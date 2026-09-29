@@ -1,1514 +1,995 @@
+/* =========================================================
+   TIỆM KEM NGỌT NGÀO
+   CORE GAME LOGIC
+========================================================= */
+
 (() => {
 
   "use strict";
 
 
-  /* =========================================================
-     HELPERS
-  ========================================================= */
+  /* =======================================================
+     SHORTCUTS
+  ======================================================= */
 
-  const $ = (id) =>
-    document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-  const moneyFormatter =
-    new Intl.NumberFormat("vi-VN");
+  const moneyFmt = new Intl.NumberFormat("vi-VN");
 
-  const money = (value) =>
-    moneyFormatter.format(
-      Math.round(value)
-    ) + "đ";
 
-  const random = (array) =>
-    array[
+  /* =======================================================
+     GAME CONFIG
+  ======================================================= */
+
+  const CONFIG = {
+
+    startingMoney: 300,
+
+    startingStock: 6,
+
+    baseMaxStock: 12,
+
+    /*
+      1 giờ game = 10 giây thực tế.
+
+      09:00 -> 21:00
+      12 giờ game = 120 giây thực tế.
+    */
+    REAL_SECONDS_PER_GAME_HOUR: 10,
+
+    openingAnimationMs: 1500,
+
+    customerEntranceMs: 850,
+
+    customerSpawnDelayMs: 600,
+
+    scoopAnimationMinMs: 320,
+
+    maxReviews: 100
+
+  };
+
+
+  const GAME_START_MINUTES = 9 * 60;
+  const GAME_END_MINUTES = 21 * 60;
+
+  const GAME_TOTAL_MINUTES =
+    GAME_END_MINUTES - GAME_START_MINUTES;
+
+
+  /* =======================================================
+     STATE
+  ======================================================= */
+
+  const defaultState = () => ({
+
+    money: CONFIG.startingMoney,
+
+    day: 1,
+
+    isOpen: false,
+
+    /*
+      Thời gian lưu bằng phút game.
+      09:00 lúc mở cửa.
+    */
+    gameMinutes: GAME_START_MINUTES,
+
+    maxStock: CONFIG.baseMaxStock,
+
+    scoopSpeed: 850,
+
+    freezerLevel: 0,
+
+    staffLevel: 0,
+
+    decorLevel: 0,
+
+    inventory: Object.fromEntries(
+      ICE_CREAM_FLAVORS.map(
+        flavor => [
+          flavor.id,
+          CONFIG.startingStock
+        ]
+      )
+    ),
+
+    currentCustomer: null,
+
+    currentOrder: null,
+
+    creation: {
+
+      step: 1,
+
+      base: null,
+
+      scoops: [],
+
+      toppings: []
+
+    },
+
+    daily: {
+
+      revenue: 0,
+
+      supplyCost: 0,
+
+      success: 0,
+
+      fail: 0
+
+    },
+
+    reviews: [],
+
+    usedReviewTexts: []
+
+  });
+
+
+  let state = loadState();
+
+
+  /* =======================================================
+     RUNTIME TIMERS
+  ======================================================= */
+
+  let shopTimer = null;
+
+  let customerTimer = null;
+
+  let scoopTimeout = null;
+
+  let customerSpawnTimeout = null;
+
+  let staffTimeout = null;
+
+  let toastTimer = null;
+
+  let introClosing = false;
+
+  let reviewFilter = "all";
+
+
+  /* =======================================================
+     SAFE HELPERS
+  ======================================================= */
+
+  function money(value) {
+
+    return `${moneyFmt.format(
+      Math.max(0, Math.round(value))
+    )}đ`;
+
+  }
+
+
+  function rand(array) {
+
+    if (!array || !array.length) {
+      return null;
+    }
+
+    return array[
       Math.floor(
         Math.random() * array.length
       )
     ];
 
-
-  /* =========================================================
-     FLAVORS
-  ========================================================= */
-
-  const FLAVORS = [
-
-    {
-      id: "chocolate",
-      name: "Sô-cô-la",
-      emoji: "🍫",
-      color: "#79513e",
-      price: 24,
-      wholesale: 78
-    },
-
-    {
-      id: "strawberry",
-      name: "Dâu Tây",
-      emoji: "🍓",
-      color: "#ed9cad",
-      price: 23,
-      wholesale: 76
-    },
-
-    {
-      id: "vanilla",
-      name: "Vani",
-      emoji: "🍦",
-      color: "#f2e3ad",
-      price: 21,
-      wholesale: 72
-    },
-
-    {
-      id: "matcha",
-      name: "Matcha",
-      emoji: "🍵",
-      color: "#a8cf99",
-      price: 25,
-      wholesale: 82
-    },
-
-    {
-      id: "durian",
-      name: "Sầu Riêng",
-      emoji: "🥭",
-      color: "#eed878",
-      price: 27,
-      wholesale: 88
-    },
-
-    {
-      id: "avocado",
-      name: "Bơ",
-      emoji: "🥑",
-      color: "#b9ce79",
-      price: 24,
-      wholesale: 80
-    },
-
-    {
-      id: "oreo",
-      name: "Oreo",
-      emoji: "🍪",
-      color: "#85858c",
-      price: 26,
-      wholesale: 84
-    },
-
-    {
-      id: "taro",
-      name: "Khoai Môn",
-      emoji: "🍠",
-      color: "#c6a8dd",
-      price: 24,
-      wholesale: 80
-    },
-
-    {
-      id: "yogurt",
-      name: "Sữa Chua",
-      emoji: "🥛",
-      color: "#dce7ef",
-      price: 22,
-      wholesale: 74
-    },
-
-    {
-      id: "rainbow",
-      name: "Rainbow 7 Màu",
-      emoji: "🌈",
-      color: "#efbcd0",
-      price: 29,
-      wholesale: 94
-    }
-
-  ];
+  }
 
 
-  /* =========================================================
-     CUSTOMERS
-  ========================================================= */
+  function clamp(value, min, max) {
 
-  const CUSTOMER_NAMES = [
-
-    "Hoàng Minh",
-    "Thảo Nguyên",
-    "Bảo Châu",
-    "Khánh Linh",
-    "Đức Minh",
-    "Mai Anh",
-    "Tuấn Anh",
-    "Ngọc Mai",
-    "Gia Bảo",
-    "Quang Minh",
-    "Hà Linh",
-    "Phúc An",
-    "Thanh Hà",
-    "Mỹ Linh",
-    "Anh Tú",
-    "Yến Trang",
-    "Minh Quân",
-    "Linh Chi",
-    "Tú Anh",
-    "Hải Nam",
-    "Phương Anh",
-    "Nhật Hạ",
-    "Đăng Minh",
-    "Thùy Dương",
-    "Thiên An",
-    "Khôi Vũ",
-    "Hồng Nhung",
-    "Duy Khánh",
-    "Ngân Hà",
-    "Trúc Linh",
-    "Kiến Văn",
-    "Mộc Lan",
-    "Vân Anh",
-    "Tường Vy",
-    "Hoài Nam",
-    "Nhã Uyên",
-    "Trung Kiên",
-    "Diệu Linh",
-    "Gia Minh",
-    "Thái An",
-    "Khánh Vy",
-    "Bảo Ngọc"
-  ];
-
-  const AVATARS = [
-    "🧑🏻",
-    "👩🏻",
-    "🧑🏼",
-    "👩🏼",
-    "👨🏻",
-    "👩🏽",
-    "🧑🏽",
-    "👨🏽",
-    "👧🏻",
-    "👦🏻"
-  ];
-
-
-  /* =========================================================
-     REVIEWS
-  ========================================================= */
-
-  const FIVE_STAR_REVIEWS = [
-
-    "Múc kem nhanh và rất khéo, viên nào cũng tròn xinh!",
-    "Kem matcha thơm dịu, ăn xong vẫn muốn gọi thêm.",
-    "Quầy xe kem nhìn yêu quá, phục vụ cũng nhẹ nhàng.",
-    "Dâu Tây mềm mịn, vị vừa ngọt vừa thơm.",
-    "Ốc quế giòn, kem mát lạnh, trải nghiệm rất dễ chịu.",
-    "Sô-cô-la đậm vị nhưng không bị ngọt gắt.",
-    "Vani thơm nhẹ, hợp ăn vào buổi chiều.",
-    "Sầu riêng béo thơm, đúng kiểu mình thích.",
-    "Bơ xanh mịn, vị lạ mà ngon bất ngờ.",
-    "Oreo có chút giòn vui miệng, rất hợp với kem.",
-    "Khoai môn thơm và màu tím nhìn cực xinh.",
-    "Sữa chua chua nhẹ, ăn trời nóng rất hợp.",
-    "Rainbow 7 màu đẹp như một chiếc cầu vồng nhỏ.",
-    "Chủ tiệm dễ thương, giao kem đúng món.",
-    "Quầy nhỏ nhưng làm kem nhìn rất có tâm.",
-    "Mình sẽ quay lại thử thêm những vị khác.",
-    "Kem được múc đầy đặn, nhìn là thấy vui.",
-    "Phục vụ nhanh gọn, mình không phải chờ lâu.",
-    "Không gian pastel nhìn rất thư giãn.",
-    "Một viên kem nhỏ mà làm buổi chiều vui hẳn.",
-    "Đúng món mình gọi, thao tác rất chuyên nghiệp.",
-    "Kem mềm, thơm và không bị đá.",
-    "Ốc quế giòn thơm, ăn tới cuối vẫn ngon.",
-    "Mình thích cách tiệm chăm chút từng đơn.",
-    "5 sao cho một góc kem đáng yêu trong phố.",
-    "Vị kem hài hòa, giá cũng dễ chịu.",
-    "Được nhìn múc kem nên cảm giác rất thú vị.",
-    "Quầy inox sạch sẽ, kem được giữ gọn gàng.",
-    "Nhân viên phản hồi nhanh, rất dễ thương.",
-    "Kem ngon, tiệm xinh, chắc chắn còn ghé."
-  ];
-
-  const ONE_STAR_REVIEWS = [
-
-    "Múc kem kiểu gì lâu thế, mình chờ muốn xỉu!",
-    "Bán buôn chán quá, đi về!",
-    "Chờ một viên kem mà cảm giác như cả buổi chiều.",
-    "Mình hết kiên nhẫn trước khi nhận được món.",
-    "Đứng đợi quá lâu nên thôi, hẹn dịp khác.",
-    "Hôm nay quầy xử lý đơn chậm quá.",
-    "Kem chưa tới mà tâm trạng đã nguội lạnh.",
-    "Mình đã gọi đúng món nhưng phải chờ quá lâu.",
-    "Chờ lâu quá nên mình bỏ cuộc giữa chừng.",
-    "Một viên kem thôi mà sao khó đến vậy?",
-    "Tiệm xinh nhưng hôm nay phục vụ chưa ổn.",
-    "Mình phải đi vì không thể đợi thêm nữa.",
-    "Hy vọng lần sau tốc độ múc kem sẽ nhanh hơn.",
-    "Đứng trước quầy lâu quá mà vẫn chưa xong.",
-    "Hôm nay mình không có trải nghiệm vui.",
-    "Khách đang vội mà đợi thế này thì khó quá.",
-    "Mùi kem thơm nhưng chờ lâu quá mất vui.",
-    "Xin lỗi shop nhưng hôm nay mình chỉ cho 1 sao.",
-    "Đợi tới mức muốn về nhà tự làm kem luôn.",
-    "Quầy cần xử lý đơn nhanh hơn một chút nha.",
-    "Mình đã hết kiên nhẫn với đơn này.",
-    "Chờ héo cả người vẫn chưa có kem.",
-    "Đáng lẽ chỉ vài giây mà thành quá lâu.",
-    "Hôm nay tiệm chưa phục vụ tốt như mong đợi.",
-    "Mình bỏ về vì không muốn đứng đợi nữa.",
-    "Chờ lâu làm mất hết hứng ăn kem.",
-    "Hy vọng shop nâng tốc độ phục vụ.",
-    "Một đơn đơn giản mà xử lý quá chậm.",
-    "Mình sẽ cân nhắc quay lại nếu phục vụ nhanh hơn.",
-    "Đứng chờ lâu quá, lần này thật sự thất vọng."
-  ];
-
-
-  /* =========================================================
-     STATE
-  ========================================================= */
-
-  const createInventory = () => {
-
-    const result = {};
-
-    FLAVORS.forEach(
-      flavor => {
-        result[flavor.id] = 6;
-      }
+    return Math.min(
+      max,
+      Math.max(min, value)
     );
 
-    return result;
-  };
-
-
-  const defaultState = () => ({
-
-    money: 300,
-
-    day: 1,
-
-    open: false,
-
-    seconds: 120,
-
-    capacity: 12,
-
-    scoopTime: 600,
-
-    staffLevel: 0,
-
-    freezerLevel: 0,
-
-    decorLevel: 0,
-
-    inventory: createInventory(),
-
-    currentCustomer: null,
-
-    order: [],
-
-    scooped: [],
-
-    daily: {
-      revenue: 0,
-      cost: 0,
-      success: 0,
-      failed: 0
-    },
-
-    reviews: createInitialReviews()
-
-  });
-
-
-  function loadState() {
-
-    try {
-
-      const saved =
-        localStorage.getItem(
-          "tiemKemCozySave"
-        );
-
-      if (!saved) {
-        return defaultState();
-      }
-
-      const parsed =
-        JSON.parse(saved);
-
-      const fresh =
-        defaultState();
-
-      return {
-        ...fresh,
-        ...parsed,
-        open: false,
-        currentCustomer: null,
-        order: [],
-        scooped: []
-      };
-
-    } catch {
-
-      return defaultState();
-
-    }
-
   }
 
-
-  const state = loadState();
-
-
-  function saveState() {
-
-    try {
-
-      const safeState = {
-        ...state,
-
-        open: false,
-
-        currentCustomer: null,
-
-        order: [],
-
-        scooped: []
-
-      };
-
-      localStorage.setItem(
-        "tiemKemCozySave",
-        JSON.stringify(safeState)
-      );
-
-    } catch {}
-
-  }
-
-
-  /* =========================================================
-     INITIAL REVIEWS
-  ========================================================= */
-
-  function createInitialReviews() {
-
-    return FIVE_STAR_REVIEWS
-      .slice(0, 12)
-      .map(
-        (text, index) => ({
-          name:
-            CUSTOMER_NAMES[index],
-          avatar:
-            AVATARS[index % AVATARS.length],
-          stars: 5,
-          text,
-          time:
-            `${index + 1} ngày trước`
-        })
-      );
-
-  }
-
-
-  /* =========================================================
-     RUNTIME
-  ========================================================= */
-
-  let dayInterval = null;
-  let customerInterval = null;
-  let customerTimer = null;
-  let toastTimeout = null;
-  let reviewFilter = "all";
-
-
-  /* =========================================================
-     FIND FLAVOR
-  ========================================================= */
 
   function getFlavor(id) {
 
-    return FLAVORS.find(
+    return ICE_CREAM_FLAVORS.find(
       flavor => flavor.id === id
     );
 
   }
 
 
-  /* =========================================================
+  function getTopping(id) {
+
+    return TOPPINGS.find(
+      topping => topping.id === id
+    );
+
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replace(/[&<>'"]/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        "\"": "&quot;"
+      }[character]));
+
+  }
+
+
+  function formatClock(minutes) {
+
+    const safe = clamp(
+      Math.floor(minutes),
+      GAME_START_MINUTES,
+      GAME_END_MINUTES
+    );
+
+    const hours = Math.floor(
+      safe / 60
+    );
+
+    const mins = safe % 60;
+
+    return (
+      String(hours).padStart(2, "0") +
+      ":" +
+      String(mins).padStart(2, "0")
+    );
+
+  }
+
+
+  function minutesToProgress(minutes) {
+
+    return clamp(
+      (
+        (minutes - GAME_START_MINUTES) /
+        GAME_TOTAL_MINUTES
+      ) * 360,
+      0,
+      360
+    );
+
+  }
+
+
+  /* =======================================================
+     LOCAL STORAGE
+  ======================================================= */
+
+  function saveState() {
+
+    try {
+
+      const copy = JSON.parse(
+        JSON.stringify(state)
+      );
+
+      copy.isOpen = false;
+
+      localStorage.setItem(
+        "sweetIceCreamShop_v2",
+        JSON.stringify(copy)
+      );
+
+    } catch (error) {
+
+      console.warn(
+        "Không thể lưu game:",
+        error
+      );
+
+    }
+
+  }
+
+
+  function loadState() {
+
+    try {
+
+      const raw =
+        localStorage.getItem(
+          "sweetIceCreamShop_v2"
+        ) ||
+        localStorage.getItem(
+          "sweetIceCreamShop_v1"
+        );
+
+      if (!raw) {
+
+        const fresh = defaultState();
+
+        seedReviews(fresh);
+
+        return fresh;
+
+      }
+
+
+      const parsed = JSON.parse(raw);
+
+      const base = defaultState();
+
+      const merged = {
+
+        ...base,
+
+        ...parsed,
+
+        isOpen: false,
+
+        daily: {
+          ...base.daily,
+          ...(parsed.daily || {})
+        },
+
+        creation: {
+          ...base.creation,
+          ...(parsed.creation || {})
+        },
+
+        inventory: {
+          ...base.inventory,
+          ...(parsed.inventory || {})
+        }
+
+      };
+
+
+      /*
+        Migration từ bản cũ:
+        bản cũ dùng daySeconds = 120.
+      */
+
+      if (
+        typeof parsed.gameMinutes !== "number"
+      ) {
+
+        merged.gameMinutes =
+          GAME_START_MINUTES;
+
+      }
+
+
+      merged.currentCustomer = null;
+
+      merged.currentOrder = null;
+
+      merged.creation = {
+        step: 1,
+        base: null,
+        scoops: [],
+        toppings: []
+      };
+
+
+      merged.isOpen = false;
+
+      merged.reviews =
+        Array.isArray(parsed.reviews)
+          ? parsed.reviews
+          : [];
+
+
+      if (!merged.reviews.length) {
+        seedReviews(merged);
+      }
+
+
+      return merged;
+
+    } catch (error) {
+
+      console.warn(
+        "Save cũ không hợp lệ, tạo game mới."
+      );
+
+      const fresh = defaultState();
+
+      seedReviews(fresh);
+
+      return fresh;
+
+    }
+
+  }
+
+
+  function seedReviews(targetState) {
+
+    const amount = 10;
+
+    targetState.reviews = [];
+
+    targetState.usedReviewTexts = [];
+
+
+    for (let i = 0; i < amount; i++) {
+
+      const text =
+        POSITIVE_REVIEWS[i];
+
+      targetState.reviews.push({
+
+        id: `base-${i}-${Date.now()}`,
+
+        name:
+          CUSTOMER_NAMES[i],
+
+        avatar:
+          AVATARS[i % AVATARS.length],
+
+        stars: 5,
+
+        text,
+
+        time:
+          `${i + 1} ngày trước`
+
+      });
+
+      targetState.usedReviewTexts.push(
+        text
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
      TOAST
-  ========================================================= */
+  ======================================================= */
 
   function showToast(message) {
 
     const toast = $("toast");
 
+    if (!toast) {
+      return;
+    }
+
     toast.textContent = message;
 
     toast.classList.add("show");
 
-    clearTimeout(toastTimeout);
+    clearTimeout(toastTimer);
 
-    toastTimeout =
-      setTimeout(
-        () => {
-          toast.classList.remove("show");
-        },
-        2000
-      );
+    toastTimer = setTimeout(() => {
+
+      toast.classList.remove("show");
+
+    }, 2200);
 
   }
 
 
-  /* =========================================================
-     RENDER EVERYTHING
-  ========================================================= */
+  /* =======================================================
+     TOP UI
+  ======================================================= */
 
-  function renderAll() {
+  function updateTopStats() {
 
-    renderHeader();
-
-    renderCounterTubs();
-
-    renderFlavorGrid();
-
-    renderOrder();
-
-    renderCustomer();
-
-    renderWarehouse();
-
-    renderUpgrades();
-
-    renderReviews();
-
-    renderIceCream();
-
-  }
-
-
-  /* =========================================================
-     HEADER
-  ========================================================= */
-
-  function renderHeader() {
-
-    $("money").textContent =
-      moneyFormatter.format(
+    $("moneyValue").textContent =
+      moneyFmt.format(
         Math.round(state.money)
       );
 
-    $("dayNumber").textContent =
+    $("dayValue").textContent =
       state.day;
 
     $("warehouseMoney").textContent =
-      money(state.money);
+      moneyFmt.format(
+        Math.round(state.money)
+      );
 
     $("upgradeMoney").textContent =
-      money(state.money);
+      moneyFmt.format(
+        Math.round(state.money)
+      );
 
-    $("shopStatus").textContent =
-      state.open
-        ? "Đang mở cửa"
-        : "Đang đóng cửa";
+    $("maxStockValue").textContent =
+      state.maxStock;
 
-    $("shopHint").textContent =
-      state.open
-        ? "Múc đúng vị và giao thật nhanh nhé!"
-        : "Mở cửa để bắt đầu bán kem.";
 
-    $("openShopButton").textContent =
-      state.open
-        ? "ĐÓNG CỬA TIỆM"
+    $("openCloseBtn").textContent =
+      state.isOpen
+        ? "ĐÓNG CỬA"
         : "MỞ CỬA TIỆM";
 
-    updateDayClock();
+
+    $("shopStatusText").textContent =
+      state.isOpen
+
+        ? `Tiệm đang mở cửa — giờ hiện tại ${formatClock(state.gameMinutes)}. Phục vụ khách thật nhanh nhé!`
+
+        : "Tiệm đang đóng cửa. Hãy mở cửa để đón khách!";
 
   }
 
 
-  /* =========================================================
+  /* =======================================================
      DAY CLOCK
-  ========================================================= */
+  ======================================================= */
 
-  function updateDayClock() {
+  function updateDayClockUI() {
 
-    const minutes =
-      Math.floor(
-        state.seconds / 60
+    const time =
+      formatClock(
+        state.gameMinutes
       );
 
-    const seconds =
-      state.seconds % 60;
-
-    $("dayTime").textContent =
-      `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    $("dayTimer").textContent =
+      time;
 
 
-    const percent =
-      state.seconds / 120;
-
-    const circumference =
-      2 * Math.PI * 23;
-
-    $("dayProgress").style.strokeDashoffset =
-      circumference *
-      (1 - percent);
+    const progress =
+      minutesToProgress(
+        state.gameMinutes
+      );
 
 
-    $("dayProgress").style.stroke =
-      percent > .5
-        ? "#70ae8f"
-        : percent > .25
-          ? "#d4b44e"
-          : "#d97575";
+    const ring =
+      $("dayClockRing");
+
+
+    ring.style.setProperty(
+      "--clock-progress",
+      `${progress}deg`
+    );
+
+
+    const remaining =
+      GAME_END_MINUTES -
+      state.gameMinutes;
+
+
+    ring.classList.toggle(
+      "warning",
+      remaining <= 180 &&
+      remaining > 60
+    );
+
+
+    ring.classList.toggle(
+      "danger",
+      remaining <= 60
+    );
 
   }
 
 
-  /* =========================================================
-     COUNTER TUBS
-  ========================================================= */
+  /* =======================================================
+     NAV
+  ======================================================= */
 
-  function renderCounterTubs() {
+  function switchTab(tabId) {
 
-    const container =
-      $("counterTubs");
+    document
+      .querySelectorAll(".tab-panel")
+      .forEach(panel => {
 
-    container.innerHTML =
-      FLAVORS.map(
-        flavor => {
+        panel.classList.toggle(
+          "active",
+          panel.id === tabId
+        );
 
-          const amount =
-            state.inventory[flavor.id] || 0;
-
-          return `
-            <button
-              class="stainless-tub"
-              data-scoop="${flavor.id}"
-              style="--flavor:${flavor.color}"
-              aria-label="Múc kem ${flavor.name}"
-            >
-
-              <div class="stainless-inside">
-
-                <div class="tub-ice"></div>
-
-                <strong>
-                  ${flavor.emoji}
-                  ${flavor.name}
-                </strong>
-
-              </div>
-
-              <span class="tub-quantity">
-                ${amount}
-              </span>
-
-            </button>
-          `;
-
-        }
-      ).join("");
+      });
 
 
     document
-      .querySelectorAll("[data-scoop]")
-      .forEach(
-        button => {
-
-          button.addEventListener(
-            "click",
-            () => {
-              scoopFlavor(
-                button.dataset.scoop
-              );
-            }
-          );
-
-        }
-      );
-
-  }
-
-
-  /* =========================================================
-     FLAVOR GRID
-  ========================================================= */
-
-  function renderFlavorGrid() {
-
-    $("stockSummary").textContent =
-      `${Object.values(state.inventory).reduce(
-        (a, b) => a + b,
-        0
-      )}/${
-        state.capacity * FLAVORS.length
-      }`;
-
-
-    $("flavorGrid").innerHTML =
-      FLAVORS.map(
-        flavor => {
-
-          const amount =
-            state.inventory[flavor.id] || 0;
-
-          return `
-            <button
-              class="flavor-button"
-              data-flavor="${flavor.id}"
-            >
-
-              <div
-                class="flavor-art"
-                style="--flavor:${flavor.color}"
-              ></div>
-
-              <div class="flavor-info">
-
-                <strong>
-                  ${flavor.emoji}
-                  ${flavor.name}
-                </strong>
-
-                <small>
-                  ${money(flavor.price)} / viên
-                </small>
-
-              </div>
-
-              <span class="flavor-stock">
-                ${amount}
-              </span>
-
-            </button>
-          `;
-
-        }
-      ).join("");
-
-
-    document
-      .querySelectorAll("[data-flavor]")
-      .forEach(
-        button => {
-
-          button.addEventListener(
-            "click",
-            () => {
-              scoopFlavor(
-                button.dataset.flavor
-              );
-            }
-          );
-
-        }
-      );
-
-  }
-
-
-  /* =========================================================
-     ORDER
-  ========================================================= */
-
-  function renderOrder() {
-
-    const customer =
-      state.currentCustomer;
-
-    if (!customer) {
-
-      $("orderText").textContent =
-        "Chưa có khách";
-
-      $("customerMood").textContent =
-        state.open
-          ? "🪑 Đang chờ khách"
-          : "🏠 Đóng cửa";
-
-      $("orderDots").innerHTML = "";
-
-    } else {
-
-      $("orderText").textContent =
-        state.order
-          .map(
-            id =>
-              `1 viên ${getFlavor(id).name}`
-          )
-          .join(" + ");
-
-
-      $("orderDots").innerHTML =
-        state.order
-          .map(
-            id => {
-
-              const flavor =
-                getFlavor(id);
-
-              return `
-                <span
-                  class="order-dot"
-                  style="--flavor:${flavor.color}"
-                ></span>
-              `;
-
-            }
-          )
-          .join("");
-
-
-      $("customerMood").textContent =
-        "😊 Khách đang chờ";
-
-    }
-
-
-    $("resetIceCream").disabled =
-      state.scooped.length === 0;
-
-    $("serveCustomer").disabled =
-      !customer ||
-      state.scooped.length !==
-        state.order.length;
-
-  }
-
-
-  /* =========================================================
-     ICE CREAM ASSEMBLY
-  ========================================================= */
-
-  function renderIceCream() {
-
-    const assembly =
-      $("iceCreamAssembly");
-
-    assembly
-      .querySelectorAll(".assembly-scoop")
-      .forEach(
-        element =>
-          element.remove()
-      );
-
-
-    const empty =
-      assembly.querySelector(
-        ".empty-assembly"
-      );
-
-
-    if (state.scooped.length === 0) {
-
-      empty.style.display =
-        "flex";
-
-      return;
-
-    }
-
-
-    empty.style.display =
-      "none";
-
-
-    state.scooped.forEach(
-      (flavorId, index) => {
-
-        const flavor =
-          getFlavor(flavorId);
-
-        const scoop =
-          document.createElement(
-            "div"
-          );
-
-        scoop.className =
-          "assembly-scoop";
-
-        scoop.style.setProperty(
-          "--flavor",
-          flavor.color
+      .querySelectorAll(".nav-btn")
+      .forEach(button => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.tab === tabId
         );
 
-        /*
-          Viên đầu nằm thấp,
-          viên sau nằm cao hơn.
-        */
+      });
 
-        scoop.style.bottom =
-          `${25 + index * 25}px`;
 
-        /*
-          Z-index giúp viên sau
-          nằm trên viên trước.
-        */
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
 
-        scoop.style.zIndex =
-          20 + index;
+  }
 
-        assembly.appendChild(
-          scoop
+
+  /* =======================================================
+     INTRO MODAL
+  ======================================================= */
+
+  function closeIntro() {
+
+    if (introClosing) {
+      return;
+    }
+
+    const modal =
+      $("introModal");
+
+    if (!modal) {
+      return;
+    }
+
+
+    introClosing = true;
+
+
+    /*
+      Chống lỗi nút không bấm được:
+      - pointer-events đã được kiểm soát bởi CSS
+      - button nằm trên modal-card
+      - không dùng display:none ngay lập tức
+      - fade-out trước
+    */
+
+    modal.classList.add("closing");
+
+
+    setTimeout(() => {
+
+      modal.classList.remove(
+        "visible",
+        "closing"
+      );
+
+      modal.style.pointerEvents =
+        "none";
+
+      introClosing = false;
+
+      showToast(
+        "Tiệm đã sẵn sàng. Bấm “MỞ CỬA TIỆM” nhé! 🍦"
+      );
+
+    }, 240);
+
+  }
+
+
+  /* =======================================================
+     OPEN SHOP
+  ======================================================= */
+
+  function openShop() {
+
+    if (state.isOpen) {
+      return;
+    }
+
+
+    if (
+      $("daySummaryModal")
+        .classList
+        .contains("visible")
+    ) {
+
+      return;
+
+    }
+
+
+    state.isOpen = true;
+
+    state.gameMinutes =
+      GAME_START_MINUTES;
+
+
+    /*
+      Reset thống kê ngày chỉ khi bắt đầu
+      một ngày mới thực sự.
+    */
+    state.daily = {
+      revenue: 0,
+      supplyCost: 0,
+      success: 0,
+      fail: 0
+    };
+
+
+    clearCustomerState();
+
+
+    updateTopStats();
+
+    updateDayClockUI();
+
+    updateOrderUI();
+
+
+    const overlay =
+      $("openingOverlay");
+
+
+    overlay.classList.add(
+      "active"
+    );
+
+
+    requestAnimationFrame(() => {
+
+      requestAnimationFrame(() => {
+
+        overlay.classList.add(
+          "play"
         );
 
-      }
+      });
+
+    });
+
+
+    /*
+      Cho phép bắt đầu đón khách
+      ngay khi rèm mở.
+    */
+    customerSpawnTimeout =
+      setTimeout(() => {
+
+        if (
+          state.isOpen &&
+          !state.currentCustomer
+        ) {
+
+          createCustomer();
+
+        }
+
+      }, CONFIG.openingAnimationMs);
+
+
+    setTimeout(() => {
+
+      overlay.classList.remove(
+        "play"
+      );
+
+      setTimeout(() => {
+
+        overlay.classList.remove(
+          "active"
+        );
+
+      }, 100);
+
+    }, CONFIG.openingAnimationMs);
+
+
+    startDayClock();
+
+    saveState();
+
+  }
+
+
+  /* =======================================================
+     CLOSE SHOP MANUALLY
+  ======================================================= */
+
+  function manualCloseShop() {
+
+    if (!state.isOpen) {
+      return;
+    }
+
+    finishDay(
+      false
     );
 
   }
 
 
-  /* =========================================================
-     SCOOP MECHANIC
-  ========================================================= */
+  /* =======================================================
+     GAME CLOCK
+  ======================================================= */
 
-  function scoopFlavor(flavorId) {
+  function startDayClock() {
 
-    if (!state.open) {
-
-      showToast(
-        "Hãy mở cửa tiệm trước nhé! 🍦"
-      );
-
-      return;
-
-    }
-
-
-    if (!state.currentCustomer) {
-
-      showToast(
-        "Chưa có khách gọi món."
-      );
-
-      return;
-
-    }
-
-
-    if (
-      state.scooped.length >=
-      state.order.length
-    ) {
-
-      showToast(
-        "Chiếc kem đã đủ viên rồi!"
-      );
-
-      return;
-
-    }
-
-
-    const requiredFlavor =
-      state.order[
-        state.scooped.length
-      ];
-
-
-    if (
-      flavorId !== requiredFlavor
-    ) {
-
-      showToast(
-        `Khách đang gọi kem ${getFlavor(requiredFlavor).name} nhé!`
-      );
-
-      return;
-
-    }
-
-
-    if (
-      state.inventory[flavorId] <= 0
-    ) {
-
-      showToast(
-        "Khay này hết kem. Vào Kho Hàng nhập thêm nhé."
-      );
-
-      return;
-
-    }
+    clearInterval(shopTimer);
 
 
     /*
-      Trừ kho ngay khi múc.
+      10 giây thật = 60 phút game.
+      Vì vậy 1 giờ game = 10 giây.
     */
 
-    state.inventory[flavorId]--;
-
-    state.scooped.push(
-      flavorId
-    );
+    const gameMinutesPerTick =
+      6;
 
 
-    /*
-      Hiệu ứng múc.
-    */
+    shopTimer =
+      setInterval(() => {
 
-    const assembly =
-      $("iceCreamAssembly");
-
-    assembly.classList.remove(
-      "scooping-animation"
-    );
-
-    void assembly.offsetWidth;
-
-    assembly.classList.add(
-      "scooping-animation"
-    );
+        if (!state.isOpen) {
+          return;
+        }
 
 
-    renderCounterTubs();
-    renderFlavorGrid();
-    renderOrder();
-    renderIceCream();
+        state.gameMinutes +=
+          gameMinutesPerTick;
+
+
+        if (
+          state.gameMinutes >=
+          GAME_END_MINUTES
+        ) {
+
+          state.gameMinutes =
+            GAME_END_MINUTES;
+
+          updateDayClockUI();
+
+          finishDay(true);
+
+          return;
+
+        }
+
+
+        updateDayClockUI();
+
+        updateTopStats();
+
+      }, 1000);
 
   }
 
 
-  /* =========================================================
-     RESET ICE CREAM
-  ========================================================= */
+  /* =======================================================
+     FINISH DAY
+  ======================================================= */
 
-  function resetIceCream() {
+  function finishDay(autoClose = false) {
 
-    if (
-      state.scooped.length === 0
-    ) {
-
+    if (!state.isOpen) {
       return;
-
     }
 
 
+    state.isOpen = false;
+
+
+    clearInterval(shopTimer);
+
+    shopTimer = null;
+
+
+    clearInterval(customerTimer);
+
+    customerTimer = null;
+
+
+    clearTimeout(scoopTimeout);
+
+    scoopTimeout = null;
+
+
+    clearTimeout(customerSpawnTimeout);
+
+    customerSpawnTimeout = null;
+
+
+    clearTimeout(staffTimeout);
+
+    staffTimeout = null;
+
+
     /*
-      Trả toàn bộ viên đã múc
-      về đúng khay.
+      Khách đang đứng quầy sẽ rời đi.
+      Không tạo review thất bại khi người chơi
+      đóng cửa giữa ngày.
     */
-
-    state.scooped.forEach(
-      flavorId => {
-
-        state.inventory[flavorId] =
-          Math.min(
-            state.capacity,
-            state.inventory[flavorId] + 1
-          );
-
-      }
-    );
+    clearCustomerState();
 
 
-    state.scooped = [];
+    updateTopStats();
+
+    updateDayClockUI();
+
+    updateOrderUI();
 
 
-    renderCounterTubs();
-    renderFlavorGrid();
-    renderOrder();
-    renderIceCream();
+    renderSummary();
+
+
+    $("daySummaryModal")
+      .classList
+      .add("visible");
+
+
+    saveState();
+
+
+    if (autoClose) {
+
+      showToast(
+        "Đã đúng 21:00 — tiệm tự động đóng cửa! 🌙"
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     NEW DAY
+  ======================================================= */
+
+  function newDay() {
+
+    $("daySummaryModal")
+      .classList
+      .remove("visible");
+
+
+    state.day += 1;
+
+    state.gameMinutes =
+      GAME_START_MINUTES;
+
+    state.isOpen = false;
+
+
+    state.daily = {
+      revenue: 0,
+      supplyCost: 0,
+      success: 0,
+      fail: 0
+    };
+
+
+    clearCustomerState();
+
+
+    updateTopStats();
+
+    updateDayClockUI();
+
+    updateOrderUI();
+
+    saveState();
 
 
     showToast(
-      "Đã làm lại chiếc kem. Kem được trả về khay."
+      `Ngày ${state.day} đã sẵn sàng. Mở cửa thôi! 🌷`
     );
 
   }
 
 
-  /* =========================================================
-     CUSTOMER SVG
-  ========================================================= */
+  /* =======================================================
+     CUSTOMER PATIENCE
+  ======================================================= */
 
-  function customerSVG(customer) {
+  function getCustomerPatience() {
 
-    const angry =
-      customer.patience <= 0;
-
-
-    let hair = "";
-
-
-    if (
-      customer.hair === "long"
-    ) {
-
-      hair = `
-        <path
-          d="
-            M22 55
-            Q20 18 54 14
-            Q88 18 86 55
-            L77 84
-            L65 69
-            L54 81
-            L42 69
-            L30 84
-            Z
-          "
-          fill="#704a3b"
-        />
-      `;
-
-    } else if (
-      customer.hair === "bob"
-    ) {
-
-      hair = `
-        <path
-          d="
-            M23 54
-            Q24 17 54 15
-            Q84 17 85 54
-            L75 72
-            Q70 35 54 29
-            Q38 35 32 72
-            Z
-          "
-          fill="#694638"
-        />
-      `;
-
-    } else if (
-      customer.hair === "cap"
-    ) {
-
-      hair = `
-        <path
-          d="
-            M24 42
-            Q52 13 82 39
-            L77 48
-            Q53 35 28 48
-            Z
-          "
-          fill="#d49cad"
-        />
-
-        <path
-          d="
-            M25 40
-            Q52 14 81 39
-          "
-          fill="none"
-          stroke="#a16d83"
-          stroke-width="4"
-          stroke-linecap="round"
-        />
-      `;
-
-    } else {
-
-      hair = `
-        <path
-          d="
-            M27 43
-            Q30 17 54 15
-            Q78 17 81 43
-            L69 34
-            Q60 28 54 28
-            Q44 28 34 35
-            Z
-          "
-          fill="#604035"
-        />
-      `;
-
-    }
-
-
-    const mouth =
-      angry
-        ? `
-          <path
-            d="M44 70 Q54 62 64 70"
-            fill="none"
-            stroke="#a34f4f"
-            stroke-width="2.5"
-            stroke-linecap="round"
-          />
-        `
-        : `
-          <path
-            d="M45 67 Q54 74 63 67"
-            fill="none"
-            stroke="#8d5b55"
-            stroke-width="2.5"
-            stroke-linecap="round"
-          />
-        `;
-
-
-    return `
-      <svg
-        class="customer-svg ${angry ? "angry" : ""}"
-        viewBox="0 0 110 153"
-        aria-hidden="true"
-      >
-
-        <!-- áo -->
-
-        <path
-          d="
-            M27 102
-            Q55 89 83 102
-            L96 153
-            L14 153
-            Z
-          "
-          fill="${customer.shirt}"
-        />
-
-        <!-- cổ áo -->
-
-        <path
-          d="
-            M42 99
-            Q55 108 68 99
-          "
-          fill="none"
-          stroke="#fff"
-          stroke-width="4"
-          opacity=".65"
-        />
-
-        <!-- mặt -->
-
-        <circle
-          class="face"
-          cx="55"
-          cy="53"
-          r="29"
-          fill="${customer.skin}"
-        />
-
-        <!-- tai -->
-
-        <circle
-          cx="27"
-          cy="55"
-          r="5"
-          fill="${customer.skin}"
-        />
-
-        <circle
-          cx="83"
-          cy="55"
-          r="5"
-          fill="${customer.skin}"
-        />
-
-        <!-- tóc -->
-
-        ${hair}
-
-        <!-- mắt -->
-
-        <ellipse
-          class="eye"
-          cx="44"
-          cy="53"
-          rx="2.7"
-          ry="3"
-          fill="#4d403c"
-        />
-
-        <ellipse
-          class="eye"
-          cx="66"
-          cy="53"
-          rx="2.7"
-          ry="3"
-          fill="#4d403c"
-        />
-
-        <!-- má -->
-
-        <circle
-          class="cheek"
-          cx="36"
-          cy="63"
-          r="5"
-          fill="#e8898e"
-        />
-
-        <circle
-          class="cheek"
-          cx="74"
-          cy="63"
-          r="5"
-          fill="#e8898e"
-        />
-
-        <!-- miệng -->
-
-        ${mouth}
-
-        <!-- tay -->
-
-        <path
-          d="
-            M28 110
-            Q18 118 22 133
-          "
-          fill="none"
-          stroke="${customer.skin}"
-          stroke-width="7"
-          stroke-linecap="round"
-        />
-
-        <path
-          d="
-            M82 110
-            Q92 118 88 133
-          "
-          fill="none"
-          stroke="${customer.skin}"
-          stroke-width="7"
-          stroke-linecap="round"
-        />
-
-      </svg>
-    `;
+    return (
+      30 +
+      state.decorLevel * 4
+    );
 
   }
 
 
-  /* =========================================================
-     CUSTOMER RENDER
-  ========================================================= */
-
-  function renderCustomer() {
-
-    const layer =
-      $("customerLayer");
-
-    if (
-      !state.currentCustomer
-    ) {
-
-      layer.innerHTML = "";
-
-      return;
-
-    }
-
-
-    const customer =
-      state.currentCustomer;
-
-    const progress =
-      Math.max(
-        0,
-        customer.patience /
-          customer.maxPatience
-      ) * 100;
-
-
-    const timerColor =
-      progress > 50
-        ? "#70ae8f"
-        : progress > 25
-          ? "#d4b44e"
-          : "#d97575";
-
-
-    let speech = "";
-
-
-    if (
-      customer.patience <= 0
-    ) {
-
-      speech =
-        customer.complaint;
-
-    } else {
-
-      const first =
-        getFlavor(
-          state.order[0]
-        );
-
-      const second =
-        state.order.length > 1
-          ? getFlavor(
-              state.order[1]
-            )
-          : null;
-
-
-      speech =
-        second
-          ? `Cho mình 1 viên ${first.emoji} ${first.name} + 1 viên ${second.emoji} ${second.name} nhé!`
-          : `Cho mình 1 viên ${first.emoji} ${first.name} nhé!`;
-
-    }
-
-
-    layer.innerHTML = `
-      <div
-        class="customer"
-        id="activeCustomer"
-      >
-
-        <div class="customer-bubble">
-          ${speech}
-        </div>
-
-        <div
-          class="customer-timer"
-          style="
-            --timer-progress:${progress};
-            --timer-color:${timerColor};
-          "
-        >
-          <span>
-            ${Math.ceil(
-              Math.max(
-                0,
-                customer.patience
-              )
-            )}
-          </span>
-        </div>
-
-        ${customerSVG(customer)}
-
-        <div class="customer-name">
-          ${customer.name}
-        </div>
-
-      </div>
-    `;
-
-  }
-
-
-  /* =========================================================
+  /* =======================================================
      CREATE CUSTOMER
-  ========================================================= */
+  ======================================================= */
 
   function createCustomer() {
 
-    const available =
-      FLAVORS.filter(
-        flavor =>
-          state.inventory[flavor.id] > 0
-      );
-
-
     if (
-      available.length === 0
-    ) {
-
-      showToast(
-        "Kho kem đang trống! Hãy nhập hàng."
-      );
-
-      return null;
-
-    }
-
-
-    const first =
-      random(available);
-
-
-    let order = [
-      first.id
-    ];
-
-
-    /*
-      Khoảng 50% khách gọi 2 viên.
-    */
-
-    if (
-      Math.random() < .52 &&
-      available.length >= 2
-    ) {
-
-      const other =
-        random(
-          available.filter(
-            flavor =>
-              flavor.id !== first.id
-          )
-        );
-
-      order.push(
-        other.id
-      );
-
-    }
-
-
-    const patience =
-      30 +
-      state.decorLevel * 4;
-
-
-    return {
-
-      name:
-        random(CUSTOMER_NAMES),
-
-      avatar:
-        random(AVATARS),
-
-      shirt:
-        random([
-          "#e7a9b7",
-          "#9ecdbb",
-          "#f0ce79",
-          "#9eb9df",
-          "#c8a5d6"
-        ]),
-
-      skin:
-        random([
-          "#f3c5a0",
-          "#dfaa7e",
-          "#c98d63",
-          "#f6d0ae"
-        ]),
-
-      hair:
-        random([
-          "short",
-          "long",
-          "bob",
-          "cap"
-        ]),
-
-      maxPatience:
-        patience,
-
-      patience,
-
-      complaint:
-        random(
-          ONE_STAR_REVIEWS
-        )
-
-    };
-
-  }
-
-
-  /* =========================================================
-     START CUSTOMER
-  ========================================================= */
-
-  function spawnCustomer() {
-
-    if (
-      !state.open ||
+      !state.isOpen ||
       state.currentCustomer
     ) {
 
@@ -1517,89 +998,587 @@
     }
 
 
-    const customer =
-      createCustomer();
+    const firstFlavor =
+      rand(ICE_CREAM_FLAVORS);
 
 
-    if (!customer) {
-      return;
-    }
+    /*
+      Một số khách gọi 2 viên.
+      Giữ tỷ lệ đơn 2 viên thấp
+      để game không quá khó.
+    */
+    const wantsTwoScoops =
+      Math.random() < .28;
+
+
+    const secondFlavor =
+      wantsTwoScoops
+        ? rand(
+            ICE_CREAM_FLAVORS.filter(
+              flavor =>
+                flavor.id !==
+                firstFlavor.id
+            )
+          )
+        : null;
+
+
+    const flavors =
+      secondFlavor
+        ? [
+            firstFlavor.id,
+            secondFlavor.id
+          ]
+        : [
+            firstFlavor.id
+          ];
+
+
+    const toppingCount =
+      Math.random() < .58
+        ? (Math.random() < .25 ? 2 : 1)
+        : 0;
+
+
+    const shuffledToppings =
+      [...TOPPINGS]
+        .sort(() => Math.random() - .5);
+
+
+    const toppings =
+      shuffledToppings
+        .slice(0, toppingCount)
+        .map(topping => topping.id);
+
+
+    const gender =
+      Math.random() > .5
+        ? "female"
+        : "male";
+
+
+    const customer = {
+
+      id:
+        `${Date.now()}-${Math.random()}`,
+
+      name:
+        rand(CUSTOMER_NAMES),
+
+      avatar:
+        rand(AVATARS),
+
+      gender,
+
+      hair:
+        rand(HAIR_TYPES),
+
+      shirt:
+        rand(SHIRT_COLORS),
+
+      skin:
+        rand(SKIN_TONES),
+
+      order: {
+
+        scoops: flavors,
+
+        toppings
+
+      },
+
+      patience:
+        getCustomerPatience(),
+
+      maxPatience:
+        getCustomerPatience(),
+
+      phase:
+        "entering"
+
+    };
 
 
     state.currentCustomer =
       customer;
 
 
-    state.order =
-      createOrderFromCustomer(
-        customer
-      );
+    state.currentOrder =
+      customer.order;
 
 
-    state.scooped = [];
+    resetCreation(false);
 
 
     renderCustomer();
-    renderOrder();
-    renderIceCream();
+
+    updateOrderUI();
 
 
-    startCustomerPatience();
+    startCustomerTimer();
+
+
+    setTimeout(() => {
+
+      if (
+        state.currentCustomer &&
+        state.currentCustomer.id ===
+          customer.id
+      ) {
+
+        customer.phase =
+          "ready";
+
+        scheduleStaffService();
+
+      }
+
+    }, CONFIG.customerEntranceMs);
 
   }
 
 
-  function createOrderFromCustomer() {
+  /* =======================================================
+     CUSTOMER SVG
+  ======================================================= */
 
-    const available =
-      FLAVORS.filter(
-        flavor =>
-          state.inventory[flavor.id] > 0
-      );
+  function buildCustomerSvg(
+    customer,
+    angry = false
+  ) {
 
-
-    if (!available.length) {
-      return [];
-    }
-
-
-    const first =
-      random(available);
+    const skin =
+      angry
+        ? "#ef9b95"
+        : customer.skin;
 
 
-    const result = [
-      first.id
-    ];
+    let hair;
 
 
     if (
-      Math.random() < .52 &&
-      available.length > 1
+      customer.hair === "cap"
     ) {
 
-      const remaining =
-        available.filter(
-          flavor =>
-            flavor.id !== first.id
-        );
+      hair = `
+        <path
+          d="M25 35 Q52 10 79 35 L75 45
+             Q52 32 29 46Z"
+          fill="#e0b3cf"
+        />
 
-      result.push(
-        random(remaining).id
-      );
+        <path
+          d="M25 34 Q52 9 79 34"
+          fill="none"
+          stroke="#9d7591"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+      `;
+
+    }
+
+    else if (
+      customer.hair === "long"
+    ) {
+
+      hair = `
+        <path
+          d="M23 48 Q20 15 52 15
+             Q84 15 81 48
+             L74 79 L63 68 L58 78
+             L45 68 L36 80Z"
+          fill="#704b3c"
+        />
+      `;
+
+    }
+
+    else if (
+      customer.hair === "curly"
+    ) {
+
+      hair = `
+        <g fill="#6d4b3b">
+
+          <circle cx="31" cy="31" r="10"/>
+          <circle cx="40" cy="21" r="11"/>
+          <circle cx="53" cy="18" r="12"/>
+          <circle cx="66" cy="23" r="11"/>
+          <circle cx="75" cy="34" r="10"/>
+          <circle cx="33" cy="43" r="9"/>
+          <circle cx="73" cy="44" r="9"/>
+
+        </g>
+      `;
+
+    }
+
+    else if (
+      customer.hair === "bob"
+    ) {
+
+      hair = `
+        <path
+          d="M23 48 Q23 17 52 14
+             Q80 18 82 48
+             L75 63
+             Q67 29 52 30
+             Q37 30 30 63Z"
+          fill="#704b3c"
+        />
+      `;
+
+    }
+
+    else {
+
+      hair = `
+        <path
+          d="M27 44 Q28 16 52 14
+             Q77 16 78 44
+             L70 35
+             Q60 27 52 27
+             Q43 27 34 35Z"
+          fill="#684639"
+        />
+      `;
 
     }
 
 
-    return result;
+    const shirt = `
+      <path
+        d="M30 88
+           Q52 77 74 88
+           L84 132
+           L20 132Z"
+        fill="${customer.shirt}"
+      />
+    `;
+
+
+    const eyes = `
+      <path
+        d="M39 51 q3 -3 6 0"
+        stroke="#4b403d"
+        stroke-width="3"
+        fill="none"
+        stroke-linecap="round"
+      />
+
+      <path
+        d="M60 51 q3 -3 6 0"
+        stroke="#4b403d"
+        stroke-width="3"
+        fill="none"
+        stroke-linecap="round"
+      />
+    `;
+
+
+    const cheeks = `
+      <circle
+        cx="37"
+        cy="60"
+        r="5"
+        fill="#ee9b9b"
+        opacity=".65"
+      />
+
+      <circle
+        cx="69"
+        cy="60"
+        r="5"
+        fill="#ee9b9b"
+        opacity=".65"
+      />
+    `;
+
+
+    const mouth =
+      angry
+
+        ? `
+          <path
+            d="M44 70 Q52 64 60 70"
+            stroke="#704a42"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+          />
+        `
+
+        : `
+          <path
+            d="M45 66 Q52 71 59 66"
+            stroke="#704a42"
+            stroke-width="2.4"
+            fill="none"
+            stroke-linecap="round"
+          />
+        `;
+
+
+    return `
+
+      <svg
+        class="customer-svg"
+        viewBox="0 0 104 140"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+
+        ${shirt}
+
+        <rect
+          x="46"
+          y="72"
+          width="12"
+          height="18"
+          rx="5"
+          fill="${skin}"
+        />
+
+        <ellipse
+          cx="52"
+          cy="50"
+          rx="27"
+          ry="29"
+          fill="${skin}"
+        />
+
+        ${hair}
+
+        ${eyes}
+
+        ${cheeks}
+
+        ${mouth}
+
+        <path
+          d="M22 94
+             Q52 79 82 94"
+          stroke="rgba(75,64,61,.12)"
+          stroke-width="4"
+          fill="none"
+        />
+
+        <rect
+          x="33"
+          y="126"
+          width="18"
+          height="11"
+          rx="5"
+          fill="#706f7a"
+        />
+
+        <rect
+          x="55"
+          y="126"
+          width="18"
+          height="11"
+          rx="5"
+          fill="#706f7a"
+        />
+
+      </svg>
+    `;
 
   }
 
 
-  /* =========================================================
-     CUSTOMER PATIENCE
-  ========================================================= */
+  /* =======================================================
+     CUSTOMER ORDER TEXT
+  ======================================================= */
 
-  function startCustomerPatience() {
+  function buildOrderText(customer) {
+
+    const order =
+      customer.order.scoops
+        .map(
+          id =>
+            `1 viên Kem ${getFlavor(id).name}`
+        )
+        .join(" + ");
+
+
+    const toppingText =
+      customer.order.toppings.length
+
+        ? ` + ${customer.order.toppings
+            .map(
+              id =>
+                getTopping(id).name
+            )
+            .join(", ")}`
+
+        : "";
+
+
+    return order + toppingText;
+
+  }
+
+
+  function requestText(customer) {
+
+    const order =
+      buildOrderText(customer);
+
+
+    const list =
+      CUSTOMER_REQUEST_TEMPLATES[
+        customer.gender
+      ];
+
+
+    const template =
+      list[
+        (
+          customer.name
+            .charCodeAt(0) +
+          state.day
+        ) %
+        list.length
+      ];
+
+
+    return template.replace(
+      "{order}",
+      order
+    );
+
+  }
+
+
+  /* =======================================================
+     RENDER CUSTOMER
+  ======================================================= */
+
+  function renderCustomer(
+    angry = false
+  ) {
+
+    const stage =
+      $("customerStage");
+
+
+    if (
+      !state.currentCustomer
+    ) {
+
+      stage.innerHTML = "";
+
+      return;
+
+    }
+
+
+    const customer =
+      state.currentCustomer;
+
+
+    const pct =
+      clamp(
+        (
+          customer.patience /
+          customer.maxPatience
+        ) * 100,
+        0,
+        100
+      );
+
+
+    const ringClass =
+      pct > 60
+        ? ""
+        : pct > 30
+          ? "warn"
+          : "danger";
+
+
+    const bubbleText =
+      angry
+        ? rand(
+            NEGATIVE_REVIEWS.slice(0, 8)
+          )
+        : requestText(customer);
+
+
+    stage.innerHTML = `
+
+      <div
+        class="customer-card ${angry ? "leaving" : ""}"
+      >
+
+        <div class="patience-wrap">
+
+          <div
+            class="patience-ring ${ringClass}"
+            style="--p:${pct}"
+          >
+
+            <span>
+              ${Math.ceil(
+                customer.patience
+              )}
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="customer-bubble">
+          ${escapeHtml(
+            bubbleText
+          )}
+        </div>
+
+
+        ${buildCustomerSvg(
+          customer,
+          angry
+        )}
+
+
+        <div class="customer-name-tag">
+          ${escapeHtml(
+            customer.name
+          )}
+        </div>
+
+      </div>
+    `;
+
+
+    const card =
+      stage.querySelector(
+        ".customer-card"
+      );
+
+
+    if (
+      card &&
+      !angry
+    ) {
+
+      card.addEventListener(
+        "click",
+        deliverCustomer
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     CUSTOMER TIMER
+  ======================================================= */
+
+  function startCustomerTimer() {
 
     clearInterval(
       customerTimer
@@ -1607,814 +1586,10 @@
 
 
     customerTimer =
-      setInterval(
-        () => {
-
-          if (
-            !state.currentCustomer ||
-            !state.open
-          ) {
-
-            clearInterval(
-              customerTimer
-            );
-
-            return;
-
-          }
-
-
-          state.currentCustomer.patience -=
-            .1;
-
-
-          if (
-            state.currentCustomer.patience <= 0
-          ) {
-
-            state.currentCustomer.patience = 0;
-
-            failCurrentCustomer();
-
-            return;
-
-          }
-
-
-          renderCustomer();
-
-        },
-        100
-      );
-
-  }
-
-
-  /* =========================================================
-     SERVE CUSTOMER
-  ========================================================= */
-
-  function serveCustomer() {
-
-    if (
-      !state.currentCustomer
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      state.scooped.length !==
-      state.order.length
-    ) {
-
-      showToast(
-        "Chưa đủ các viên kem khách gọi!"
-      );
-
-      return;
-
-    }
-
-
-    /*
-      Tính tiền theo từng viên.
-    */
-
-    let revenue = 0;
-
-
-    state.order.forEach(
-      flavorId => {
-
-        revenue +=
-          getFlavor(flavorId).price;
-
-      }
-    );
-
-
-    state.money +=
-      revenue;
-
-    state.daily.revenue +=
-      revenue;
-
-    state.daily.success++;
-
-
-    /*
-      Review 5 sao.
-    */
-
-    addReview(5);
-
-
-    /*
-      Hiệu ứng khách rời quầy.
-    */
-
-    const customerElement =
-      $("activeCustomer");
-
-
-    if (customerElement) {
-
-      customerElement.classList.add(
-        "leaving"
-      );
-
-    }
-
-
-    clearInterval(
-      customerTimer
-    );
-
-
-    state.currentCustomer = null;
-    state.order = [];
-    state.scooped = [];
-
-
-    setTimeout(
-      () => {
-
-        renderCustomer();
-        renderOrder();
-        renderIceCream();
-
-      },
-      500
-    );
-
-
-    renderHeader();
-    renderCounterTubs();
-    renderFlavorGrid();
-
-
-    showToast(
-      `Giao kem thành công! +${money(revenue)} 🍦`
-    );
-
-
-    saveState();
-
-
-    /*
-      Khách tiếp theo.
-    */
-
-    setTimeout(
-      () => {
-
-        if (state.open) {
-          spawnCustomer();
-        }
-
-      },
-      1000
-    );
-
-  }
-
-
-  /* =========================================================
-     FAILED CUSTOMER
-  ========================================================= */
-
-  function failCurrentCustomer() {
-
-    clearInterval(
-      customerTimer
-    );
-
-
-    if (
-      !state.currentCustomer
-    ) {
-
-      return;
-
-    }
-
-
-    state.daily.failed++;
-
-
-    addReview(1);
-
-
-    renderCustomer();
-
-
-    const element =
-      $("activeCustomer");
-
-
-    if (element) {
-
-      element.classList.add(
-        "leaving"
-      );
-
-    }
-
-
-    setTimeout(
-      () => {
-
-        state.currentCustomer =
-          null;
-
-        state.order = [];
-
-        state.scooped = [];
-
-
-        renderCustomer();
-        renderOrder();
-        renderIceCream();
-
+      setInterval(() => {
 
         if (
-          state.open
-        ) {
-
-          setTimeout(
-            spawnCustomer,
-            850
-          );
-
-        }
-
-      },
-      800
-    );
-
-
-    saveState();
-
-  }
-
-
-  /* =========================================================
-     ADD REVIEW
-  ========================================================= */
-
-  function addReview(stars) {
-
-    const pool =
-      stars === 5
-        ? FIVE_STAR_REVIEWS
-        : ONE_STAR_REVIEWS;
-
-
-    const used =
-      new Set(
-        state.reviews.map(
-          review =>
-            review.text
-        )
-      );
-
-
-    const unused =
-      pool.filter(
-        text =>
-          !used.has(text)
-      );
-
-
-    const text =
-      random(
-        unused.length
-          ? unused
-          : pool
-      );
-
-
-    state.reviews.unshift({
-
-      name:
-        random(CUSTOMER_NAMES),
-
-      avatar:
-        random(AVATARS),
-
-      stars,
-
-      text,
-
-      time:
-        "vừa xong"
-
-    });
-
-
-    /*
-      Giữ tối đa 100 review.
-    */
-
-    state.reviews =
-      state.reviews.slice(
-        0,
-        100
-      );
-
-  }
-
-
-  /* =========================================================
-     WAREHOUSE
-  ========================================================= */
-
-  function renderWarehouse() {
-
-    $("warehouseList").innerHTML =
-      FLAVORS.map(
-        flavor => {
-
-          const stock =
-            state.inventory[
-              flavor.id
-            ] || 0;
-
-
-          const disabled =
-            stock >= state.capacity ||
-            state.money <
-              flavor.wholesale;
-
-
-          return `
-            <article class="warehouse-card">
-
-              <div
-                class="warehouse-art"
-                style="--flavor:${flavor.color}"
-              >
-                ${flavor.emoji}
-              </div>
-
-              <div>
-
-                <strong>
-                  ${flavor.name}
-                </strong>
-
-                <small>
-                  ${stock}/${state.capacity}
-                  viên · +6 viên/thùng
-                </small>
-
-              </div>
-
-              <button
-                class="secondary-button"
-                data-buy="${flavor.id}"
-                ${disabled ? "disabled" : ""}
-              >
-                ${money(flavor.wholesale)}
-              </button>
-
-            </article>
-          `;
-
-        }
-      ).join("");
-
-
-    document
-      .querySelectorAll("[data-buy]")
-      .forEach(
-        button => {
-
-          button.addEventListener(
-            "click",
-            () => {
-
-              buyIceCreamBox(
-                button.dataset.buy
-              );
-
-            }
-          );
-
-        }
-      );
-
-  }
-
-
-  /* =========================================================
-     BUY ICE CREAM
-  ========================================================= */
-
-  function buyIceCreamBox(
-    flavorId
-  ) {
-
-    const flavor =
-      getFlavor(flavorId);
-
-
-    if (!flavor) {
-      return;
-    }
-
-
-    if (
-      state.money <
-      flavor.wholesale
-    ) {
-
-      showToast(
-        "Bạn chưa đủ tiền nhập thùng này."
-      );
-
-      return;
-
-    }
-
-
-    if (
-      state.inventory[flavorId] >=
-      state.capacity
-    ) {
-
-      showToast(
-        "Khay này đã đầy."
-      );
-
-      return;
-
-    }
-
-
-    state.money -=
-      flavor.wholesale;
-
-
-    state.daily.cost +=
-      flavor.wholesale;
-
-
-    state.inventory[flavorId] =
-      Math.min(
-        state.capacity,
-        state.inventory[flavorId] + 6
-      );
-
-
-    renderAll();
-
-    saveState();
-
-
-    showToast(
-      `Đã nhập thêm 6 viên ${flavor.name}! 📦`
-    );
-
-  }
-
-
-  /* =========================================================
-     UPGRADES
-  ========================================================= */
-
-  function getUpgradeDefinitions() {
-
-    return [
-
-      {
-        id: "speed",
-
-        icon: "🥄",
-
-        name:
-          "Muỗng múc nhanh",
-
-        description:
-          "Giảm thời gian thao tác múc kem.",
-
-        level:
-          Math.round(
-            (600 - state.scoopTime) / 70
-          ),
-
-        max: 6,
-
-        cost:
-          100 +
-          Math.round(
-            (600 - state.scoopTime) / 70
-          ) * 60
-
-      },
-
-      {
-        id: "freezer",
-
-        icon: "🧊",
-
-        name:
-          "Tủ đông lớn hơn",
-
-        description:
-          "Tăng sức chứa mỗi khay kem thêm 4 viên.",
-
-        level:
-          state.freezerLevel,
-
-        max: 5,
-
-        cost:
-          130 +
-          state.freezerLevel * 95
-
-      },
-
-      {
-        id: "staff",
-
-        icon: "🧑‍🍳",
-
-        name:
-          "Thuê nhân viên",
-
-        description:
-          "Nhân viên có thể tự hoàn thành đơn sau một khoảng chờ.",
-
-        level:
-          state.staffLevel,
-
-        max: 3,
-
-        cost:
-          230 +
-          state.staffLevel * 180
-
-      },
-
-      {
-        id: "decor",
-
-        icon: "🌷",
-
-        name:
-          "Trang trí xe kem",
-
-        description:
-          "Khách kiên nhẫn hơn và tiệm trông đáng yêu hơn.",
-
-        level:
-          state.decorLevel,
-
-        max: 5,
-
-        cost:
-          110 +
-          state.decorLevel * 85
-
-      }
-
-    ];
-
-  }
-
-
-  function renderUpgrades() {
-
-    $("upgradeList").innerHTML =
-      getUpgradeDefinitions()
-        .map(
-          upgrade => {
-
-            const maxed =
-              upgrade.level >=
-              upgrade.max;
-
-
-            const disabled =
-              maxed ||
-              state.money <
-                upgrade.cost;
-
-
-            return `
-              <article class="upgrade-card">
-
-                <div class="upgrade-icon">
-                  ${upgrade.icon}
-                </div>
-
-                <div>
-
-                  <span class="level">
-                    CẤP ${upgrade.level}/${upgrade.max}
-                  </span>
-
-                  <h3>
-                    ${upgrade.name}
-                  </h3>
-
-                  <p>
-                    ${upgrade.description}
-                  </p>
-
-                </div>
-
-                <div class="upgrade-bottom">
-
-                  <span class="level">
-                    ${
-                      maxed
-                        ? "ĐÃ TỐI ĐA"
-                        : money(upgrade.cost)
-                    }
-                  </span>
-
-                  <button
-                    class="secondary-button"
-                    data-upgrade="${upgrade.id}"
-                    ${disabled ? "disabled" : ""}
-                  >
-                    NÂNG CẤP
-                  </button>
-
-                </div>
-
-              </article>
-            `;
-
-          }
-        )
-        .join("");
-
-
-    document
-      .querySelectorAll(
-        "[data-upgrade]"
-      )
-      .forEach(
-        button => {
-
-          button.addEventListener(
-            "click",
-            () => {
-
-              upgradeShop(
-                button.dataset.upgrade
-              );
-
-            }
-          );
-
-        }
-      );
-
-  }
-
-
-  /* =========================================================
-     UPGRADE SHOP
-  ========================================================= */
-
-  function upgradeShop(
-    upgradeId
-  ) {
-
-    const upgrade =
-      getUpgradeDefinitions()
-        .find(
-          item =>
-            item.id ===
-            upgradeId
-        );
-
-
-    if (!upgrade) {
-      return;
-    }
-
-
-    if (
-      upgrade.level >=
-      upgrade.max
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      state.money <
-      upgrade.cost
-    ) {
-
-      showToast(
-        "Chưa đủ tiền nâng cấp."
-      );
-
-      return;
-
-    }
-
-
-    state.money -=
-      upgrade.cost;
-
-
-    switch (upgradeId) {
-
-      case "speed":
-
-        state.scoopTime =
-          Math.max(
-            180,
-            state.scoopTime - 70
-          );
-
-        break;
-
-
-      case "freezer":
-
-        state.freezerLevel++;
-
-        state.capacity += 4;
-
-        break;
-
-
-      case "staff":
-
-        state.staffLevel++;
-
-        break;
-
-
-      case "decor":
-
-        state.decorLevel++;
-
-        break;
-
-    }
-
-
-    renderAll();
-
-    saveState();
-
-
-    showToast(
-      "Nâng cấp thành công! 🌷"
-    );
-
-  }
-
-
-  /* =========================================================
-     AUTO STAFF
-  ========================================================= */
-
-  function staffLogic() {
-
-    if (
-      !state.open ||
-      state.staffLevel <= 0 ||
-      !state.currentCustomer
-    ) {
-
-      return;
-
-    }
-
-
-    /*
-      Nhân viên tự xử lý đơn
-      nếu người chơi để khách chờ.
-    */
-
-    const delay =
-      Math.max(
-        3500,
-        7000 -
-          state.staffLevel * 1100
-      );
-
-
-    setTimeout(
-      () => {
-
-        if (
-          !state.open ||
+          !state.isOpen ||
           !state.currentCustomer
         ) {
 
@@ -2423,13 +1598,912 @@
         }
 
 
+        const customer =
+          state.currentCustomer;
+
+
+        customer.patience =
+          Math.max(
+            0,
+            customer.patience - 1
+          );
+
+
+        updateCustomerVisual();
+
+        updateOrderUI();
+
+
+        if (
+          customer.patience <= 0
+        ) {
+
+          customerTimeout();
+
+        }
+
+      }, 1000);
+
+  }
+
+
+  function updateCustomerVisual() {
+
+    const customer =
+      state.currentCustomer;
+
+
+    if (!customer) {
+      return;
+    }
+
+
+    const ring =
+      document.querySelector(
+        ".patience-ring"
+      );
+
+
+    const bubble =
+      document.querySelector(
+        ".customer-bubble"
+      );
+
+
+    if (!ring || !bubble) {
+      return;
+    }
+
+
+    const pct =
+      clamp(
+        (
+          customer.patience /
+          customer.maxPatience
+        ) * 100,
+        0,
+        100
+      );
+
+
+    ring.style.setProperty(
+      "--p",
+      pct
+    );
+
+
+    ring.classList.toggle(
+      "warn",
+      pct <= 60 && pct > 30
+    );
+
+
+    ring.classList.toggle(
+      "danger",
+      pct <= 30
+    );
+
+
+    const number =
+      ring.querySelector("span");
+
+
+    if (number) {
+
+      number.textContent =
+        Math.ceil(
+          customer.patience
+        );
+
+    }
+
+
+    bubble.textContent =
+      requestText(customer);
+
+  }
+
+
+  /* =======================================================
+     CUSTOMER TIMEOUT
+  ======================================================= */
+
+  function customerTimeout() {
+
+    if (
+      !state.currentCustomer
+    ) {
+
+      return;
+
+    }
+
+
+    clearInterval(
+      customerTimer
+    );
+
+
+    customerTimer = null;
+
+
+    const customer =
+      state.currentCustomer;
+
+
+    state.daily.fail += 1;
+
+
+    pushReview(
+      1
+    );
+
+
+    renderCustomer(
+      true
+    );
+
+
+    showToast(
+      `${customer.name}: “${rand(
+        NEGATIVE_REVIEWS
+      )}” 😡`
+    );
+
+
+    /*
+      Không tạo khách mới ngay.
+      Đợi khách rời màn hình.
+    */
+
+    state.currentCustomer = null;
+
+    state.currentOrder = null;
+
+    resetCreation(false);
+
+
+    saveState();
+
+
+    setTimeout(() => {
+
+      $("customerStage")
+        .innerHTML = "";
+
+
+      if (
+        state.isOpen &&
+        !state.currentCustomer
+      ) {
+
+        customerSpawnTimeout =
+          setTimeout(
+            createCustomer,
+            CONFIG.customerSpawnDelayMs
+          );
+
+      }
+
+    }, 750);
+
+  }
+
+
+  /* =======================================================
+     CREATION RESET
+  ======================================================= */
+
+  function resetCreation(
+    refund = true
+  ) {
+
+    if (
+      refund &&
+      state.creation.scoops.length
+    ) {
+
+      state.creation.scoops
+        .forEach(id => {
+
+          state.inventory[id] =
+            Math.min(
+              state.maxStock,
+              (
+                state.inventory[id] ||
+                0
+              ) + 1
+            );
+
+        });
+
+    }
+
+
+    state.creation = {
+
+      step: 1,
+
+      base: null,
+
+      scoops: [],
+
+      toppings: []
+
+    };
+
+
+    clearTimeout(
+      scoopTimeout
+    );
+
+
+    scoopTimeout = null;
+
+
+    renderCreation();
+
+    renderTubs();
+
+    renderWarehouse();
+
+  }
+
+
+  /* =======================================================
+     CREATION STEP UI
+  ======================================================= */
+
+  function renderCreationSteps() {
+
+    const step =
+      state.creation.step;
+
+
+    $("creationStepLabel")
+      .textContent =
+      `BƯỚC ${step}/3`;
+
+
+    [1, 2, 3].forEach(number => {
+
+      const dot =
+        $(`stepDot${number}`);
+
+
+      if (!dot) {
+        return;
+      }
+
+
+      dot.classList.toggle(
+        "active",
+        number === step
+      );
+
+
+      dot.classList.toggle(
+        "done",
+        number < step
+      );
+
+    });
+
+  }
+
+
+  /* =======================================================
+     RENDER DESSERT
+  ======================================================= */
+
+  function renderDessert() {
+
+    const display =
+      $("iceCreamDisplay");
+
+
+    const creation =
+      state.creation;
+
+
+    if (!creation.base) {
+
+      display.innerHTML = `
+
+        <div class="empty-dessert">
+
+          <div class="empty-dessert-icon">
+            🍨
+          </div>
+
+          <strong>
+            Chọn đế kem để bắt đầu
+          </strong>
+
+          <span>
+            Làm từng bước để hoàn thành đơn
+          </span>
+
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    const baseClass =
+      creation.base === "cone"
+        ? "dessert-cone"
+        : "dessert-cup";
+
+
+    const scoopsHtml =
+      creation.scoops
+        .map(
+          flavorId => {
+
+            const flavor =
+              getFlavor(
+                flavorId
+              );
+
+            return `
+
+              <div
+                class="scoop"
+                style="--scoop-color:${flavor.color}"
+                title="${escapeHtml(
+                  flavor.name
+                )}"
+              ></div>
+
+            `;
+
+          }
+        )
+        .join("");
+
+
+    const toppingHtml =
+      creation.toppings
+        .map(
+          toppingId => {
+
+            const topping =
+              getTopping(
+                toppingId
+              );
+
+            return `
+
+              <span
+                class="dessert-topping"
+                style="
+                  left:${20 + Math.random() * 75}%;
+                  top:${Math.random() * 28}px;
+                "
+              >
+                ${topping.emoji}
+              </span>
+
+            `;
+
+          }
+        )
+        .join("");
+
+
+    display.innerHTML = `
+
+      <div class="dessert">
+
+        <div class="scoop-stack">
+          ${scoopsHtml}
+        </div>
+
+
+        <div class="dessert-toppings">
+          ${toppingHtml}
+        </div>
+
+
+        <div class="dessert-base">
+
+          <div class="${baseClass}">
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+  }
+
+
+  /* =======================================================
+     RENDER STEP 1
+  ======================================================= */
+
+  function renderBaseChoices() {
+
+    document
+      .querySelectorAll(
+        ".base-choice"
+      )
+      .forEach(button => {
+
+        button.classList.toggle(
+          "selected",
+          button.dataset.base ===
+            state.creation.base
+        );
+
+      });
+
+  }
+
+
+  /* =======================================================
+     RENDER STEP 2
+  ======================================================= */
+
+  function renderWorkspaceFlavors() {
+
+    const container =
+      $("workspaceFlavorButtons");
+
+
+    if (!state.currentCustomer) {
+
+      container.innerHTML = `
+        <div class="workspace-hint">
+          Chưa có khách.
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    const requested =
+      state.currentCustomer
+        .order
+        .scoops;
+
+
+    container.innerHTML =
+      ICE_CREAM_FLAVORS
+        .map(flavor => {
+
+          const stock =
+            state.inventory[
+              flavor.id
+            ] || 0;
+
+
+          const requestedCount =
+            requested.filter(
+              id =>
+                id === flavor.id
+            ).length;
+
+
+          const currentCount =
+            state.creation.scoops
+              .filter(
+                id =>
+                  id === flavor.id
+              )
+              .length;
+
+
+          const canSelect =
+            requestedCount >
+              currentCount &&
+            stock > 0;
+
+
+          return `
+
+            <button
+              type="button"
+              class="
+                workspace-flavor
+                ${!canSelect ? "empty" : ""}
+                ${currentCount > 0 ? "selected" : ""}
+              "
+              data-workspace-flavor="${flavor.id}"
+              ${canSelect ? "" : "disabled"}
+            >
+
+              <span>
+                ${flavor.emoji}
+              </span>
+
+              <strong>
+                ${escapeHtml(
+                  flavor.name
+                )}
+              </strong>
+
+              <small>
+                ${stock}/${state.maxStock}
+              </small>
+
+            </button>
+          `;
+
+        })
+        .join("");
+
+
+    container
+      .querySelectorAll(
+        "[data-workspace-flavor]"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            scoopFlavor(
+              button.dataset
+                .workspaceFlavor
+            );
+
+          }
+        );
+
+      });
+
+  }
+
+
+  /* =======================================================
+     RENDER STEP 3
+  ======================================================= */
+
+  function renderWorkspaceToppings() {
+
+    const container =
+      $("workspaceToppingButtons");
+
+
+    if (!state.currentCustomer) {
+
+      container.innerHTML = "";
+
+      return;
+
+    }
+
+
+    const requested =
+      state.currentCustomer
+        .order
+        .toppings;
+
+
+    container.innerHTML =
+      TOPPINGS
+        .map(topping => {
+
+          const wanted =
+            requested.includes(
+              topping.id
+            );
+
+
+          const selected =
+            state.creation.toppings
+              .includes(
+                topping.id
+              );
+
+
+          return `
+
+            <button
+              type="button"
+              class="
+                workspace-topping
+                ${selected ? "selected" : ""}
+                ${!wanted ? "empty" : ""}
+              "
+              data-workspace-topping="${topping.id}"
+              ${wanted ? "" : "disabled"}
+            >
+
+              <span>
+                ${topping.emoji}
+              </span>
+
+              <strong>
+                ${escapeHtml(
+                  topping.name
+                )}
+              </strong>
+
+            </button>
+          `;
+
+        })
+        .join("");
+
+
+    container
+      .querySelectorAll(
+        "[data-workspace-topping]"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            selectTopping(
+              button.dataset
+                .workspaceTopping
+            );
+
+          }
+        );
+
+      });
+
+  }
+
+
+  /* =======================================================
+     RENDER CREATION
+  ======================================================= */
+
+  function renderCreation() {
+
+    renderCreationSteps();
+
+    renderBaseChoices();
+
+    renderDessert();
+
+    renderWorkspaceFlavors();
+
+    renderWorkspaceToppings();
+
+
+    $("baseChoices")
+      .classList.toggle(
+        "hidden",
+        state.creation.step !== 1
+      );
+
+
+    $("scoopWorkspace")
+      .classList.toggle(
+        "hidden",
+        state.creation.step !== 2
+      );
+
+
+    $("toppingWorkspace")
+      .classList.toggle(
+        "hidden",
+        state.creation.step !== 3
+      );
+
+
+    const complete =
+      isCreationComplete();
+
+
+    $("serveBtn").disabled =
+      !complete ||
+      !state.currentCustomer ||
+      !state.isOpen;
+
+
+    $("resetScoopBtn").disabled =
+      !(
+        state.creation.base ||
+        state.creation.scoops.length ||
+        state.creation.toppings.length
+      );
+
+
+    $("backStepBtn").disabled =
+      state.creation.step === 1;
+
+  }
+
+
+  /* =======================================================
+     SELECT BASE
+  ======================================================= */
+
+  function selectBase(base) {
+
+    if (
+      !state.currentCustomer ||
+      !state.isOpen
+    ) {
+
+      showToast(
+        "Hãy mở cửa và đón khách trước nhé!"
+      );
+
+      return;
+
+    }
+
+
+    state.creation.base =
+      base;
+
+
+    state.creation.step =
+      2;
+
+
+    renderCreation();
+
+    showToast(
+      base === "cone"
+        ? "Đã chọn Vỏ Ốc Quế 🍦"
+        : "Đã chọn Ly Kem 🍨"
+    );
+
+  }
+
+
+  /* =======================================================
+     SCOOP
+  ======================================================= */
+
+  function scoopFlavor(
+    flavorId
+  ) {
+
+    if (
+      !state.isOpen ||
+      !state.currentCustomer
+    ) {
+
+      showToast(
+        "Mở cửa và đón khách trước nhé!"
+      );
+
+      return;
+
+    }
+
+
+    if (!state.creation.base) {
+
+      showToast(
+        "Bước 1: hãy chọn đế kem trước."
+      );
+
+      state.creation.step = 1;
+
+      renderCreation();
+
+      return;
+
+    }
+
+
+    if (
+      state.creation.step < 2
+    ) {
+
+      state.creation.step = 2;
+
+    }
+
+
+    const order =
+      state.currentCustomer
+        .order
+        .scoops;
+
+
+    const wantedCount =
+      order.filter(
+        id =>
+          id === flavorId
+      ).length;
+
+
+    const currentCount =
+      state.creation.scoops
+        .filter(
+          id =>
+            id === flavorId
+        ).length;
+
+
+    if (
+      currentCount >=
+      wantedCount
+    ) {
+
+      showToast(
+        `Khách không gọi thêm vị ${getFlavor(flavorId).name}.`
+      );
+
+      return;
+
+    }
+
+
+    const stock =
+      state.inventory[
+        flavorId
+      ] || 0;
+
+
+    if (stock <= 0) {
+
+      showToast(
+        "Hũ này hết kem rồi! Vào Kho Hàng nhập thêm nhé."
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Không trừ kho ngay lúc click.
+      Chỉ trừ khi animation múc hoàn thành.
+      Nếu khách timeout trong lúc animation,
+      inventory vẫn an toàn.
+    */
+
+    const targetCustomerId =
+      state.currentCustomer.id;
+
+
+    const tub =
+      document.querySelector(
+        `.tub[data-flavor="${flavorId}"]`
+      );
+
+
+    tub?.classList.add(
+      "mini-shake"
+    );
+
+
+    setTimeout(() => {
+
+      tub?.classList.remove(
+        "mini-shake"
+      );
+
+    }, 320);
+
+
+    clearTimeout(
+      scoopTimeout
+    );
+
+
+    scoopTimeout =
+      setTimeout(() => {
+
         /*
-          Chỉ tự làm nếu người chơi
-          chưa múc viên nào.
+          Customer có thể đã timeout.
+          Kiểm tra ID trước khi thay đổi state.
         */
 
         if (
-          state.scooped.length > 0
+          !state.currentCustomer ||
+          state.currentCustomer.id !==
+            targetCustomerId
         ) {
 
           return;
@@ -2437,670 +2511,172 @@
         }
 
 
-        /*
-          Kiểm tra kho.
-        */
-
-        const possible =
-          state.order.every(
-            flavorId =>
-              state.inventory[flavorId] > 0
-          );
-
-
-        if (!possible) {
+        if (
+          !state.isOpen
+        ) {
 
           return;
 
         }
 
 
-        /*
-          Nhân viên múc toàn bộ.
-        */
+        if (
+          (state.inventory[
+            flavorId
+          ] || 0) <= 0
+        ) {
 
-        state.order.forEach(
-          flavorId => {
+          return;
 
-            state.inventory[
-              flavorId
-            ]--;
+        }
 
-            state.scooped.push(
-              flavorId
-            );
 
-          }
-        );
+        state.inventory[
+          flavorId
+        ] -= 1;
 
 
-        renderAll();
+        state.creation.scoops
+          .push(
+            flavorId
+          );
 
 
-        setTimeout(
-          () => {
+        renderTubs();
 
-            if (
-              state.currentCustomer
-            ) {
+        renderWarehouse();
 
-              serveCustomer();
+        renderCreation();
 
-            }
 
-          },
-          350
-        );
-
-      },
-      delay
-    );
-
-  }
-
-
-  /* =========================================================
-     REVIEWS
-  ========================================================= */
-
-  function renderReviews() {
-
-    const all =
-      state.reviews || [];
-
-
-    const average =
-      all.length
-        ? all.reduce(
-            (sum, review) =>
-              sum + review.stars,
-            0
-          ) / all.length
-        : 0;
-
-
-    $("averageRating").textContent =
-      average.toFixed(1);
-
-
-    $("reviewCount").textContent =
-      `${all.length} đánh giá`;
-
-
-    let visible =
-      all;
-
-
-    if (
-      reviewFilter !==
-      "all"
-    ) {
-
-      visible =
-        all.filter(
-          review =>
-            review.stars ===
-            Number(reviewFilter)
-        );
-
-    }
-
-
-    $("reviewList").innerHTML =
-      visible
-        .map(
-          review => {
-
-            const stars =
-              "★".repeat(
-                review.stars
-              ) +
-              "☆".repeat(
-                5 - review.stars
-              );
-
-
-            return `
-              <article class="review">
-
-                <div class="review-top">
-
-                  <div class="review-user">
-
-                    <div class="review-avatar">
-                      ${review.avatar}
-                    </div>
-
-                    <div>
-
-                      <div class="review-name">
-                        ${review.name}
-                      </div>
-
-                      <div class="review-time">
-                        ${review.time}
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                  <div class="review-stars">
-                    ${stars}
-                  </div>
-
-                </div>
-
-                <div class="review-text">
-                  ${review.text}
-                </div>
-
-              </article>
-            `;
-
-          }
-        )
-        .join("");
-
-  }
-
-
-  /* =========================================================
-     OPEN SHOP
-  ========================================================= */
-
-  function openShop() {
-
-    if (state.open) {
-
-      closeShop();
-
-      return;
-
-    }
-
-
-    const transition =
-      $("openingTransition");
-
-
-    transition.classList.add(
-      "active"
-    );
-
-
-    /*
-      Cho rèm xuất hiện trước.
-    */
-
-    setTimeout(
-      () => {
-
-        transition.classList.add(
-          "play"
-        );
-
-      },
-      80
-    );
-
-
-    /*
-      Sau khoảng 1.5 giây
-      mới thực sự bắt đầu ngày.
-    */
-
-    setTimeout(
-      () => {
-
-        transition.classList.remove(
-          "active",
-          "play"
-        );
-
-
-        state.open = true;
-
-        state.seconds = 120;
-
-        state.currentCustomer =
-          null;
-
-        state.order = [];
-
-        state.scooped = [];
-
-
-        renderAll();
-
-        startDay();
-
-
-        setTimeout(
-          spawnCustomer,
-          500
+        showToast(
+          `Đã múc ${getFlavor(flavorId).name}! 🥄`
         );
 
 
         /*
-          Nhân viên tự động.
+          Nếu đủ số viên -> sang topping.
         */
 
-        staffLogic();
+        if (
+          state.creation.scoops
+            .length ===
+          order.length
+        ) {
 
-      },
-      1500
-    );
+          state.creation.step = 3;
 
-  }
+          renderCreation();
 
-
-  /* =========================================================
-     START DAY
-  ========================================================= */
-
-  function startDay() {
-
-    clearInterval(
-      dayInterval
-    );
-
-    clearInterval(
-      customerInterval
-    );
+        }
 
 
-    dayInterval =
-      setInterval(
-        () => {
+        saveState();
 
-          if (!state.open) {
-            return;
-          }
-
-
-          if (
-            state.seconds <= 0
-          ) {
-
-            closeShop();
-
-            return;
-
-          }
-
-
-          state.seconds--;
-
-          updateDayClock();
-
-
-          /*
-            Nếu không có khách,
-            có cơ hội xuất hiện khách mới.
-          */
-
-          if (
-            !state.currentCustomer &&
-            Math.random() <
-              .055 +
-              state.staffLevel * .01
-          ) {
-
-            spawnCustomer();
-
-          }
-
-        },
-        1000
-      );
-
-
-    /*
-      Backup spawn timer.
-    */
-
-    customerInterval =
-      setInterval(
-        () => {
-
-          if (
-            state.open &&
-            !state.currentCustomer
-          ) {
-
-            spawnCustomer();
-
-          }
-
-        },
-        6500
-      );
+      }, Math.max(
+        CONFIG.scoopAnimationMinMs,
+        state.scoopSpeed
+      ));
 
   }
 
 
-  /* =========================================================
-     CLOSE SHOP
-  ========================================================= */
+  /* =======================================================
+     TOPPING
+  ======================================================= */
 
-  function closeShop() {
-
-    if (!state.open) {
-      return;
-    }
-
-
-    state.open = false;
-
-
-    clearInterval(
-      dayInterval
-    );
-
-    clearInterval(
-      customerInterval
-    );
-
-    clearInterval(
-      customerTimer
-    );
-
-
-    state.currentCustomer =
-      null;
-
-    state.order = [];
-
-    state.scooped = [];
-
-
-    renderAll();
-
-
-    showDailySummary();
-
-    saveState();
-
-  }
-
-
-  /* =========================================================
-     DAILY SUMMARY
-  ========================================================= */
-
-  function showDailySummary() {
-
-    const daily =
-      state.daily;
-
-
-    $("summaryDay").textContent =
-      state.day;
-
-    $("summaryRevenue").textContent =
-      money(daily.revenue);
-
-    $("summaryCost").textContent =
-      money(daily.cost);
-
-    $("summaryProfit").textContent =
-      money(
-        daily.revenue -
-        daily.cost
-      );
-
-    $("summarySuccess").textContent =
-      daily.success;
-
-    $("summaryFail").textContent =
-      daily.failed;
-
-
-    $("dailySummary")
-      .classList.add(
-        "visible"
-      );
-
-  }
-
-
-  /* =========================================================
-     NEXT DAY
-  ========================================================= */
-
-  function nextDay() {
-
-    $("dailySummary")
-      .classList.remove(
-        "visible"
-      );
-
-
-    state.day++;
-
-    state.seconds = 120;
-
-    state.daily = {
-
-      revenue: 0,
-
-      cost: 0,
-
-      success: 0,
-
-      failed: 0
-
-    };
-
-
-    state.open = false;
-
-    state.currentCustomer =
-      null;
-
-    state.order = [];
-
-    state.scooped = [];
-
-
-    renderAll();
-
-    saveState();
-
-  }
-
-
-  /* =========================================================
-     NAVIGATION
-  ========================================================= */
-
-  function switchScreen(
-    screenName
+  function selectTopping(
+    toppingId
   ) {
 
-    document
-      .querySelectorAll(
-        ".screen"
-      )
-      .forEach(
-        screen => {
+    if (
+      !state.currentCustomer ||
+      !state.isOpen
+    ) {
 
-          screen.classList.toggle(
-            "active",
-            screen.id ===
-              `screen-${screenName}`
-          );
+      return;
 
-        }
+    }
+
+
+    const wanted =
+      state.currentCustomer
+        .order
+        .toppings
+        .includes(
+          toppingId
+        );
+
+
+    if (!wanted) {
+
+      showToast(
+        "Khách không gọi topping này."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      state.creation.toppings
+        .includes(
+          toppingId
+        )
+    ) {
+
+      showToast(
+        "Topping này đã được rắc rồi."
+      );
+
+      return;
+
+    }
+
+
+    state.creation.toppings
+      .push(
+        toppingId
       );
 
 
-    document
-      .querySelectorAll(
-        ".nav-item"
-      )
-      .forEach(
-        item => {
-
-          item.classList.toggle(
-            "active",
-            item.dataset.screen ===
-              screenName
-          );
-
-        }
-      );
+    renderCreation();
 
 
-    /*
-      Khi chuyển tab,
-      render lại dữ liệu tương ứng.
-    */
+    showToast(
+      `Đã thêm ${getTopping(toppingId).name}! ✨`
+    );
 
-    if (
-      screenName ===
-      "reviews"
-    ) {
 
-      renderReviews();
-
-    }
-
-    if (
-      screenName ===
-      "warehouse"
-    ) {
-
-      renderWarehouse();
-
-    }
-
-    if (
-      screenName ===
-      "upgrades"
-    ) {
-
-      renderUpgrades();
-
-    }
+    saveState();
 
   }
 
 
-  /* =========================================================
-     EVENTS
-  ========================================================= */
+  /* =======================================================
+     CREATION COMPLETE
+  ======================================================= */
 
-  document
-    .querySelectorAll(
-      ".nav-item"
-    )
-    .forEach(
-      button => {
+  function isCreationComplete() {
 
-        button.addEventListener(
-          "click",
-          () => {
-
-            switchScreen(
-              button.dataset.screen
-            );
-
-          }
-        );
-
-      }
-    );
+    const customer =
+      state.currentCustomer;
 
 
-  document
-    .querySelectorAll(
-      ".review-filter"
-    )
-    .forEach(
-      button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            reviewFilter =
-              button.dataset.filter;
+    if (!customer) {
+      return false;
+    }
 
 
-            document
-              .querySelectorAll(
-                ".review-filter"
-              )
-              .forEach(
-                item => {
-
-                  item.classList.toggle(
-                    "active",
-                    item.dataset.filter ===
-                      reviewFilter
-                  );
-
-                }
-              );
+    if (!state.creation.base) {
+      return false;
+    }
 
 
-            renderReviews();
-
-          }
-        );
-
-      }
-    );
+    const requiredScoops =
+      customer.order.scoops;
 
 
-  $("startGameButton")
-    .addEventListener(
-      "click",
-      () => {
-
-        $("introModal")
-          .classList.remove(
-            "visible"
-          );
-
-      }
-    );
-
-
-  $("openShopButton")
-    .addEventListener(
-      "click",
-      openShop
-    );
-
-
-  $("resetIceCream")
-    .addEventListener(
-      "click",
-      resetIceCream
-    );
-
-
-  $("serveCustomer")
-    .addEventListener(
-      "click",
-      serveCustomer
-    );
-
-
-  $("nextDayButton")
-    .addEventListener(
-      "click",
-      nextDay
-    );
-
-
-  /* =========================================================
-     INITIAL
-  ========================================================= */
-
-  renderAll();
-
-})();
+    if (
+      state.creation
