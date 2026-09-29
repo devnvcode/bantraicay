@@ -2680,3 +2680,436 @@
 
     if (
       state.creation
+       .length !== requiredScoops
+    ) {
+      return false;
+    }
+
+
+    /*
+      Kiểm tra đủ số viên kem theo đơn.
+      Nếu khách yêu cầu 0 viên thì vẫn phải
+      đảm bảo trạng thái creation hợp lệ.
+    */
+
+    if (
+      requiredScoops > 0 &&
+      state.creation.scoops.length <
+        requiredScoops
+    ) {
+      return false;
+    }
+
+
+    /*
+      Kiểm tra topping nếu đơn hàng có yêu cầu.
+    */
+
+    const requiredToppings =
+      customer.order.toppings || [];
+
+
+    if (
+      requiredToppings.length > 0
+    ) {
+
+      for (
+        const topping
+        of requiredToppings
+      ) {
+
+        const toppingId =
+          typeof topping === "string"
+            ? topping
+            : topping.id;
+
+
+        const hasTopping =
+          state.creation.toppings.some(
+            selected => {
+
+              const selectedId =
+                typeof selected === "string"
+                  ? selected
+                  : selected.id;
+
+              return (
+                selectedId === toppingId
+              );
+
+            }
+          );
+
+
+        if (!hasTopping) {
+          return false;
+        }
+
+      }
+
+    }
+
+
+    return true;
+
+  }
+
+
+  /* =======================================================
+     CREATION RESULT
+  ======================================================= */
+
+  function completeCreation() {
+
+    const customer =
+      state.currentCustomer;
+
+
+    if (!customer) {
+      return;
+    }
+
+
+    if (!isCreationComplete()) {
+
+      showToast(
+        "Bạn chưa hoàn thành món kem theo đơn! 🍦"
+      );
+
+      return;
+    }
+
+
+    /*
+      Ngăn hoàn thành món nhiều lần.
+    */
+
+    if (
+      customer.completed === true
+    ) {
+      return;
+    }
+
+
+    customer.completed = true;
+
+
+    /*
+      Tính kết quả đơn hàng.
+    */
+
+    const requiredBase =
+      customer.order.base;
+
+
+    const selectedBase =
+      state.creation.base;
+
+
+    const baseCorrect =
+      !requiredBase ||
+      selectedBase === requiredBase;
+
+
+    const requiredScoops =
+      customer.order.scoops;
+
+
+    const selectedScoops =
+      state.creation.scoops || [];
+
+
+    let scoopsCorrect =
+      selectedScoops.length ===
+      requiredScoops;
+
+
+    if (scoopsCorrect) {
+
+      const expectedScoops =
+        customer.order.flavors ||
+        customer.order.scoopsFlavors ||
+        [];
+
+
+      if (
+        expectedScoops.length > 0
+      ) {
+
+        const selectedIds =
+          selectedScoops.map(
+            scoop => {
+
+              if (
+                typeof scoop ===
+                "string"
+              ) {
+                return scoop;
+              }
+
+              return scoop.id;
+            }
+          );
+
+
+        scoopsCorrect =
+          expectedScoops.every(
+            flavorId =>
+              selectedIds.includes(
+                flavorId
+              )
+          );
+
+      }
+
+    }
+
+
+    const requiredToppings =
+      customer.order.toppings || [];
+
+
+    const selectedToppings =
+      state.creation.toppings || [];
+
+
+    let toppingsCorrect = true;
+
+
+    if (
+      requiredToppings.length > 0
+    ) {
+
+      const selectedIds =
+        selectedToppings.map(
+          topping => {
+
+            if (
+              typeof topping ===
+              "string"
+            ) {
+              return topping;
+            }
+
+            return topping.id;
+          }
+        );
+
+
+      toppingsCorrect =
+        requiredToppings.every(
+          topping => {
+
+            const toppingId =
+              typeof topping === "string"
+                ? topping
+                : topping.id;
+
+            return selectedIds.includes(
+              toppingId
+            );
+
+          }
+        );
+
+    }
+
+
+    const success =
+      baseCorrect &&
+      scoopsCorrect &&
+      toppingsCorrect;
+
+
+    if (success) {
+
+      handleSuccessfulOrder();
+
+    } else {
+
+      handleFailedOrder();
+
+    }
+
+  }
+
+
+  /* =======================================================
+     SUCCESSFUL ORDER
+  ======================================================= */
+
+  function handleSuccessfulOrder() {
+
+    const customer =
+      state.currentCustomer;
+
+
+    if (!customer) {
+      return;
+    }
+
+
+    const reward =
+      Number(
+        customer.order.price ||
+        customer.reward ||
+        20
+      );
+
+
+    state.money += reward;
+
+    state.daily.revenue += reward;
+
+    state.daily.success += 1;
+
+
+    addReview(
+      customer,
+      true
+    );
+
+
+    showToast(
+      `Khách rất hài lòng! +${moneyFmt.format(
+        reward
+      )}đ 💰🍦`
+    );
+
+
+    saveState();
+
+    renderAll();
+
+
+    setTimeout(
+      finishCustomer,
+      650
+    );
+
+  }
+
+
+  /* =======================================================
+     FAILED ORDER
+  ======================================================= */
+
+  function handleFailedOrder() {
+
+    const customer =
+      state.currentCustomer;
+
+
+    if (!customer) {
+      return;
+    }
+
+
+    state.daily.fail += 1;
+
+
+    addReview(
+      customer,
+      false
+    );
+
+
+    showToast(
+      "Khách không hài lòng với món kem này 😢"
+    );
+
+
+    saveState();
+
+    renderAll();
+
+
+    setTimeout(
+      finishCustomer,
+      650
+    );
+
+  }
+
+
+  /* =======================================================
+     FINISH CUSTOMER
+  ======================================================= */
+
+  function finishCustomer() {
+
+    if (scoopTimeout) {
+
+      clearTimeout(
+        scoopTimeout
+      );
+
+      scoopTimeout = null;
+
+    }
+
+
+    if (customerSpawnTimeout) {
+
+      clearTimeout(
+        customerSpawnTimeout
+      );
+
+      customerSpawnTimeout = null;
+
+    }
+
+
+    state.currentCustomer = null;
+    state.currentOrder = null;
+
+
+    state.creation = {
+      step: 1,
+      base: null,
+      scoops: [],
+      toppings: []
+    };
+
+
+    saveState();
+
+    renderAll();
+
+
+    if (
+      state.isOpen &&
+      state.gameMinutes <
+        GAME_END_MINUTES
+    ) {
+
+      customerSpawnTimeout =
+        setTimeout(
+          spawnCustomer,
+          CONFIG.customerSpawnDelayMs
+        );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     RESET CREATION
+  ======================================================= */
+
+  function resetCreation() {
+
+    state.creation = {
+      step: 1,
+      base: null,
+      scoops: [],
+      toppings: []
+    };
+
+
+    saveState();
+
+    renderAll();
+
+  }
