@@ -2,25 +2,26 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiệm Trái Cây Siêu Cấp Đáng Yêu 🍓</title>
+    <!-- Meta viewport CHUẨN chống zoom và tràn màn hình -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tiệm Trái Cây Siêu Cấp 🍓</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
         :root {
-            /* Bảng màu Pastel */
-            --bg-color: #FFF2F2;
-            --panel-bg: #FFE5E5;
-            --border-color: #7B6079;
+            /* Bảng màu Pastel & Flat Design */
+            --app-bg: #FFF2F2;
+            --main-bg: #FAEEE7;
+            --border-color: #594545;
             --text-color: #594545;
-            --btn-pink: #FF8787;
-            --btn-pink-hover: #FF6B6B;
+            --btn-pink: #FF9E9E;
+            --btn-pink-hover: #FF7B7B;
             --btn-green: #A3D9A5;
-            --btn-green-hover: #82C985;
             --btn-yellow: #FFD166;
-            --shelf-color: #FFD6A5;
-            --flat-shadow: 4px 4px 0px var(--border-color);
-            --flat-shadow-sm: 2px 2px 0px var(--border-color);
+            --btn-blue: #A0C4FF;
+            --shelf-color: #F8C291;
+            --shadow: 3px 3px 0px var(--border-color);
+            --shadow-sm: 2px 2px 0px var(--border-color);
         }
 
         * {
@@ -28,51 +29,68 @@
             margin: 0;
             padding: 0;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--border-color);
             color: var(--text-color);
-            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh; /* Sử dụng dvh để fix lỗi thanh địa chỉ trên mobile */
             overflow: hidden;
+        }
+
+        /* Container chuẩn App Mobile-First */
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            height: 100dvh;
+            background-color: var(--app-bg);
             display: flex;
             flex-direction: column;
+            position: relative;
+            border-left: 4px solid var(--border-color);
+            border-right: 4px solid var(--border-color);
         }
 
-        /* HEADER */
+        /* --- HEADER --- */
         header {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 30px;
+            padding: 10px 15px;
             background-color: #FFC4C4;
             border-bottom: 3px solid var(--border-color);
-            box-shadow: 0 4px 0px rgba(123, 96, 121, 0.1); /* Bóng phẳng mờ nhẹ, không glow */
             z-index: 10;
+            gap: 10px;
         }
 
-        .header-item {
-            font-size: 1.2rem;
-            font-weight: 700;
+        .stat-badge {
             background: white;
-            padding: 8px 20px;
             border: 2px solid var(--border-color);
-            border-radius: 20px;
-            box-shadow: var(--flat-shadow-sm);
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-weight: 900;
+            font-size: 1rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .btn-toggle {
-            padding: 10px 25px;
-            font-size: 1.2rem;
+            padding: 8px 15px;
+            font-size: 1rem;
             font-weight: 900;
             cursor: pointer;
             border: 2px solid var(--border-color);
-            border-radius: 20px;
+            border-radius: 15px;
             background-color: var(--btn-green);
             color: var(--text-color);
-            box-shadow: var(--flat-shadow);
-            transition: transform 0.1s;
+            box-shadow: var(--shadow-sm);
+            flex-grow: 1;
+            text-align: center;
         }
         .btn-toggle:active {
             transform: translate(2px, 2px);
@@ -82,166 +100,129 @@
             background-color: var(--btn-pink);
         }
 
-        /* MAIN LAYOUT - 3 CỘT */
+        /* --- MAIN CONTENT & TABS --- */
         main {
-            display: flex;
             flex: 1;
-            padding: 20px;
-            gap: 20px;
-            height: calc(100vh - 80px);
-        }
-
-        .panel {
-            background-color: var(--panel-bg);
-            border: 3px solid var(--border-color);
-            border-radius: 20px;
-            box-shadow: var(--flat-shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
+            background: var(--main-bg);
         }
 
-        .panel-title {
-            background-color: var(--border-color);
-            color: white;
-            text-align: center;
-            padding: 10px;
-            font-weight: 900;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-        }
-
-        /* 1. KHO NHẬP HÀNG */
-        .inventory-area {
-            flex: 1;
-            min-width: 300px;
-        }
-        .inv-list {
-            padding: 15px;
+        .tab-pane {
+            display: none;
+            width: 100%;
+            height: 100%;
             overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 30px;
+        }
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        /* Tittle Chung */
+        .page-title {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: var(--border-color);
+            color: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* --- TAB 1: CỬA HÀNG --- */
+        #tab-store {
+            background: linear-gradient(180deg, #E6F4F1 0%, #FFF5E4 100%);
             display: flex;
             flex-direction: column;
+            padding: 0;
+        }
+        .shelves-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
-        }
-        .fruit-card {
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: 15px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--flat-shadow-sm);
-        }
-        .fruit-icon-lg { font-size: 2.5rem; }
-        .fruit-info { flex: 1; margin-left: 10px; }
-        .fruit-name { font-weight: 800; font-size: 1.1rem; }
-        .fruit-price { font-size: 0.9rem; color: #888; }
-        .fruit-qty { font-weight: 700; color: var(--btn-pink-hover); }
-        .inv-actions { display: flex; flex-direction: column; gap: 5px; }
-        
-        button {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 800;
-            cursor: pointer;
-            padding: 5px 10px;
-            box-shadow: 2px 2px 0px var(--border-color);
-        }
-        button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0 0 0 var(--border-color);
-        }
-        .btn-buy { background-color: var(--btn-yellow); }
-        .btn-restock { background-color: var(--btn-green); }
-
-        /* 2. KHU VỰC BÁN HÀNG */
-        .sales-area {
-            flex: 2;
-            background: linear-gradient(180deg, #E6F4F1 0%, #FFF5E4 100%);
-        }
-        .shelves-container {
-            height: 45%;
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
             padding: 20px;
+            height: 55%;
             border-bottom: 4px solid var(--border-color);
             background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="2" fill="%237B6079" opacity="0.1"/></svg>');
+            overflow-y: auto;
         }
         .shelf {
-            width: 80px;
-            height: 120px;
             background-color: var(--shelf-color);
             border: 3px solid var(--border-color);
             border-radius: 10px 10px 0 0;
-            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
+            position: relative;
             padding-bottom: 10px;
+            height: 100px;
             box-shadow: inset 0 -15px 0 rgba(0,0,0,0.1);
         }
         .shelf-qty {
             position: absolute;
-            top: -15px;
+            top: -12px;
             background: white;
             border: 2px solid var(--border-color);
-            border-radius: 15px;
-            padding: 2px 8px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            box-shadow: var(--flat-shadow-sm);
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-weight: 900;
+            font-size: 0.8rem;
+            box-shadow: var(--shadow-sm);
         }
-        .shelf-fruit { font-size: 2.5rem; }
+        .shelf-fruit { font-size: 2.2rem; }
 
-        .customer-queue {
-            height: 55%;
+        .floor-area {
+            height: 45%;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
         }
 
-        /* KHÁCH HÀNG */
         .customer {
             position: absolute;
-            bottom: 20px;
-            left: -100px;
+            bottom: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            transition: left 0.5s linear;
+            transition: left 0.3s ease-out;
+            z-index: 2;
         }
         .character {
-            font-size: 4rem;
+            font-size: 3.5rem;
             filter: drop-shadow(2px 2px 0px var(--border-color));
         }
         .speech-bubble {
             background: white;
             border: 2px solid var(--border-color);
             border-radius: 15px;
-            padding: 5px 15px;
-            font-size: 1.5rem;
+            padding: 5px 10px;
+            font-size: 1.2rem;
             position: relative;
             margin-bottom: 5px;
-            box-shadow: var(--flat-shadow-sm);
+            box-shadow: var(--shadow-sm);
             animation: bounce 1s infinite alternate;
         }
         .speech-bubble::after {
             content: '';
             position: absolute;
-            bottom: -8px;
+            bottom: -6px;
             left: 50%;
             transform: translateX(-50%);
-            border-width: 8px 8px 0;
+            border-width: 6px 6px 0;
             border-style: solid;
             border-color: var(--border-color) transparent transparent transparent;
         }
         .patience-container {
-            width: 80px;
+            width: 60px;
             height: 10px;
             background: white;
             border: 2px solid var(--border-color);
@@ -255,60 +236,141 @@
             background-color: var(--btn-green);
             transition: width 0.1s linear, background-color 0.3s;
         }
+
+        /* --- TAB 2: KHO HÀNG --- */
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+        }
+        .card-icon { font-size: 2.5rem; width: 50px; text-align: center; }
+        .card-info { flex: 1; padding: 0 10px; }
+        .card-title { font-weight: 900; font-size: 1.1rem; }
+        .card-desc { font-size: 0.85rem; color: #666; font-weight: 700; margin-top: 2px;}
+        .card-actions { display: flex; flex-direction: column; gap: 5px; }
         
-        /* Hiệu ứng Floating Text */
+        button.action-btn {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            cursor: pointer;
+            padding: 6px 12px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.1s;
+        }
+        button.action-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0 0 0 var(--border-color);
+        }
+        button.action-btn:disabled {
+            background: #ccc !important;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: var(--shadow-sm);
+        }
+        .bg-yellow { background-color: var(--btn-yellow); }
+        .bg-green { background-color: var(--btn-green); }
+        .bg-blue { background-color: var(--btn-blue); }
+
+        /* --- TAB 3: NÂNG CẤP --- */
+        .upgrade-level {
+            font-size: 0.8rem;
+            background: var(--btn-pink);
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        /* --- TAB 4: ĐÁNH GIÁ --- */
+        #tab-reviews {
+            background-color: #E8F0FE;
+        }
+        .review-header {
+            text-align: center;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+        .star-rating { font-size: 2rem; color: #FFB703; text-shadow: 1px 1px 0 var(--border-color); }
+        .rating-number { font-weight: 900; font-size: 1.5rem; margin-top: 5px;}
+        
+        .review-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            animation: slideIn 0.3s ease-out;
+        }
+        .review-stars { color: #FFB703; font-size: 1rem; margin-bottom: 5px; }
+        .review-text { font-size: 0.95rem; font-weight: 700; line-height: 1.4; }
+
+        /* --- BOTTOM NAVIGATION --- */
+        nav {
+            display: flex;
+            background: white;
+            border-top: 3px solid var(--border-color);
+            height: 65px;
+            z-index: 10;
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 900;
+            color: #888;
+            cursor: pointer;
+            border-right: 2px solid #eee;
+            transition: all 0.2s;
+        }
+        .nav-item:last-child { border-right: none; }
+        .nav-icon { font-size: 1.5rem; margin-bottom: 3px; }
+        .nav-item.active {
+            color: var(--text-color);
+            background-color: var(--app-bg);
+            border-top: 4px solid var(--btn-pink-hover);
+            margin-top: -4px;
+        }
+
+        /* --- THÀNH PHẦN NỔI & MODAL --- */
         .floating-text {
             position: absolute;
             font-weight: 900;
             font-size: 1.2rem;
             pointer-events: none;
             text-shadow: 2px 2px 0px white, -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white;
-            animation: floatUp 1.5s ease-out forwards;
+            animation: floatUp 1.2s ease-out forwards;
             z-index: 100;
             text-align: center;
-            width: max-content;
-            max-width: 200px;
+            white-space: nowrap;
         }
 
-        /* 3. REVIEW APP (MẠNG XÃ HỘI) */
-        .review-area {
-            flex: 1;
-            min-width: 300px;
-            background-color: #E8F0FE;
-        }
-        .phone-header {
-            background: #fff;
-            padding: 15px;
-            text-align: center;
-            border-bottom: 2px solid var(--border-color);
-        }
-        .star-rating { font-size: 2rem; color: #FFB703; text-shadow: 1px 1px 0 var(--border-color); }
-        .rating-number { font-weight: 900; font-size: 1.5rem; }
-        
-        .reviews-list {
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            height: calc(100% - 100px);
-        }
-        .review-card {
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: var(--flat-shadow-sm);
-            animation: slideIn 0.3s ease-out;
-        }
-        .review-stars { color: #FFB703; font-size: 1rem; margin-bottom: 5px; }
-        .review-text { font-size: 0.9rem; font-weight: 700; line-height: 1.4; }
-        
-        /* MODAL TỔNG KẾT */
         .modal-overlay {
-            position: fixed;
+            position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(89, 69, 69, 0.5);
+            background: rgba(89, 69, 69, 0.7);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -325,155 +387,191 @@
             background: #FFF;
             border: 4px solid var(--border-color);
             border-radius: 20px;
-            padding: 30px;
-            width: 400px;
+            padding: 25px;
+            width: 85%;
             text-align: center;
-            box-shadow: 8px 8px 0px var(--border-color);
+            box-shadow: 6px 6px 0px var(--border-color);
             transform: translateY(50px);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .modal-overlay.active .modal-content {
             transform: translateY(0);
         }
-        .modal-content h1 { font-size: 2rem; margin-bottom: 20px; color: var(--btn-pink-hover); }
+        .modal-content h1 { font-size: 1.8rem; margin-bottom: 15px; color: var(--btn-pink-hover); }
         .stat-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
             font-weight: 700;
-            border-bottom: 2px dashed #ccc;
+            border-bottom: 2px dashed #ddd;
             padding-bottom: 5px;
         }
-        .profit { color: var(--btn-green-hover); font-size: 1.5rem; font-weight: 900; margin-top: 20px;}
-        .loss { color: #FF4D4D; font-size: 1.5rem; font-weight: 900; margin-top: 20px;}
-        .btn-next-day {
-            margin-top: 25px;
-            padding: 12px 30px;
+        .profit { color: #28a745; font-size: 1.3rem; font-weight: 900; margin-top: 15px;}
+        .loss { color: #dc3545; font-size: 1.3rem; font-weight: 900; margin-top: 15px;}
+        
+        .btn-large {
+            margin-top: 20px;
+            padding: 12px;
             font-size: 1.2rem;
+            font-weight: 900;
             background: var(--btn-pink);
             width: 100%;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+        .btn-large:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0 0 0 var(--border-color);
         }
 
         /* Animations */
-        @keyframes bounce {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-5px); }
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
-        }
-        @keyframes slideIn {
-            0% { transform: translateX(50px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-5px); } }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-50px) scale(1.2); opacity: 0; } }
+        @keyframes slideIn { 0% { transform: translateX(30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
+<div class="app-container">
+    <!-- HEADER -->
     <header>
-        <div class="header-item" id="money-display">💰 Tiền: $500</div>
-        <div class="header-item" id="day-display">Ngày 1</div>
-        <div class="header-item" id="clock-display">⏰ 08:00</div>
-        <button class="btn-toggle closed" id="toggle-shop-btn">🔴 ĐANG ĐÓNG CỬA</button>
+        <div class="stat-badge" id="money-display">💰 $100</div>
+        <div class="stat-badge" id="day-display">Ngày 1</div>
+        <div class="stat-badge" id="clock-display">⏰ 08:00</div>
+        <button class="btn-toggle closed" id="toggle-shop-btn">🔴 ĐÓNG CỬA</button>
     </header>
 
+    <!-- MAIN CONTENT (TABS) -->
     <main>
-        <!-- Cột 1: Kho & Nhập Hàng -->
-        <div class="panel inventory-area">
-            <div class="panel-title">📦 KHO NHẬP HÀNG</div>
-            <div class="inv-list" id="inventory-list">
-                <!-- Gen bằng JS -->
+        <!-- TAB 1: CỬA HÀNG -->
+        <div class="tab-pane active" id="tab-store">
+            <div class="shelves-grid" id="shelves-container">
+                <!-- Render bằng JS -->
+            </div>
+            <div class="floor-area" id="customer-queue">
+                <!-- Khách hàng -->
             </div>
         </div>
 
-        <!-- Cột 2: Cửa Hàng -->
-        <div class="panel sales-area">
-            <div class="panel-title">🏪 KHU VỰC BÁN HÀNG</div>
-            <div class="shelves-container" id="shelves-container">
-                <!-- Gen bằng JS -->
-            </div>
-            <div class="customer-queue" id="customer-queue">
-                <!-- Khách hàng xuất hiện ở đây -->
+        <!-- TAB 2: KHO HÀNG -->
+        <div class="tab-pane" id="tab-inventory">
+            <div class="page-title">📦 NHẬP HÀNG SỈ</div>
+            <div class="list-container" id="inventory-list">
+                <!-- Render bằng JS -->
             </div>
         </div>
 
-        <!-- Cột 3: Điện thoại Đánh Giá -->
-        <div class="panel review-area">
-            <div class="panel-title">📱 FOOD-TOK REVIEWS</div>
-            <div class="phone-header">
-                <div class="star-rating">⭐⭐⭐⭐⭐</div>
+        <!-- TAB 3: NÂNG CẤP -->
+        <div class="tab-pane" id="tab-upgrades">
+            <div class="page-title">🛠️ NÂNG CẤP TIỆM</div>
+            <div class="list-container" id="upgrade-list">
+                <!-- Render bằng JS -->
+            </div>
+        </div>
+
+        <!-- TAB 4: ĐÁNH GIÁ -->
+        <div class="tab-pane" id="tab-reviews">
+            <div class="review-header">
+                <div class="page-title" style="margin-bottom: 5px;">📱 FOOD-TOK</div>
+                <div class="star-rating" id="review-stars">⭐⭐⭐⭐⭐</div>
                 <div class="rating-number"><span id="avg-rating">5.0</span> / 5.0</div>
             </div>
-            <div class="reviews-list" id="reviews-list">
-                <!-- Gen bằng JS -->
+            <div class="list-container" id="reviews-list">
+                <!-- Render bằng JS -->
             </div>
         </div>
     </main>
 
-    <!-- Modal Tổng kết ngày -->
+    <!-- BOTTOM NAVIGATION -->
+    <nav>
+        <div class="nav-item active" data-target="tab-store">
+            <div class="nav-icon">🏪</div>
+            <span>Cửa Hàng</span>
+        </div>
+        <div class="nav-item" data-target="tab-inventory">
+            <div class="nav-icon">📦</div>
+            <span>Kho Hàng</span>
+        </div>
+        <div class="nav-item" data-target="tab-upgrades">
+            <div class="nav-icon">🛠️</div>
+            <span>Nâng Cấp</span>
+        </div>
+        <div class="nav-item" data-target="tab-reviews">
+            <div class="nav-icon">📱</div>
+            <span>Đánh Giá</span>
+        </div>
+    </nav>
+
+    <!-- MODAL TỔNG KẾT NGÀY -->
     <div class="modal-overlay" id="summary-modal">
         <div class="modal-content">
             <h1>🌙 Hết Ngày Rồi!</h1>
             <div class="stat-row">
-                <span>Doanh thu:</span>
-                <span id="stat-revenue" style="color: green;">+$0</span>
+                <span>Doanh thu bán:</span>
+                <span id="stat-revenue" style="color: #28a745;">+$0</span>
             </div>
             <div class="stat-row">
-                <span>Tiền nhập hàng:</span>
-                <span id="stat-cost" style="color: red;">-$0</span>
+                <span>Chi phí nhập/nâng:</span>
+                <span id="stat-cost" style="color: #dc3545;">-$0</span>
             </div>
             <div class="stat-row">
                 <span>Khách phục vụ:</span>
                 <span id="stat-served">0</span>
             </div>
             <div class="stat-row">
-                <span>Khách giận bỏ đi:</span>
+                <span>Khách cọc bỏ đi:</span>
                 <span id="stat-angry">0</span>
             </div>
             <div class="stat-row profit" id="stat-profit">
                 <span>Lợi nhuận:</span>
                 <span>$0</span>
             </div>
-            <button class="btn-next-day" id="btn-next-day">Bắt đầu Ngày Mới ☀️</button>
+            <button class="btn-large" id="btn-next-day">Bắt đầu Ngày Mới ☀️</button>
         </div>
     </div>
+</div>
 
 <script>
-    // --- DATABASE & CẤU HÌNH ---
+    // --- DỮ LIỆU GAME ---
     const FRUIT_DB = {
-        apple:      { id: 'apple', name: 'Táo Đỏ', icon: '🍎', cost: 3, price: 10 },
-        banana:     { id: 'banana', name: 'Chuối', icon: '🍌', cost: 2, price: 8 },
-        watermelon: { id: 'watermelon', name: 'Dưa Hấu', icon: '🍉', cost: 10, price: 25 },
-        strawberry: { id: 'strawberry', name: 'Dâu Tây', icon: '🍓', cost: 5, price: 15 },
-        mango:      { id: 'mango', name: 'Xoài Cát', icon: '🥭', cost: 7, price: 20 }
+        apple:      { id: 'apple', name: 'Táo Đỏ', icon: '🍎', cost: 5, price: 15 },
+        banana:     { id: 'banana', name: 'Chuối', icon: '🍌', cost: 4, price: 12 },
+        watermelon: { id: 'watermelon', name: 'Dưa Hấu', icon: '🍉', cost: 15, price: 35 },
+        strawberry: { id: 'strawberry', name: 'Dâu Tây', icon: '🍓', cost: 8, price: 22 },
+        mango:      { id: 'mango', name: 'Xoài Cát', icon: '🥭', cost: 10, price: 28 },
+        orange:     { id: 'orange', name: 'Cam Tươi', icon: '🍊', cost: 6, price: 18 }
     };
     const FRUIT_KEYS = Object.keys(FRUIT_DB);
-    const CHARACTERS = ['🙎‍♂️','🙎‍♀️','🧝‍♀️','🧙‍♂️','👨‍🌾','👩‍🍳','🕵️‍♂️','🦸‍♀️'];
+    const CHARACTERS = ['🙎‍♂️','🙎‍♀️','👩‍⚕️','👨‍🎓','👨‍🌾','👩‍🍳','🕵️‍♂️','🦸‍♀️','🎅'];
 
-    // Câu chửi hài hước khi khách đợi lâu
     const ANGRY_QUOTES = [
-        "Làm ăn lề mề quá, dỗi!",
-        "Đợi mòn thanh xuân, cạch mặt!",
-        "Ủa alo shop? Chậm rì vậy?",
+        "Shop làm ăn lề mề quá!",
+        "Đợi héo cả người! Đi về!",
         "Hết hàng thì dẹp tiệm đi!",
-        "Thái độ 0 điểm! Đi về!",
-        "Rùa bò còn nhanh hơn shop!",
-        "Bán buôn chán thế, tốn time!"
+        "Thái độ 0 điểm! Tẩy chay!",
+        "Trời ơi tốn thời gian ghê!",
+        "Tốc độ rùa bò à shop??"
     ];
 
-    // --- STATE TRÒ CHƠI ---
+    // --- TRẠNG THÁI GAME (STATE) ---
     let state = {
-        money: 100,
+        money: 200,
         day: 1,
-        time: 8 * 60, // 8:00 AM tính bằng phút
+        time: 8 * 60, // 8:00
         isOpen: false,
         rating: 5.0,
-        inventory: { apple: 10, banana: 10, watermelon: 5, strawberry: 5, mango: 5 },
-        shelf:     { apple: 0, banana: 0, watermelon: 0, strawberry: 0, mango: 0 },
-        reviews: [],
-        customers: [], // Các khách hàng đang đứng chờ
+        inventory: { apple: 10, banana: 10, watermelon: 5, strawberry: 5, mango: 5, orange: 5 },
+        shelf:     { apple: 5, banana: 5, watermelon: 2, strawberry: 2, mango: 2, orange: 2 },
+        upgrades: {
+            shelfCap: { name: "Mở rộng Kệ", desc: "+5 sức chứa mỗi kệ", cost: 150, level: 0, max: 4, value: 10, step: 5 },
+            cashier:  { name: "Thuê Thu Ngân", desc: "Tự động bán hàng nhanh", cost: 300, level: 0, max: 1, value: 0, step: 1 },
+            decor:    { name: "Trang trí Tiệm", desc: "Khách kiên nhẫn hơn", cost: 200, level: 0, max: 3, value: 1, step: 0.5 }
+        },
+        customers: [],
         daily: { revenue: 0, cost: 0, served: 0, angry: 0 }
     };
 
@@ -486,65 +584,61 @@
     const elDay = document.getElementById('day-display');
     const elClock = document.getElementById('clock-display');
     const btnToggle = document.getElementById('toggle-shop-btn');
-    const invList = document.getElementById('inventory-list');
+    
+    const storeTab = document.getElementById('tab-store');
     const shelfContainer = document.getElementById('shelves-container');
     const queueContainer = document.getElementById('customer-queue');
+    
+    const invList = document.getElementById('inventory-list');
+    const upgradeList = document.getElementById('upgrade-list');
     const reviewList = document.getElementById('reviews-list');
-    const elRating = document.getElementById('avg-rating');
-    const elStars = document.querySelector('.star-rating');
+    
     const modal = document.getElementById('summary-modal');
+
+    // --- ĐIỀU HƯỚNG TABS ---
+    document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+            
+            nav.classList.add('active');
+            document.getElementById(nav.dataset.target).classList.add('active');
+        });
+    });
 
     // --- KHỞI TẠO UI ---
     function initUI() {
         updateHUD();
-        renderInventory();
         renderShelves();
+        renderInventory();
+        renderUpgrades();
+        // Add first review
+        addReview(true, "Tiệm mới mở, nhìn decor cute phết. Ủng hộ shop nha! 💖");
     }
 
     function updateHUD() {
-        elMoney.innerText = `💰 Tiền: $${state.money}`;
+        elMoney.innerText = `💰 $${state.money}`;
         elDay.innerText = `Ngày ${state.day}`;
-        let hours = Math.floor(state.time / 60);
-        let mins = state.time % 60;
-        elClock.innerText = `⏰ ${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+        let h = Math.floor(state.time / 60).toString().padStart(2, '0');
+        let m = (state.time % 60).toString().padStart(2, '0');
+        elClock.innerText = `⏰ ${h}:${m}`;
         
-        let displayRating = Math.max(1, Math.min(5, state.rating)).toFixed(1);
-        elRating.innerText = displayRating;
-        let starStr = '';
-        for(let i=1; i<=5; i++) {
-            starStr += (i <= Math.round(state.rating)) ? '⭐' : '☆';
-        }
-        elStars.innerText = starStr;
+        let dRating = Math.max(1, Math.min(5, state.rating)).toFixed(1);
+        document.getElementById('avg-rating').innerText = dRating;
+        document.getElementById('review-stars').innerText = '⭐'.repeat(Math.round(state.rating)) + '☆'.repeat(5 - Math.round(state.rating));
+        
+        // Cập nhật trạng thái nút mua/nâng cấp
+        renderInventory(); // Re-render để update nút Mờ/Sáng
+        renderUpgrades();
     }
 
-    function renderInventory() {
-        invList.innerHTML = '';
-        FRUIT_KEYS.forEach(k => {
-            let fruit = FRUIT_DB[k];
-            let html = `
-                <div class="fruit-card">
-                    <div class="fruit-icon-lg">${fruit.icon}</div>
-                    <div class="fruit-info">
-                        <div class="fruit-name">${fruit.name}</div>
-                        <div class="fruit-price">Mua sỉ: $${fruit.cost} | Bán: $${fruit.price}</div>
-                        <div class="fruit-qty">Trong kho: <span id="inv-qty-${k}">${state.inventory[k]}</span></div>
-                    </div>
-                    <div class="inv-actions">
-                        <button class="btn-buy" onclick="buyFruit('${k}')">Mua +5</button>
-                        <button class="btn-restock" onclick="restockFruit('${k}')">Lên kệ</button>
-                    </div>
-                </div>
-            `;
-            invList.insertAdjacentHTML('beforeend', html);
-        });
-    }
-
+    // --- KHO & KỆ ---
     function renderShelves() {
         shelfContainer.innerHTML = '';
         FRUIT_KEYS.forEach(k => {
             let html = `
                 <div class="shelf">
-                    <div class="shelf-qty" id="shelf-qty-${k}">${state.shelf[k]}/10</div>
+                    <div class="shelf-qty" id="shelf-qty-${k}">${state.shelf[k]}/${state.upgrades.shelfCap.value}</div>
                     <div class="shelf-fruit">${FRUIT_DB[k].icon}</div>
                 </div>
             `;
@@ -552,12 +646,31 @@
         });
     }
 
-    function updateInventoryUI(key) {
-        document.getElementById(`inv-qty-${key}`).innerText = state.inventory[key];
-        document.getElementById(`shelf-qty-${key}`).innerText = `${state.shelf[key]}/10`;
+    function renderInventory() {
+        invList.innerHTML = '';
+        FRUIT_KEYS.forEach(k => {
+            let fruit = FRUIT_DB[k];
+            let buyCost = fruit.cost * 5;
+            let canBuy = state.money >= buyCost;
+            let canRestock = state.inventory[k] > 0 && state.shelf[k] < state.upgrades.shelfCap.value;
+            
+            let html = `
+                <div class="card">
+                    <div class="card-icon">${fruit.icon}</div>
+                    <div class="card-info">
+                        <div class="card-title">${fruit.name}</div>
+                        <div class="card-desc">Kho: <span style="color:#FF7B7B;font-weight:900">${state.inventory[k]}</span> | Kệ: ${state.shelf[k]}/${state.upgrades.shelfCap.value}</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn bg-yellow" onclick="buyFruit('${k}')" ${canBuy?'':'disabled'}>Mua x5 ($${buyCost})</button>
+                        <button class="action-btn bg-green" onclick="restockFruit('${k}')" ${canRestock?'':'disabled'}>Lên Kệ</button>
+                    </div>
+                </div>
+            `;
+            invList.insertAdjacentHTML('beforeend', html);
+        });
     }
 
-    // --- LOGIC MUA HÀNG & LÊN KỆ ---
     window.buyFruit = function(key) {
         let cost = FRUIT_DB[key].cost * 5;
         if(state.money >= cost) {
@@ -565,48 +678,82 @@
             state.daily.cost += cost;
             state.inventory[key] += 5;
             updateHUD();
-            updateInventoryUI(key);
-            spawnFloatingText(`-$${cost}`, queueContainer, 100, 50, '#FF4D4D'); // Chữ bay lên ở giữa màn
-        } else {
-            alert('Không đủ tiền b ơi! Bán thêm trái cây đi!');
+            spawnFloat(`-$${cost}`, 'red');
         }
     }
 
     window.restockFruit = function(key) {
-        let currentShelf = state.shelf[key];
-        let space = 10 - currentShelf;
-        if(space <= 0) return; // Kệ đầy
-        if(state.inventory[key] <= 0) {
-            alert('Kho đã hết hàng này! Vui lòng mua thêm.');
-            return;
-        }
-        let moveAmount = Math.min(space, state.inventory[key]);
-        state.inventory[key] -= moveAmount;
-        state.shelf[key] += moveAmount;
-        updateInventoryUI(key);
+        let max = state.upgrades.shelfCap.value;
+        let space = max - state.shelf[key];
+        if(space <= 0 || state.inventory[key] <= 0) return;
+        
+        let amount = Math.min(space, state.inventory[key]);
+        state.inventory[key] -= amount;
+        state.shelf[key] += amount;
+        
+        document.getElementById(`shelf-qty-${key}`).innerText = `${state.shelf[key]}/${max}`;
+        updateHUD(); // refresh inventory buttons
     }
 
-    // --- LOGIC THỜI GIAN & ĐÓNG/MỞ CỬA ---
+    // --- NÂNG CẤP ---
+    function renderUpgrades() {
+        upgradeList.innerHTML = '';
+        Object.keys(state.upgrades).forEach(k => {
+            let upg = state.upgrades[k];
+            let isMax = upg.level >= upg.max;
+            let canBuy = !isMax && state.money >= upg.cost;
+            
+            let btnHtml = isMax 
+                ? `<button class="action-btn" disabled>Đã Max</button>`
+                : `<button class="action-btn bg-blue" onclick="buyUpgrade('${k}')" ${canBuy?'':'disabled'}>Nâng ($${upg.cost})</button>`;
+
+            let html = `
+                <div class="card">
+                    <div class="card-info">
+                        <div class="card-title">${upg.name} <span class="upgrade-level">Lv.${upg.level}/${upg.max}</span></div>
+                        <div class="card-desc">${upg.desc}</div>
+                    </div>
+                    <div class="card-actions">${btnHtml}</div>
+                </div>
+            `;
+            upgradeList.insertAdjacentHTML('beforeend', html);
+        });
+    }
+
+    window.buyUpgrade = function(key) {
+        let upg = state.upgrades[key];
+        if(upg.level < upg.max && state.money >= upg.cost) {
+            state.money -= upg.cost;
+            state.daily.cost += upg.cost;
+            upg.level++;
+            upg.value += upg.step;
+            upg.cost = Math.floor(upg.cost * 1.5); // Tăng giá lần sau
+            
+            if(key === 'shelfCap') renderShelves(); // Cập nhật ui kệ
+            
+            updateHUD();
+            spawnFloat(`Đã nâng cấp!`, 'blue');
+        }
+    }
+
+    // --- LOGIC NGÀY & KHÁCH HÀNG ---
     btnToggle.addEventListener('click', () => {
-        if(state.isOpen) return; // Đang mở không cho đóng sớm
+        if(state.isOpen) return; 
         
         state.isOpen = true;
         btnToggle.innerText = '🟢 ĐANG MỞ CỬA';
         btnToggle.classList.remove('closed');
         
-        // Timer thời gian trong game: 1 giây đời thực = 10 phút game
+        // Nhảy tab về Cửa hàng
+        document.querySelector('[data-target="tab-store"]').click();
+        
         gameTimer = setInterval(() => {
             state.time += 10; 
             updateHUD();
-            if(state.time >= 20 * 60) { // 20:00 (8 PM) đóng cửa
-                closeShop();
-            }
+            if(state.time >= 21 * 60) closeShop(); // 21:00 đóng
         }, 1000);
 
-        // Timer sinh khách hàng (phụ thuộc rating)
         scheduleNextCustomer();
-
-        // Game loop cập nhật sự kiên nhẫn
         loopTimer = setInterval(gameLoop, 100);
     });
 
@@ -616,134 +763,133 @@
         clearTimeout(spawnTimer);
         clearInterval(loopTimer);
         
-        btnToggle.innerText = '🔴 ĐANG ĐÓNG CỬA';
+        btnToggle.innerText = '🔴 ĐÓNG CỬA';
         btnToggle.classList.add('closed');
         
-        // Đuổi hết khách đang chờ
         state.customers.forEach(c => c.dom.remove());
         state.customers = [];
-
-        // Hiện modal
         showSummary();
     }
 
-    // --- LOGIC KHÁCH HÀNG ---
     function scheduleNextCustomer() {
         if(!state.isOpen) return;
-        // Rating càng cao sinh càng nhanh. Rating 5 => 1-2s. Rating 1 => 4-6s.
-        let baseDelay = (6 - state.rating) * 1000; 
-        let randomDelay = baseDelay + Math.random() * 1500;
+        let base = (6 - state.rating) * 800; // Rate cao ra nhanh
+        let delay = Math.max(800, base + Math.random() * 1500);
         
         spawnTimer = setTimeout(() => {
             spawnCustomer();
             scheduleNextCustomer();
-        }, randomDelay);
+        }, delay);
     }
 
-    let custIdCounter = 0;
+    let custId = 0;
     function spawnCustomer() {
-        if(state.customers.length >= 6) return; // Quán chật không nhận thêm
+        let maxCust = window.innerWidth > 400 ? 5 : 4; // Responsive lượng khách đứng vừa màn hình
+        if(state.customers.length >= maxCust) return; 
         
-        let fruitKey = FRUIT_KEYS[Math.floor(Math.random() * FRUIT_KEYS.length)];
-        let charIcon = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
-        let id = `cust_${custIdCounter++}`;
+        let fruit = FRUIT_KEYS[Math.floor(Math.random() * FRUIT_KEYS.length)];
+        let icon = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+        let id = `c_${custId++}`;
         
         let dom = document.createElement('div');
         dom.className = 'customer';
         dom.id = id;
         dom.innerHTML = `
-            <div class="speech-bubble">${FRUIT_DB[fruitKey].icon}</div>
-            <div class="character">${charIcon}</div>
+            <div class="speech-bubble">${FRUIT_DB[fruit].icon}</div>
+            <div class="character">${icon}</div>
             <div class="patience-container">
                 <div class="patience-bar" id="bar-${id}"></div>
             </div>
         `;
         
-        // Vị trí khách đứng (từ trái qua phải)
-        let slotIndex = state.customers.length; 
-        let leftPos = 20 + (slotIndex * 90); 
-        dom.style.left = leftPos + 'px';
-
-        // Click để bán
+        // Đặt vị trí ngoài màn hình bên trái, rồi animate trượt vào
+        dom.style.left = '-100px'; 
         dom.addEventListener('click', () => serveCustomer(id));
-
         queueContainer.appendChild(dom);
 
-        state.customers.push({
-            id: id,
-            fruit: fruitKey,
-            patience: 100, // 100%
-            dom: dom,
-            status: 'waiting'
-        });
+        // Patience = 100 * hệ số trang trí
+        let startPatience = 100 * state.upgrades.decor.value;
+
+        state.customers.push({ id, fruit, patience: startPatience, maxPat: startPatience, dom, status: 'waiting' });
     }
 
+    let cashierTick = 0;
     function gameLoop() {
+        // Cập nhật khách hàng
         state.customers.forEach((c, index) => {
             if(c.status === 'waiting') {
-                c.patience -= 0.6; // Trừ kiên nhẫn mỗi 100ms (~16s tổng cộng)
+                c.patience -= 0.6; 
                 let bar = document.getElementById(`bar-${c.id}`);
                 if(bar) {
-                    bar.style.width = Math.max(0, c.patience) + '%';
-                    if(c.patience < 50) bar.style.backgroundColor = '#FFD166'; // Vàng
-                    if(c.patience < 20) bar.style.backgroundColor = '#FF4D4D'; // Đỏ
+                    let pct = Math.max(0, (c.patience / c.maxPat) * 100);
+                    bar.style.width = pct + '%';
+                    if(pct < 50) bar.style.backgroundColor = '#FFD166';
+                    if(pct < 20) bar.style.backgroundColor = '#dc3545';
                 }
 
-                if(c.patience <= 0) {
-                    customerAngryLeave(c);
-                } else {
-                    // Update vị trí nếu hàng phía trước trống
-                    let targetLeft = 20 + (index * 90);
-                    c.dom.style.left = targetLeft + 'px';
+                if(c.patience <= 0) customerAngryLeave(c);
+                else {
+                    // Update vị trí đứng xếp hàng (Responsive gap)
+                    let gap = window.innerWidth > 400 ? 80 : 70;
+                    let leftOffset = window.innerWidth > 400 ? 20 : 10;
+                    c.dom.style.left = (leftOffset + index * gap) + 'px';
                 }
             }
         });
+
+        // Thu ngân tự động (nếu đã nâng cấp)
+        if(state.upgrades.cashier.level > 0) {
+            cashierTick++;
+            if(cashierTick >= 10) { // Mỗi 1 giây (10 * 100ms)
+                cashierTick = 0;
+                let firstCust = state.customers.find(c => c.status === 'waiting' && state.shelf[c.fruit] > 0);
+                if(firstCust) serveCustomer(firstCust.id);
+            }
+        }
     }
 
     function serveCustomer(id) {
-        let index = state.customers.findIndex(c => c.id === id);
-        if(index === -1) return;
-        let c = state.customers[index];
+        let idx = state.customers.findIndex(c => c.id === id);
+        if(idx === -1) return;
+        let c = state.customers[idx];
         if(c.status !== 'waiting') return;
 
-        let reqFruit = c.fruit;
-        if(state.shelf[reqFruit] > 0) {
-            // Có hàng -> Bán thành công
-            state.shelf[reqFruit]--;
-            updateInventoryUI(reqFruit);
+        let req = c.fruit;
+        if(state.shelf[req] > 0) {
+            // Có hàng -> Thành công
+            state.shelf[req]--;
+            document.getElementById(`shelf-qty-${req}`).innerText = `${state.shelf[req]}/${state.upgrades.shelfCap.value}`;
             
-            let price = FRUIT_DB[reqFruit].price;
-            state.money += price;
-            state.daily.revenue += price;
+            // Nếu phục vụ cực nhanh (>70% kiên nhẫn) -> cho Tip
+            let pct = c.patience / c.maxPat;
+            let price = FRUIT_DB[req].price;
+            let tip = pct > 0.7 ? Math.floor(price * 0.2) : 0;
+            let earn = price + tip;
+
+            state.money += earn;
+            state.daily.revenue += earn;
             state.daily.served++;
             updateHUD();
 
             c.status = 'served';
-            
-            // Hiệu ứng nhận tiền
-            let rect = c.dom.getBoundingClientRect();
-            let qRect = queueContainer.getBoundingClientRect();
-            spawnFloatingText(`+$${price}`, queueContainer, c.dom.offsetLeft + 20, c.dom.offsetTop, 'green');
-
-            // Thêm review tốt
-            addReview(true);
+            spawnFloat(tip > 0 ? `+$${earn} (Tip)` : `+$${earn}`, '#28a745', c.dom);
+            if(Math.random() > 0.6) addReview(true); // 40% tỷ lệ review tốt
 
             // Xóa khách
-            c.dom.style.transform = 'translateY(-20px)';
+            c.dom.style.transform = 'translateY(-30px)';
             c.dom.style.opacity = '0';
             setTimeout(() => c.dom.remove(), 300);
-            state.customers.splice(index, 1);
+            state.customers.splice(idx, 1);
         } else {
-            // Không có hàng
-            spawnFloatingText("Hết hàng trên kệ!", queueContainer, c.dom.offsetLeft, c.dom.offsetTop - 20, 'red');
-            // Lắc khách
+            // Hết hàng -> Rung khách, hiện text đỏ
+            spawnFloat("Hết hàng!", '#dc3545', c.dom);
             c.dom.style.animation = 'none';
-            setTimeout(() => {
-                c.dom.style.transform = 'rotate(10deg)';
-                setTimeout(() => c.dom.style.transform = 'rotate(-10deg)', 100);
-                setTimeout(() => c.dom.style.transform = 'rotate(0)', 200);
+            setTimeout(() => { c.dom.style.transform = 'translateX(5px)'; }, 50);
+            setTimeout(() => { c.dom.style.transform = 'translateX(-5px)'; }, 100);
+            setTimeout(() => { 
+                c.dom.style.transform = 'translateX(0)'; 
                 c.dom.style.animation = 'bounce 1s infinite alternate';
-            }, 50);
+            }, 150);
         }
     }
 
@@ -752,45 +898,55 @@
         state.daily.angry++;
         
         let quote = ANGRY_QUOTES[Math.floor(Math.random() * ANGRY_QUOTES.length)];
-        spawnFloatingText(quote, queueContainer, c.dom.offsetLeft - 20, c.dom.offsetTop - 30, '#FF4D4D');
+        spawnFloat(quote, '#dc3545', c.dom, -20);
         
         addReview(false);
 
-        // Khách bỏ đi
         c.dom.style.opacity = '0.5';
         c.dom.style.left = '-100px';
         
-        let index = state.customers.findIndex(x => x.id === c.id);
-        if(index > -1) state.customers.splice(index, 1);
-        
+        let idx = state.customers.findIndex(x => x.id === c.id);
+        if(idx > -1) state.customers.splice(idx, 1);
         setTimeout(() => c.dom.remove(), 500);
     }
 
-    // --- FLOATING TEXT ---
-    function spawnFloatingText(text, parent, x, y, color) {
+    // --- FLOATING TEXT TÍCH HỢP ---
+    function spawnFloat(text, color, targetDom = null, yOffset = 0) {
         let el = document.createElement('div');
         el.className = 'floating-text';
         el.innerText = text;
-        el.style.left = x + 'px';
-        el.style.top = y + 'px';
         el.style.color = color;
-        parent.appendChild(el);
-        setTimeout(() => el.remove(), 1500);
+        
+        if(targetDom) {
+            let rect = targetDom.getBoundingClientRect();
+            let parentRect = storeTab.getBoundingClientRect();
+            el.style.left = (rect.left - parentRect.left + 10) + 'px';
+            el.style.top = (rect.top - parentRect.top - 20 + yOffset) + 'px';
+            storeTab.appendChild(el);
+        } else {
+            // Canh giữa màn hình (dùng cho kho hàng)
+            el.style.left = '50%';
+            el.style.top = '40%';
+            el.style.transform = 'translateX(-50%)';
+            document.body.appendChild(el);
+        }
+        
+        setTimeout(() => el.remove(), 1200);
     }
 
-    // --- HỆ THỐNG REVIEW MẠNG XÃ HỘI ---
-    function addReview(isGood) {
+    // --- MẠNG XÃ HỘI ---
+    function addReview(isGood, customText = null) {
         let text = "";
         let stars = 5;
         if(isGood) {
             let posText = [
                 "Trái cây ngon đỉnh của chóp, chủ tiệm dthw ❤️",
-                "Giao hàng nhanh bằng tốc độ người yêu cũ trở mặt. 10 điểm!",
+                "Giao hàng nhanh như người yêu cũ trở mặt. 10 điểm!",
                 "10/10 không có nhưng, sẽ quay lại ủng hộ mòn dép.",
                 "Tươi rói, ăn một miếng là u mê không lối thoát 😍"
             ];
-            text = posText[Math.floor(Math.random() * posText.length)];
-            state.rating = Math.min(5.0, state.rating + 0.2);
+            text = customText || posText[Math.floor(Math.random() * posText.length)];
+            state.rating = Math.min(5.0, state.rating + 0.1);
             stars = 5;
         } else {
             let negText = [
@@ -799,8 +955,8 @@
                 "Mới sáng ra làm ăn lề mề, tuột mood dễ sợ 😡",
                 "Tiệm gì mà lười, cạch mặt đến già nha!!"
             ];
-            text = negText[Math.floor(Math.random() * negText.length)];
-            state.rating = Math.max(1.0, state.rating - 0.5); // Phạt nặng
+            text = customText || negText[Math.floor(Math.random() * negText.length)];
+            state.rating = Math.max(1.0, state.rating - 0.4); // Phạt nặng
             stars = 1;
         }
         
@@ -813,12 +969,17 @@
             </div>
         `;
         reviewList.insertAdjacentHTML('afterbegin', reviewHTML);
-        if(reviewList.children.length > 20) {
-            reviewList.lastChild.remove();
+        if(reviewList.children.length > 15) reviewList.lastChild.remove();
+        
+        // Hiện thông báo nhỏ đỏ ở tab nếu chưa mở tab review
+        let reviewNav = document.querySelector('[data-target="tab-reviews"]');
+        if(!reviewNav.classList.contains('active')) {
+            reviewNav.style.color = '#dc3545';
+            setTimeout(() => reviewNav.style.color = '', 2000);
         }
     }
 
-    // --- KẾT THÚC NGÀY ---
+    // --- TỔNG KẾT ---
     function showSummary() {
         let profit = state.daily.revenue - state.daily.cost;
         document.getElementById('stat-revenue').innerText = `+$${state.daily.revenue}`;
@@ -841,14 +1002,13 @@
     document.getElementById('btn-next-day').addEventListener('click', () => {
         modal.classList.remove('active');
         state.day++;
-        state.time = 8 * 60; // Reset 8 AM
-        state.daily = { revenue: 0, cost: 0, served: 0, angry: 0 }; // Reset stats
+        state.time = 8 * 60; // 8 AM
+        state.daily = { revenue: 0, cost: 0, served: 0, angry: 0 };
         updateHUD();
     });
 
-    // Start game
+    // Start
     initUI();
-
 </script>
 </body>
 </html>
