@@ -1,2089 +1,556 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0,
-               maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#fff7e8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>🍓 Tiệm Bán Trái Cây</title>
-<style>
-/* =========================================================
-   RESET
-========================================================= */
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-html,
-body {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-}
-body {
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-    background: #fff7e8;
-    color: #4d4037;
-    min-height: 100vh;
-    overscroll-behavior-x: none;
-}
-button,
-input,
-select {
-    font: inherit;
-}
-button {
-    border: 0;
-    cursor: pointer;
-}
-button:active {
-    transform: scale(.97);
-}
-img {
-    max-width: 100%;
-}
-/* =========================================================
-   APP
-========================================================= */
-.app {
-    width: 100%;
-    min-height: 100vh;
-    padding-bottom: 88px;
-}
-.screen {
-    display: none;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 12px;
-}
-.screen.active {
-    display: block;
-}
-/* =========================================================
-   HEADER
-========================================================= */
-.topbar {
-    width: 100%;
-    background: #fffdf8;
-    border-bottom: 1px solid #eadfce;
-    padding:
-        calc(10px + env(safe-area-inset-top))
-        12px
-        10px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-.topbar-inner {
-    width: 100%;
-    max-width: 1100px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-.logo {
-    min-width: 0;
-}
-.logo-title {
-    font-size: clamp(18px, 5vw, 25px);
-    font-weight: 900;
-    color: #5e5147;
-    white-space: nowrap;
-}
-.logo-sub {
-    font-size: 11px;
-    color: #9c8b7c;
-    margin-top: 2px;
-}
-.money {
-    flex-shrink: 0;
-    background: #fff0bd;
-    color: #755719;
-    padding: 9px 12px;
-    border-radius: 16px;
-    font-weight: 900;
-    font-size: 14px;
-    border: 1px solid #eedca6;
-}
-/* =========================================================
-   COMMON
-========================================================= */
-.card {
-    background: #fffdf8;
-    border: 1px solid #eadfce;
-    border-radius: 20px;
-    padding: 14px;
-    margin-bottom: 12px;
-}
-.section-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.section-title h2,
-.section-title h3 {
-    margin: 0;
-    color: #55483f;
-}
-.section-title h2 {
-    font-size: 20px;
-}
-.section-title h3 {
-    font-size: 16px;
-}
-.muted {
-    color: #9b8c80;
-    font-size: 12px;
-}
-.primary-btn,
-.secondary-btn,
-.danger-btn {
-    width: 100%;
-    min-height: 44px;
-    border-radius: 14px;
-    font-weight: 900;
-    transition: .15s ease;
-}
-.primary-btn {
-    background: #91c99a;
-    color: #fff;
-}
-.secondary-btn {
-    background: #f8dfaa;
-    color: #6b5428;
-}
-.danger-btn {
-    background: #f1aaa0;
-    color: #fff;
-}
-.primary-btn:disabled,
-.secondary-btn:disabled,
-.danger-btn:disabled {
-    opacity: .45;
-    cursor: not-allowed;
-}
-.badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #f5e8d7;
-    color: #78675a;
-    border-radius: 999px;
-    padding: 5px 9px;
-    font-size: 11px;
-    font-weight: 800;
-}
-/* =========================================================
-   SHOP HEADER
-========================================================= */
-.shop-info {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.stat {
-    background: #fffdf8;
-    border: 1px solid #eadfce;
-    border-radius: 16px;
-    padding: 10px;
-}
-.stat-label {
-    font-size: 11px;
-    color: #9a897c;
-}
-.stat-value {
-    font-size: 17px;
-    font-weight: 900;
-    margin-top: 3px;
-}
-/* =========================================================
-   STORE
-========================================================= */
-.shop {
-    position: relative;
-    min-height: 450px;
-    overflow: hidden;
-    background: #f7e6cf;
-    border: 1px solid #e6d2b7;
-    border-radius: 24px;
-    margin-bottom: 12px;
-}
-/* nền tiệm */
-.shop-wall {
-    position: absolute;
-    inset: 0 0 115px 0;
-    background:
-        linear-gradient(
-            180deg,
-            #fcefdc 0%,
-            #f8e4ca 100%
-        );
-}
-.shop-sign {
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fff9ed;
-    border: 2px solid #e9d4b7;
-    border-radius: 18px;
-    padding: 9px 18px;
-    font-weight: 900;
-    color: #70594b;
-    white-space: nowrap;
-    font-size: 14px;
-}
-.window {
-    position: absolute;
-    top: 76px;
-    left: 8%;
-    width: 84%;
-    height: 100px;
-    border: 7px solid #d5b99a;
-    background: #d9edf0;
-    border-radius: 15px;
-}
-.window:before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 5px;
-    background: #d5b99a;
-}
-.counter {
-    position: absolute;
-    left: 5%;
-    right: 5%;
-    bottom: 75px;
-    height: 85px;
-    background: #d99e71;
-    border: 5px solid #bc8159;
-    border-radius: 18px 18px 10px 10px;
-}
-.counter-top {
-    position: absolute;
-    left: -3%;
-    right: -3%;
-    top: -15px;
-    height: 20px;
-    background: #efbf8e;
-    border: 3px solid #c38a61;
-    border-radius: 12px;
-}
-/* trái cây trên quầy */
-.shelf-fruits {
-    position: absolute;
-    left: 8%;
-    right: 8%;
-    bottom: 125px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: clamp(5px, 2vw, 12px);
-    min-height: 55px;
-}
-.shelf-fruit {
-    font-size: clamp(26px, 8vw, 42px);
-    animation: fruitFloat 2.8s ease-in-out infinite;
-}
-.shelf-fruit:nth-child(2) { animation-delay: .3s; }
-.shelf-fruit:nth-child(3) { animation-delay: .6s; }
-.shelf-fruit:nth-child(4) { animation-delay: .9s; }
-.shelf-fruit:nth-child(5) { animation-delay: 1.2s; }
-@keyframes fruitFloat {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-}
-/* cửa */
-.door {
-    position: absolute;
-    right: 7%;
-    bottom: 74px;
-    width: 58px;
-    height: 105px;
-    background: #b98868;
-    border: 4px solid #8d6049;
-    border-radius: 9px 9px 0 0;
-}
-/* khách */
-.customer-area {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 175px;
-    pointer-events: none;
-}
-.customer {
-    position: absolute;
-    left: 50%;
-    bottom: 2px;
-    transform: translateX(-50%);
-    width: 145px;
-    text-align: center;
-    animation: customerIn .5s ease;
-}
-@keyframes customerIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, 30px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-.customer-face {
-    width: 72px;
-    height: 72px;
-    margin: auto;
-    border-radius: 50%;
-    background: #f6c8a7;
-    border: 4px solid #d99e7e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 38px;
-}
-.customer-body {
-    width: 84px;
-    height: 58px;
-    margin: -5px auto 0;
-    background: #9cb9d8;
-    border-radius: 35px 35px 8px 8px;
-    border: 4px solid #7899bd;
-}
-.customer-name {
-    font-weight: 900;
-    font-size: 12px;
-    margin-top: 3px;
-}
-.bubble {
-    position: absolute;
-    left: 50%;
-    bottom: 132px;
-    transform: translateX(-50%);
-    width: min(230px, 76vw);
-    background: #fff;
-    border: 2px solid #e4d7c8;
-    border-radius: 16px;
-    padding: 9px;
-    font-size: 12px;
-    font-weight: 800;
-    color: #554941;
-    text-align: center;
-}
-.bubble:after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: -10px;
-    transform: translateX(-50%);
-    border-left: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-top: 10px solid #fff;
-}
-/* =========================================================
-   PATIENCE
-========================================================= */
-.patience-wrap {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 113px;
-    width: min(220px, 70vw);
-}
-.patience-label {
-    font-size: 10px;
-    font-weight: 900;
-    text-align: center;
-    margin-bottom: 3px;
-}
-.patience {
-    width: 100%;
-    height: 9px;
-    background: #eadbd1;
-    border-radius: 999px;
-    overflow: hidden;
-}
-.patience-bar {
-    height: 100%;
-    width: 100%;
-    background: #8fc99a;
-    border-radius: inherit;
-    transition: width .25s linear, background .25s;
-}
-/* =========================================================
-   SHOP CONTROLS
-========================================================= */
-.shop-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-.open-status {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 10px;
-    border-radius: 14px;
-    background: #e7f3e7;
-    color: #4f8158;
-    font-weight: 900;
-}
-.open-status.closed {
-    background: #f8e3df;
-    color: #a65e55;
-}
-/* =========================================================
-   INVENTORY
-========================================================= */
-.fruit-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-}
-.fruit-card {
-    background: #fffdf8;
-    border: 1px solid #eadfce;
-    border-radius: 18px;
-    padding: 12px;
-    min-width: 0;
-}
-.fruit-icon {
-    font-size: 38px;
-    text-align: center;
-}
-.fruit-name {
-    font-weight: 900;
-    text-align: center;
-    margin-top: 4px;
-}
-.fruit-price {
-    text-align: center;
-    font-size: 12px;
-    color: #8f7d6f;
-    margin: 3px 0 9px;
-}
-.stock {
-    background: #f5eee5;
-    border-radius: 9px;
-    padding: 6px;
-    font-size: 11px;
-    text-align: center;
-    margin-bottom: 8px;
-}
-.stock strong {
-    color: #635348;
-}
-.fruit-card .secondary-btn {
-    min-height: 40px;
-    font-size: 12px;
-}
-/* =========================================================
-   UPGRADES
-========================================================= */
-.upgrade-list {
-    display: grid;
-    gap: 10px;
-}
-.upgrade-card {
-    display: grid;
-    grid-template-columns: 48px minmax(0,1fr);
-    gap: 10px;
-    padding: 13px;
-    background: #fffdf8;
-    border: 1px solid #eadfce;
-    border-radius: 18px;
-}
-.upgrade-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 15px;
-    background: #f8ead2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-}
-.upgrade-title {
-    font-weight: 900;
-}
-.upgrade-description {
-    font-size: 12px;
-    color: #8e7e71;
-    line-height: 1.45;
-    margin: 3px 0 8px;
-}
-.upgrade-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-.level {
-    font-size: 11px;
-    font-weight: 900;
-    color: #758a75;
-}
-.upgrade-btn {
-    background: #91c99a;
-    color: white;
-    border-radius: 11px;
-    padding: 8px 11px;
-    font-size: 11px;
-    font-weight: 900;
-}
-/* =========================================================
-   REVIEWS / SOCIAL APP
-========================================================= */
-.social-header {
-    background: #fffdf8;
-    border: 1px solid #eadfce;
-    border-radius: 22px;
-    padding: 18px;
-    text-align: center;
-    margin-bottom: 12px;
-}
-.avatar-store {
-    width: 62px;
-    height: 62px;
-    margin: 0 auto 8px;
-    border-radius: 20px;
-    background: #f7dca7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-}
-.rating-big {
-    font-size: 32px;
-    font-weight: 900;
-}
-.stars {
-    color: #e9ad45;
-    letter-spacing: 2px;
-    font-size: 18px;
-}
-.rating-count {
-    color: #978679;
-    font-size: 12px;
-    margin-top: 3px;
-}
-.review {
-    background: #fffdf8;
-    border: 1px solid #eadfce;
-    border-radius: 18px;
-    padding: 13px;
-    margin-bottom: 9px;
-}
-.review-head {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-.review-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: #f0d5bc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-}
-.review-user {
-    min-width: 0;
-    flex: 1;
-}
-.review-name {
-    font-weight: 900;
-    font-size: 13px;
-}
-.review-time {
-    font-size: 10px;
-    color: #a39387;
-}
-.review-text {
-    font-size: 13px;
-    line-height: 1.5;
-    margin-top: 9px;
-}
-.review-stars {
-    font-size: 13px;
-    color: #e7ad4d;
-}
-/* =========================================================
-   BOTTOM TAB BAR
-========================================================= */
-.tabbar {
-    position: fixed;
-    z-index: 200;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    padding:
-        7px
-        7px
-        calc(7px + env(safe-area-inset-bottom));
-    background: rgba(255,253,248,.98);
-    border-top: 1px solid #e4d9ca;
-}
-.tabs {
-    width: 100%;
-    max-width: 700px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-}
-.tab {
-    min-width: 0;
-    min-height: 58px;
-    background: transparent;
-    color: #9b8b7d;
-    border-radius: 15px;
-    font-size: 10px;
-    font-weight: 900;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-}
-.tab-icon {
-    font-size: 21px;
-    line-height: 1;
-}
-.tab.active {
-    background: #edf5e9;
-    color: #5d8762;
-}
-/* =========================================================
-   MODAL
-========================================================= */
-.modal {
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    background: rgba(71,57,47,.35);
-}
-.modal.show {
-    display: flex;
-}
-.modal-box {
-    width: min(430px, 100%);
-    max-height: 90vh;
-    overflow-y: auto;
-    background: #fffdf8;
-    border: 1px solid #e6d9ca;
-    border-radius: 24px;
-    padding: 20px;
-    text-align: center;
-}
-.modal-icon {
-    font-size: 48px;
-}
-.modal h2 {
-    margin: 8px 0;
-}
-.summary-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 14px 0;
-}
-.summary-item {
-    background: #f7efe5;
-    border-radius: 14px;
-    padding: 10px;
-}
-.summary-item span {
-    display: block;
-    font-size: 11px;
-    color: #927f70;
-}
-.summary-item strong {
-    display: block;
-    margin-top: 4px;
-    font-size: 17px;
-}
-.profit-positive {
-    color: #5c9866;
-}
-.profit-negative {
-    color: #b66058;
-}
-/* =========================================================
-   TOAST
-========================================================= */
-.toast-container {
-    position: fixed;
-    z-index: 1000;
-    top: 75px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(340px, calc(100% - 24px));
-    pointer-events: none;
-}
-.toast {
-    background: #5e5147;
-    color: white;
-    padding: 11px 14px;
-    border-radius: 14px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 800;
-    margin-bottom: 6px;
-    animation: toastIn .25s ease;
-}
-@keyframes toastIn {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-/* =========================================================
-   DESKTOP
-========================================================= */
-@media (min-width: 700px) {
-    .screen {
-        padding: 20px;
-    }
-    .shop-info {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    .fruit-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    .upgrade-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .shop {
-        min-height: 530px;
-    }
-    .counter {
-        bottom: 90px;
-    }
-    .customer-area {
-        height: 190px;
-    }
-    .tabbar {
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-    .tab {
-        font-size: 11px;
-    }
-}
-/* =========================================================
-   REDUCE MOTION
-========================================================= */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,
+                 initial-scale=1.0,
+                 maximum-scale=1.0,
+                 user-scalable=no"
+    >
+
+    <meta name="theme-color" content="#fff7ef">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <title>🍦 Tiệm Kem Ngọt Ngào</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="app">
+
+<div id="app">
+
     <!-- =====================================================
-         HEADER
+         TOP BAR
     ====================================================== -->
     <header class="topbar">
+
         <div class="topbar-inner">
-            <div class="logo">
-                <div class="logo-title">🍓 Tiệm Trái Cây</div>
-                <div class="logo-sub" id="dayLabel">
+
+            <div class="brand">
+                <div class="brand-title">
+                    🍦 Tiệm Kem
+                </div>
+
+                <div class="brand-subtitle" id="dayTimeText">
                     Ngày 1 · 08:00
                 </div>
             </div>
-            <div class="money" id="money">
-                💰 1.000đ
+
+            <div class="money-box">
+                💰 <span id="money">2.000</span>đ
             </div>
+
         </div>
+
     </header>
+
+
     <!-- =====================================================
-         TAB 1 — SHOP
+         MAIN
     ====================================================== -->
-    <main id="screen-shop" class="screen active">
-        <div class="shop-info">
-            <div class="stat">
-                <div class="stat-label">Doanh thu hôm nay</div>
-                <div class="stat-value" id="todayRevenue">0đ</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label">Khách hôm nay</div>
-                <div class="stat-value" id="todayCustomers">0</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label">Đang phục vụ</div>
-                <div class="stat-value" id="customerStatus">Không có</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label">Ngày</div>
-                <div class="stat-value" id="dayNumber">1</div>
-            </div>
-        </div>
-        <!-- TIỆM -->
-        <section class="shop">
-            <div class="shop-wall"></div>
-            <div class="shop-sign">
-                🍉 TIỆM TRÁI CÂY 🍊
-            </div>
-            <div class="window"></div>
-            <div class="shelf-fruits" id="shelfFruits"></div>
-            <div class="counter">
-                <div class="counter-top"></div>
-            </div>
-            <div class="door"></div>
-            <!-- khách -->
-            <div class="customer-area" id="customerArea"></div>
-        </section>
-        <!-- CONTROLS -->
-        <section class="card">
-            <div class="section-title">
-                <h3>🏪 Điều khiển cửa hàng</h3>
-                <span class="badge" id="shopClock">
-                    08:00
-                </span>
-            </div>
-            <div class="shop-controls">
-                <div class="open-status" id="openStatus">
-                    🟢 Đang mở cửa
+    <main>
+
+        <!-- =================================================
+             TAB 1 - TIỆM KEM
+        ================================================== -->
+        <section
+            id="tab-shop"
+            class="page active"
+        >
+
+            <div class="shop-stats">
+
+                <div class="stat-card">
+                    <span>💵 Doanh thu</span>
+                    <strong id="todayRevenue">0đ</strong>
                 </div>
-                <button
-                    class="primary-btn"
-                    id="serveBtn"
-                    onclick="serveCustomer()">
-                    🛍️ BÁN HÀNG
-                </button>
-                <button
-                    class="secondary-btn"
-                    id="openCloseBtn"
-                    onclick="toggleShop()">
-                    🔴 Đóng cửa
-                </button>
+
+                <div class="stat-card">
+                    <span>👥 Khách hôm nay</span>
+                    <strong id="todayCustomers">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>⭐ Đánh giá</span>
+                    <strong id="averageRating">5.0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>🕐 Giờ</span>
+                    <strong id="gameClock">08:00</strong>
+                </div>
+
             </div>
-        </section>
-        <!-- THÔNG TIN -->
-        <section class="card">
-            <div class="section-title">
-                <h3>📊 Tình trạng tiệm</h3>
-            </div>
-            <div class="muted">
-                Khách sẽ tự động xuất hiện khi cửa hàng mở.
-                Phục vụ nhanh để nhận thêm tiền tip và đánh giá 5⭐.
-            </div>
-        </section>
-    </main>
-    <!-- =====================================================
-         TAB 2 — INVENTORY
-    ====================================================== -->
-    <main id="screen-inventory" class="screen">
-        <section class="card">
-            <div class="section-title">
-                <div>
-                    <h2>📦 Kho hàng</h2>
-                    <div class="muted">
-                        Nhập trái cây và đưa lên quầy
+
+
+            <!-- =================================================
+                 ICE CREAM SHOP SCENE
+            ================================================== -->
+            <section class="shop-scene">
+
+                <div class="sky"></div>
+
+                <div class="cloud cloud-1">☁️</div>
+                <div class="cloud cloud-2">☁️</div>
+
+                <div class="sun">☀️</div>
+
+                <div class="shop-building">
+
+                    <div class="awning">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
                     </div>
-                </div>
-                <span class="badge" id="warehouseCapacity">
-                    0 / 20
-                </span>
-            </div>
-            <div class="fruit-grid" id="fruitGrid"></div>
-        </section>
-    </main>
-    <!-- =====================================================
-         TAB 3 — UPGRADES
-    ====================================================== -->
-    <main id="screen-upgrades" class="screen">
-        <section class="card">
-            <div class="section-title">
-                <div>
-                    <h2>🛠️ Nâng cấp</h2>
-                    <div class="muted">
-                        Phát triển tiệm ngày càng lớn
+
+                    <div class="shop-sign">
+                        🍦 TIỆM KEM NGỌT NGÀO 🍦
                     </div>
-                </div>
-            </div>
-            <div class="upgrade-list" id="upgradeList"></div>
-        </section>
-    </main>
-    <!-- =====================================================
-         TAB 4 — REVIEWS
-    ====================================================== -->
-    <main id="screen-reviews" class="screen">
-        <section class="social-header">
-            <div class="avatar-store">
-                🍓
-            </div>
-            <h2 style="margin:0;">
-                Tiệm Trái Cây
-            </h2>
-            <div class="stars" id="ratingStars">
-                ★★★★★
-            </div>
-            <div class="rating-big" id="ratingAverage">
-                5.0
-            </div>
-            <div class="rating-count" id="ratingCount">
-                0 đánh giá
-            </div>
-        </section>
-        <div id="reviewList"></div>
-    </main>
-</div>
-<!-- =========================================================
-     BOTTOM NAV
-========================================================= -->
-<nav class="tabbar">
-    <div class="tabs">
-        <button
-            class="tab active"
-            data-tab="shop"
-            onclick="switchTab('shop')">
-            <span class="tab-icon">🏪</span>
-            <span>CỬA HÀNG</span>
-        </button>
-        <button
-            class="tab"
-            data-tab="inventory"
-            onclick="switchTab('inventory')">
-            <span class="tab-icon">📦</span>
-            <span>KHO HÀNG</span>
-        </button>
-        <button
-            class="tab"
-            data-tab="upgrades"
-            onclick="switchTab('upgrades')">
-            <span class="tab-icon">🛠️</span>
-            <span>NÂNG CẤP</span>
-        </button>
-        <button
-            class="tab"
-            data-tab="reviews"
-            onclick="switchTab('reviews')">
-            <span class="tab-icon">📱</span>
-            <span>ĐÁNH GIÁ</span>
-        </button>
-    </div>
-</nav>
-<!-- =========================================================
-     DAY SUMMARY MODAL
-========================================================= -->
-<div class="modal" id="dayModal">
-    <div class="modal-box">
-        <div class="modal-icon">🌙</div>
-        <h2>Kết thúc ngày</h2>
-        <div class="muted">
-            Một ngày làm việc đã hoàn thành!
-        </div>
-        <div class="summary-grid">
-            <div class="summary-item">
-                <span>Doanh thu</span>
-                <strong id="summaryRevenue">0đ</strong>
-            </div>
-            <div class="summary-item">
-                <span>Chi phí</span>
-                <strong id="summaryCost">0đ</strong>
-            </div>
-            <div class="summary-item">
-                <span>Tiền tip</span>
-                <strong id="summaryTips">0đ</strong>
-            </div>
-            <div class="summary-item">
-                <span>Khách phục vụ</span>
-                <strong id="summaryCustomers">0</strong>
-            </div>
-        </div>
-        <div class="summary-item">
-            <span>Lời / Lỗ</span>
-            <strong id="summaryProfit">0đ</strong>
-        </div>
-        <br>
-        <button
-            class="primary-btn"
-            onclick="startNextDay()">
-            ☀️ Bắt đầu ngày mới
-        </button>
-    </div>
-</div>
-<!-- =========================================================
-     TOAST
-========================================================= -->
-<div class="toast-container" id="toastContainer"></div>
-<script>
-"use strict";
-/* =========================================================
-   GAME DATA
-========================================================= */
-const FRUITS = [
-    {
-        id: "apple",
-        name: "Táo",
-        icon: "🍎",
-        wholesale: 40,
-        sell: 75
-    },
-    {
-        id: "orange",
-        name: "Cam",
-        icon: "🍊",
-        wholesale: 35,
-        sell: 70
-    },
-    {
-        id: "watermelon",
-        name: "Dưa hấu",
-        icon: "🍉",
-        wholesale: 80,
-        sell: 150
-    },
-    {
-        id: "banana",
-        name: "Chuối",
-        icon: "🍌",
-        wholesale: 25,
-        sell: 55
-    },
-    {
-        id: "grape",
-        name: "Nho",
-        icon: "🍇",
-        wholesale: 55,
-        sell: 100
-    },
-    {
-        id: "strawberry",
-        name: "Dâu",
-        icon: "🍓",
-        wholesale: 65,
-        sell: 120
-    },
-    {
-        id: "peach",
-        name: "Đào",
-        icon: "🍑",
-        wholesale: 50,
-        sell: 95
-    },
-    {
-        id: "pineapple",
-        name: "Dứa",
-        icon: "🍍",
-        wholesale: 70,
-        sell: 130
-    }
-];
-/* =========================================================
-   GAME STATE
-========================================================= */
-const game = {
-    money: 1000,
-    day: 1,
-    hour: 8,
-    minute: 0,
-    isOpen: true,
-    customer: null,
-    customerId: 0,
-    revenueToday: 0,
-    costsToday: 0,
-    tipsToday: 0,
-    customersToday: 0,
-    servedToday: 0,
-    reviews: [],
-    fruits: {},
-    upgrades: {
-        counter: 1,
-        cashier: 0,
-        decoration: 0,
-        fridge: 0
-    },
-    lastTick: Date.now(),
-    dayFinished: false
-};
-/* =========================================================
-   INITIAL INVENTORY
-========================================================= */
-FRUITS.forEach(fruit => {
-    game.fruits[fruit.id] = 2;
-});
-/* =========================================================
-   CUSTOMER NAMES
-========================================================= */
-const CUSTOMER_NAMES = [
-    "Bé Na",
-    "Anh Minh",
-    "Chị Lan",
-    "Cô Hạnh",
-    "Chú Ba",
-    "Bé Mít",
-    "Anh Tuấn",
-    "Chị Mai",
-    "Cô Vy",
-    "Bạn Nam"
-];
-const CUSTOMER_EMOJIS = [
-    "😊",
-    "🙂",
-    "😋",
-    "😎",
-    "🥰",
-    "🤗",
-    "😄"
-];
-const ANGRY_MESSAGES = [
-    "Shop làm ăn lề mề quá! 😤",
-    "Đợi héo cả người rồi! 😭",
-    "Ủa shop ngủ quên hả? 😑",
-    "Chờ lâu hơn cả mùa trái cây! 😵",
-    "Tôi đợi muốn mọc rễ luôn rồi! 🌱",
-    "Nhanh lên shop ơi! 😡"
-];
-const HAPPY_MESSAGES = [
-    "Nhanh quá! Cảm ơn shop! 🥰",
-    "Trái cây ngon quá trời! 😋",
-    "Shop phục vụ dễ thương ghê! ❤️",
-    "Lần sau tôi lại ghé! 🌷",
-    "Quá nhanh, quá tuyệt! ⭐"
-];
-/* =========================================================
-   UTILITIES
-========================================================= */
-function money(value) {
-    return Math.round(value).toLocaleString("vi-VN") + "đ";
-}
-function randomItem(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
-function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-}
-function getCapacity() {
-    return 20 +
-        (game.upgrades.counter - 1) * 10 +
-        game.upgrades.fridge * 15;
-}
-function getTotalStock() {
-    return Object.values(game.fruits)
-        .reduce((sum, value) => sum + value, 0);
-}
-function getDecorationBonus() {
-    return game.upgrades.decoration * 0.05;
-}
-function getPatienceBonus() {
-    return game.upgrades.decoration * 10;
-}
-function getCustomerSpeed() {
-    let speed = 1;
-    speed += game.upgrades.decoration * 0.12;
-    return speed;
-}
-/* =========================================================
-   TOAST
-========================================================= */
-function toast(message) {
-    const container =
-        document.getElementById("toastContainer");
-    const el =
-        document.createElement("div");
-    el.className = "toast";
-    el.textContent = message;
-    container.appendChild(el);
-    setTimeout(() => {
-        el.style.opacity = "0";
-        setTimeout(() => {
-            el.remove();
-        }, 200);
-    }, 2200);
-}
-/* =========================================================
-   TABS
-========================================================= */
-function switchTab(tab) {
-    document
-        .querySelectorAll(".screen")
-        .forEach(screen => {
-            screen.classList.remove("active");
-        });
-    document
-        .getElementById("screen-" + tab)
-        .classList.add("active");
-    document
-        .querySelectorAll(".tab")
-        .forEach(button => {
-            button.classList.toggle(
-                "active",
-                button.dataset.tab === tab
-            );
-        });
-    if (tab === "inventory") {
-        renderInventory();
-    }
-    if (tab === "upgrades") {
-        renderUpgrades();
-    }
-    if (tab === "reviews") {
-        renderReviews();
-    }
-}
-/* =========================================================
-   INVENTORY
-========================================================= */
-function renderInventory() {
-    const grid =
-        document.getElementById("fruitGrid");
-    grid.innerHTML = "";
-    const capacity = getCapacity();
-    const total = getTotalStock();
-    document.getElementById(
-        "warehouseCapacity"
-    ).textContent =
-        `${total} / ${capacity}`;
-    FRUITS.forEach(fruit => {
-        const stock =
-            game.fruits[fruit.id] || 0;
-        const card =
-            document.createElement("div");
-        card.className = "fruit-card";
-        card.innerHTML = `
-            <div class="fruit-icon">
-                ${fruit.icon}
-            </div>
-            <div class="fruit-name">
-                ${fruit.name}
-            </div>
-            <div class="fruit-price">
-                Nhập ${money(fruit.wholesale)}
-                · Bán ${money(
-                    Math.round(
-                        fruit.sell *
-                        (1 + getDecorationBonus())
-                    )
-                )}
-            </div>
-            <div class="stock">
-                Kho: <strong>${stock}</strong>
-            </div>
-            <button
-                class="secondary-btn"
-                onclick="buyFruit('${fruit.id}')">
-                📦 Nhập 1 quả
-            </button>
-        `;
-        grid.appendChild(card);
-    });
-}
-/* =========================================================
-   BUY FRUIT
-========================================================= */
-function buyFruit(id) {
-    const fruit =
-        FRUITS.find(item => item.id === id);
-    if (!fruit) return;
-    if (getTotalStock() >= getCapacity()) {
-        toast("📦 Kho đã đầy!");
-        return;
-    }
-    if (game.money < fruit.wholesale) {
-        toast("💰 Không đủ tiền nhập hàng!");
-        return;
-    }
-    game.money -= fruit.wholesale;
-    game.costsToday += fruit.wholesale;
-    game.fruits[id]++;
-    updateUI();
-    renderInventory();
-    updateShelf();
-    toast(
-        `${fruit.icon} Đã nhập 1 ${fruit.name}!`
-    );
-}
-/* =========================================================
-   SHELF
-========================================================= */
-function updateShelf() {
-    const shelf =
-        document.getElementById("shelfFruits");
-    const available = FRUITS.filter(
-        fruit => game.fruits[fruit.id] > 0
-    );
-    shelf.innerHTML = "";
-    available.slice(0, 6).forEach(fruit => {
-        const item =
-            document.createElement("div");
-        item.className = "shelf-fruit";
-        item.textContent = fruit.icon;
-        shelf.appendChild(item);
-    });
-}
-/* =========================================================
-   UPGRADES
-========================================================= */
-const UPGRADES = [
-    {
-        id: "counter",
-        icon: "🏪",
-        title: "Nâng cấp quầy hàng",
-        description:
-            "Tăng sức chứa kho và giúp tiệm chứa được nhiều trái cây hơn.",
-        max: 5,
-        baseCost: 500
-    },
-    {
-        id: "fridge",
-        icon: "🧊",
-        title: "Tủ lạnh bảo quản",
-        description:
-            "Tăng sức chứa thêm 15 trái cây mỗi cấp.",
-        max: 4,
-        baseCost: 750
-    },
-    {
-        id: "cashier",
-        icon: "🧑‍💼",
-        title: "Thuê thu ngân",
-        description:
-            "Nhân viên tự động phục vụ khách khi bạn không bấm nút bán.",
-        max: 3,
-        baseCost: 1200
-    },
-    {
-        id: "decoration",
-        icon: "🌷",
-        title: "Trang trí tiệm",
-        description:
-            "Khách kiên nhẫn hơn và giá bán tăng 5% mỗi cấp.",
-        max: 5,
-        baseCost: 900
-    }
-];
-function upgradeCost(upgrade) {
-    const level =
-        game.upgrades[upgrade.id];
-    return Math.round(
-        upgrade.baseCost *
-        Math.pow(1.65, level)
-    );
-}
-function renderUpgrades() {
-    const list =
-        document.getElementById("upgradeList");
-    list.innerHTML = "";
-    UPGRADES.forEach(upgrade => {
-        const level =
-            game.upgrades[upgrade.id];
-        const maxed =
-            level >= upgrade.max;
-        const cost =
-            upgradeCost(upgrade);
-        const card =
-            document.createElement("div");
-        card.className = "upgrade-card";
-        card.innerHTML = `
-            <div class="upgrade-icon">
-                ${upgrade.icon}
-            </div>
-            <div>
-                <div class="upgrade-title">
-                    ${upgrade.title}
-                </div>
-                <div class="upgrade-description">
-                    ${upgrade.description}
-                </div>
-                <div class="upgrade-bottom">
-                    <div class="level">
-                        Cấp ${level} / ${upgrade.max}
+
+                    <div class="shop-window">
+
+                        <div class="window-frame"></div>
+
+                        <div class="icecream-display">
+                            <span>🍦</span>
+                            <span>🍨</span>
+                            <span>🍧</span>
+                            <span>🍦</span>
+                        </div>
+
                     </div>
-                    <button
-                        class="upgrade-btn"
-                        ${maxed ? "disabled" : ""}
-                        onclick="buyUpgrade('${upgrade.id}')">
-                        ${
-                            maxed
-                            ? "ĐÃ TỐI ĐA"
-                            : "💰 " + money(cost)
-                        }
-                    </button>
+
+                    <div class="shop-door">
+                        <div class="door-handle"></div>
+                    </div>
+
+                    <div class="counter">
+
+                        <div class="counter-top">
+
+                            <div class="icecream-tubs">
+                                <div class="tub chocolate">🍫</div>
+                                <div class="tub strawberry">🍓</div>
+                                <div class="tub vanilla">🍦</div>
+                                <div class="tub matcha">🍵</div>
+                                <div class="tub rainbow">🌈</div>
+                            </div>
+
+                        </div>
+
+                        <div class="counter-front">
+                            🍦 NGỌT NGÀO
+                        </div>
+
+                    </div>
+
                 </div>
-            </div>
-        `;
-        list.appendChild(card);
-    });
-}
-/* =========================================================
-   BUY UPGRADE
-========================================================= */
-function buyUpgrade(id) {
-    const upgrade =
-        UPGRADES.find(item => item.id === id);
-    if (!upgrade) return;
-    const level =
-        game.upgrades[id];
-    if (level >= upgrade.max) {
-        toast("⭐ Đã đạt cấp tối đa!");
-        return;
-    }
-    const cost =
-        upgradeCost(upgrade);
-    if (game.money < cost) {
-        toast("💰 Chưa đủ tiền!");
-        return;
-    }
-    game.money -= cost;
-    game.costsToday += cost;
-    game.upgrades[id]++;
-    toast(
-        `${upgrade.icon} Đã nâng cấp ${upgrade.title}!`
-    );
-    updateUI();
-    renderUpgrades();
-    renderInventory();
-}
-/* =========================================================
-   CUSTOMER GENERATION
-========================================================= */
-function spawnCustomer() {
-    if (!game.isOpen) return;
-    if (game.customer) return;
-    if (game.dayFinished) return;
-    if (game.hour >= 20) return;
-    const availableFruits =
-        FRUITS.filter(
-            fruit => game.fruits[fruit.id] > 0
-        );
-    if (!availableFruits.length) {
-        toast(
-            "📦 Hết trái cây! Hãy vào KHO HÀNG nhập thêm."
-        );
-        return;
-    }
-    const fruit =
-        randomItem(availableFruits);
-    const quantity =
-        Math.random() < .72 ? 1 : 2;
-    const finalQuantity =
-        Math.min(
-            quantity,
-            game.fruits[fruit.id]
-        );
-    const patience =
-        65 +
-        getPatienceBonus();
-    game.customer = {
-        id: ++game.customerId,
-        name: randomItem(CUSTOMER_NAMES),
-        emoji: randomItem(CUSTOMER_EMOJIS),
-        fruitId: fruit.id,
-        quantity: finalQuantity,
-        patience: patience,
-        maxPatience: patience,
-        served: false
-    };
-    game.customersToday++;
-    renderCustomer();
-    updateUI();
-}
-/* =========================================================
-   RENDER CUSTOMER
-========================================================= */
-function renderCustomer() {
-    const area =
-        document.getElementById("customerArea");
-    area.innerHTML = "";
-    if (!game.customer) {
-        document.getElementById(
-            "customerStatus"
-        ).textContent = "Không có";
-        return;
-    }
-    const customer =
-        game.customer;
-    const fruit =
-        FRUITS.find(
-            item => item.id === customer.fruitId
-        );
-    const customerEl =
-        document.createElement("div");
-    customerEl.className = "customer";
-    customerEl.innerHTML = `
-        <div class="bubble">
-            ${customer.emoji}
-            Cho mình
-            <strong>${customer.quantity}
-            ${fruit.name}</strong>
-            ${fruit.icon} nhé!
-        </div>
-        <div class="patience-wrap">
-            <div class="patience-label">
-                ❤️ Kiên nhẫn
-            </div>
-            <div class="patience">
+
+
+                <!-- CUSTOMER AREA -->
                 <div
-                    class="patience-bar"
-                    id="patienceBar">
+                    id="customerArea"
+                    class="customer-area"
+                ></div>
+
+
+                <!-- GROUND -->
+                <div class="street">
+
+                    <div class="street-line"></div>
+
                 </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 CUSTOMER CONTROL
+            ================================================== -->
+            <section class="control-card">
+
+                <div class="control-header">
+
+                    <div>
+                        <h2>🏪 Điều khiển tiệm</h2>
+
+                        <p id="shopStatusText">
+                            Tiệm đang đóng cửa
+                        </p>
+                    </div>
+
+                    <div
+                        id="clockBadge"
+                        class="clock-badge"
+                    >
+                        08:00
+                    </div>
+
+                </div>
+
+
+                <div class="control-buttons">
+
+                    <button
+                        id="openShopButton"
+                        class="main-button"
+                        onclick="openShop()"
+                    >
+                        🚪 MỞ CỬA TIỆM
+                    </button>
+
+                    <button
+                        id="serveButton"
+                        class="serve-button"
+                        onclick="serveCustomer()"
+                        disabled
+                    >
+                        🍨 BÁN KEM CHO KHÁCH
+                    </button>
+
+                    <button
+                        id="closeShopButton"
+                        class="secondary-button"
+                        onclick="closeShop()"
+                        disabled
+                    >
+                        🔒 ĐÓNG CỬA
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- CURRENT CUSTOMER -->
+            <section class="current-order-card">
+
+                <div class="section-title">
+                    <h2>📝 Đơn hiện tại</h2>
+                </div>
+
+                <div id="currentOrder">
+                    Chưa có khách đang chờ.
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB 2 - KHO HÀNG
+        ================================================== -->
+        <section
+            id="tab-warehouse"
+            class="page"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>📦 Kho Kem</h1>
+
+                    <p>
+                        Nhập kem sỉ rồi đưa lên quầy.
+                    </p>
+                </div>
+
+                <div
+                    id="warehouseCapacity"
+                    class="capacity-badge"
+                >
+                    0 / 30
+                </div>
+
             </div>
-        </div>
-        <div class="customer-face">
-            ${customer.emoji}
-        </div>
-        <div class="customer-body"></div>
-        <div class="customer-name">
-            ${customer.name}
-        </div>
-    `;
-    area.appendChild(customerEl);
-    updatePatience();
-    document.getElementById(
-        "customerStatus"
-    ).textContent = "Đang chờ";
-}
-/* =========================================================
-   PATIENCE
-========================================================= */
-function updatePatience() {
-    if (!game.customer) return;
-    const customer =
-        game.customer;
-    const percent =
-        clamp(
-            customer.patience /
-            customer.maxPatience *
-            100,
-            0,
-            100
-        );
-    const bar =
-        document.getElementById("patienceBar");
-    if (!bar) return;
-    bar.style.width = percent + "%";
-    if (percent <= 25) {
-        bar.style.background = "#d98276";
-    } else if (percent <= 50) {
-        bar.style.background = "#e4b45f";
-    } else {
-        bar.style.background = "#8fc99a";
-    }
-}
-/* =========================================================
-   SERVE CUSTOMER
-========================================================= */
-function serveCustomer() {
-    if (!game.isOpen) {
-        toast("🔴 Tiệm đang đóng cửa!");
-        return;
-    }
-    if (!game.customer) {
-        toast("👀 Chưa có khách nào đang chờ.");
-        return;
-    }
-    const customer =
-        game.customer;
-    const fruit =
-        FRUITS.find(
-            item => item.id === customer.fruitId
-        );
-    if (
-        game.fruits[customer.fruitId] <
-        customer.quantity
-    ) {
-        toast(
-            `📦 Không đủ ${fruit.name}!`
-        );
-        return;
-    }
-    /* trừ hàng */
-    game.fruits[customer.fruitId] -=
-        customer.quantity;
-    const unitPrice =
-        fruit.sell *
-        (1 + getDecorationBonus());
-    const revenue =
-        Math.round(
-            unitPrice *
-            customer.quantity
-        );
-    const patiencePercent =
-        customer.patience /
-        customer.maxPatience;
-    const tip =
-        patiencePercent >= .75
-        ? Math.round(revenue * .15)
-        : patiencePercent >= .45
-            ? Math.round(revenue * .08)
-            : 0;
-    const total =
-        revenue + tip;
-    game.money += total;
-    game.revenueToday += revenue;
-    game.tipsToday += tip;
-    game.servedToday++;
-    addReview(
-        5,
-        randomItem(HAPPY_MESSAGES),
-        customer.emoji,
-        customer.name
-    );
-    game.customer = null;
-    renderCustomer();
-    updateShelf();
-    updateUI();
-    renderReviews();
-    toast(
-        `🛍️ Bán ${fruit.icon} +${money(revenue)}`
-        + (tip > 0
-            ? ` · Tip +${money(tip)}`
-            : "")
-    );
-}
-/* =========================================================
-   CUSTOMER ANGRY
-========================================================= */
-function customerLeavesAngry() {
-    if (!game.customer) return;
-    const customer =
-        game.customer;
-    const message =
-        randomItem(ANGRY_MESSAGES);
-    addReview(
-        1,
-        message,
-        "😡",
-        customer.name
-    );
-    game.customer = null;
-    renderCustomer();
-    renderReviews();
-    toast(
-        `😡 Khách bỏ về: ${message}`
-    );
-}
-/* =========================================================
-   REVIEWS
-========================================================= */
-function addReview(
-    stars,
-    text,
-    avatar,
-    name
-) {
-    game.reviews.unshift({
-        stars,
-        text,
-        avatar,
-        name,
-        time:
-            `Ngày ${game.day}`
-    });
-    if (game.reviews.length > 50) {
-        game.reviews.pop();
-    }
-}
-function getAverageRating() {
-    if (!game.reviews.length) {
-        return 5;
-    }
-    const total =
-        game.reviews.reduce(
-            (sum, review) =>
-                sum + review.stars,
-            0
-        );
-    return total / game.reviews.length;
-}
-function renderReviews() {
-    const average =
-        getAverageRating();
-    document.getElementById(
-        "ratingAverage"
-    ).textContent =
-        average.toFixed(1);
-    document.getElementById(
-        "ratingCount"
-    ).textContent =
-        `${game.reviews.length} đánh giá`;
-    let starCount =
-        Math.round(average);
-    document.getElementById(
-        "ratingStars"
-    ).textContent =
-        "★".repeat(starCount) +
-        "☆".repeat(5 - starCount);
-    const list =
-        document.getElementById(
-            "reviewList"
-        );
-    list.innerHTML = "";
-    if (!game.reviews.length) {
-        list.innerHTML = `
-            <div class="card"
-                 style="text-align:center;">
-                <div style="font-size:36px;">
-                    💬
+
+
+            <div
+                id="icecreamGrid"
+                class="icecream-grid"
+            ></div>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB 3 - NÂNG CẤP
+        ================================================== -->
+        <section
+            id="tab-upgrades"
+            class="page"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>🛠️ Nâng cấp</h1>
+
+                    <p>
+                        Biến tiệm nhỏ thành tiệm kem nổi tiếng.
+                    </p>
                 </div>
-                <strong>
-                    Chưa có đánh giá
+
+            </div>
+
+
+            <div
+                id="upgradeList"
+                class="upgrade-list"
+            ></div>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB 4 - ĐÁNH GIÁ
+        ================================================== -->
+        <section
+            id="tab-reviews"
+            class="page"
+        >
+
+            <div class="social-profile">
+
+                <div class="store-avatar">
+                    🍦
+                </div>
+
+                <h1>
+                    Tiệm Kem Ngọt Ngào
+                </h1>
+
+                <div
+                    id="ratingStars"
+                    class="rating-stars"
+                >
+                    ★★★★★
+                </div>
+
+                <div
+                    id="ratingNumber"
+                    class="rating-number"
+                >
+                    5.0
+                </div>
+
+                <p id="reviewCount">
+                    0 đánh giá
+                </p>
+
+            </div>
+
+
+            <div
+                id="reviewList"
+                class="review-list"
+            ></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         BOTTOM NAV
+    ====================================================== -->
+    <nav class="bottom-nav">
+
+        <button
+            class="nav-button active"
+            data-tab="shop"
+            onclick="switchTab('shop')"
+        >
+            <span>🍦</span>
+            <small>TIỆM KEM</small>
+        </button>
+
+        <button
+            class="nav-button"
+            data-tab="warehouse"
+            onclick="switchTab('warehouse')"
+        >
+            <span>📦</span>
+            <small>KHO HÀNG</small>
+        </button>
+
+        <button
+            class="nav-button"
+            data-tab="upgrades"
+            onclick="switchTab('upgrades')"
+        >
+            <span>🛠️</span>
+            <small>NÂNG CẤP</small>
+        </button>
+
+        <button
+            class="nav-button"
+            data-tab="reviews"
+            onclick="switchTab('reviews')"
+        >
+            <span>📱</span>
+            <small>ĐÁNH GIÁ</small>
+        </button>
+
+    </nav>
+
+
+    <!-- =====================================================
+         INTRO MODAL
+    ====================================================== -->
+    <div
+        id="introModal"
+        class="modal show"
+    >
+
+        <div class="modal-card intro-card">
+
+            <div class="intro-icecream">
+                🍦
+            </div>
+
+            <h1>
+                Tiệm Kem<br>
+                <span>Ngọt Ngào</span>
+            </h1>
+
+            <p>
+                🍦 Chào mừng bạn đến với
+                <strong>Tiệm Kem Ngọt Ngào!</strong>
+                Hãy nhập nhiều loại kem thơm ngon,
+                phục vụ các vị khách vui tính và
+                nâng cấp tiệm kem số 1 phố nhé!
+            </p>
+
+            <button
+                class="main-button"
+                onclick="startGame()"
+            >
+                🎀 BẮT ĐẦU
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         DAY TRANSITION
+    ====================================================== -->
+    <div
+        id="dayTransition"
+        class="day-transition"
+    >
+
+        <div class="curtain curtain-left"></div>
+        <div class="curtain curtain-right"></div>
+
+        <div class="transition-text">
+            <div>☀️</div>
+            <strong>NGÀY MỚI BẮT ĐẦU!</strong>
+            <small>
+                Tiệm kem mở cửa đón khách
+            </small>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         DAY SUMMARY
+    ====================================================== -->
+    <div
+        id="summaryModal"
+        class="modal"
+    >
+
+        <div class="modal-card">
+
+            <div class="summary-icon">
+                🌙
+            </div>
+
+            <h1>
+                Tổng kết ngày
+            </h1>
+
+            <p>
+                Một ngày bán kem đã kết thúc!
+            </p>
+
+            <div class="summary-grid">
+
+                <div>
+                    <span>Doanh thu</span>
+                    <strong id="summaryRevenue">
+                        0đ
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Chi phí</span>
+                    <strong id="summaryCost">
+                        0đ
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Tiền tip</span>
+                    <strong id="summaryTips">
+                        0đ
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Khách phục vụ</span>
+                    <strong id="summaryCustomers">
+                        0
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="profit-box">
+
+                <span>LỜI / LỖ</span>
+
+                <strong id="summaryProfit">
+                    0đ
                 </strong>
-                <div class="muted"
-                     style="margin-top:5px;">
-                    Phục vụ khách để nhận đánh giá đầu tiên.
-                </div>
+
             </div>
-        `;
-        return;
-    }
-    game.reviews.forEach(review => {
-        const el =
-            document.createElement("div");
-        el.className = "review";
-        el.innerHTML = `
-            <div class="review-head">
-                <div class="review-avatar">
-                    ${review.avatar}
-                </div>
-                <div class="review-user">
-                    <div class="review-name">
-                        ${review.name}
-                    </div>
-                    <div class="review-time">
-                        ${review.time}
-                    </div>
-                </div>
-                <div class="review-stars">
-                    ${
-                        "★".repeat(review.stars)
-                    }${
-                        "☆".repeat(
-                            5 - review.stars
-                        )
-                    }
-                </div>
-            </div>
-            <div class="review-text">
-                ${review.text}
-            </div>
-        `;
-        list.appendChild(el);
-    });
-}
-/* =========================================================
-   SHOP OPEN / CLOSE
-========================================================= */
-function toggleShop() {
-    if (game.dayFinished) return;
-    game.isOpen =
-        !game.isOpen;
-    if (!game.isOpen) {
-        game.customer = null;
-        renderCustomer();
-        toast("🔴 Đã đóng cửa tiệm.");
-    } else {
-        toast("🟢 Đã mở cửa tiệm!");
-    }
-    updateUI();
-}
-/* =========================================================
-   DAY / NIGHT
-========================================================= */
-function advanceGameTime() {
-    if (game.dayFinished) return;
-    /*
-       1 giây thật = 1 phút trong game.
-       Ngày làm việc 08:00 → 20:00.
-    */
-    game.minute++;
-    if (game.minute >= 60) {
-        game.minute = 0;
-        game.hour++;
-    }
-    if (
-        game.hour >= 20 &&
-        !game.dayFinished
-    ) {
-        finishDay();
-    }
-}
-function finishDay() {
-    if (game.dayFinished) return;
-    game.dayFinished = true;
-    game.isOpen = false;
-    game.customer = null;
-    renderCustomer();
-    const fixedCost =
-        80 +
-        game.upgrades.cashier * 45;
-    game.costsToday += fixedCost;
-    const profit =
-        game.revenueToday +
-        game.tipsToday -
-        game.costsToday;
-    document.getElementById(
-        "summaryRevenue"
-    ).textContent =
-        money(game.revenueToday);
-    document.getElementById(
-        "summaryCost"
-    ).textContent =
-        money(game.costsToday);
-    document.getElementById(
-        "summaryTips"
-    ).textContent =
-        money(game.tipsToday);
-    document.getElementById(
-        "summaryCustomers"
-    ).textContent =
-        game.servedToday;
-    const profitEl =
-        document.getElementById(
-            "summaryProfit"
-        );
-    profitEl.textContent =
-        money(profit);
-    profitEl.className =
-        profit >= 0
-        ? "profit-positive"
-        : "profit-negative";
-    document
-        .getElementById("dayModal")
-        .classList.add("show");
-    updateUI();
-}
-/* =========================================================
-   START NEXT DAY
-========================================================= */
-function startNextDay() {
-    game.day++;
-    game.hour = 8;
-    game.minute = 0;
-    game.isOpen = true;
-    game.dayFinished = false;
-    game.customer = null;
-    game.revenueToday = 0;
-    game.costsToday = 0;
-    game.tipsToday = 0;
-    game.customersToday = 0;
-    game.servedToday = 0;
-    document
-        .getElementById("dayModal")
-        .classList.remove("show");
-    updateUI();
-    updateShelf();
-    toast(
-        `☀️ Ngày ${game.day} bắt đầu!`
-    );
-}
-/* =========================================================
-   AUTO CASHIER
-========================================================= */
-function autoCashier() {
-    if (!game.isOpen) return;
-    if (!game.customer) return;
-    if (game.upgrades.cashier <= 0) return;
-    /*
-       Cấp càng cao thì nhân viên phục vụ càng nhanh.
-    */
-    const chance =
-        0.015 *
-        game.upgrades.cashier;
-    if (Math.random() < chance) {
-        serveCustomer();
-    }
-}
-/* =========================================================
-   CUSTOMER SPAWN TIMER
-========================================================= */
-let customerSpawnTimer = 0;
-function customerSpawner() {
-    if (!game.isOpen) return;
-    if (game.customer) return;
-    if (game.hour >= 20) return;
-    /*
-       Trang trí càng cao,
-       khách đến càng nhanh.
-    */
-    const interval =
-        Math.max(
-            3,
-            7 -
-            game.upgrades.decoration
-        );
-    customerSpawnTimer++;
-    if (
-        customerSpawnTimer >=
-        interval
-    ) {
-        customerSpawnTimer = 0;
-        if (Math.random() < .8) {
-            spawnCustomer();
-        }
-    }
-}
-/* =========================================================
-   GAME TICK
-========================================================= */
-let lastSecond = Date.now();
-function gameLoop() {
-    const now = Date.now();
-    if (now - lastSecond >= 1000) {
-        lastSecond = now;
-        if (!game.dayFinished) {
-            advanceGameTime();
-            customerSpawner();
-            autoCashier();
-            if (game.customer) {
-                /*
-                   Kiên nhẫn giảm mỗi giây.
-                   Trang trí làm khách kiên nhẫn hơn.
-                */
-                const decrease =
-                    game.upgrades.decoration >= 3
-                    ? 0.65
-                    : 1;
-                game.customer.patience -=
-                    decrease;
-                updatePatience();
-                if (
-                    game.customer &&
-                    game.customer.patience <= 0
-                ) {
-                    customerLeavesAngry();
-                }
-            }
-            updateUI();
-        }
-    }
-    requestAnimationFrame(gameLoop);
-}
-/* =========================================================
-   UI UPDATE
-========================================================= */
-function updateUI() {
-    document.getElementById(
-        "money"
-    ).textContent =
-        "💰 " + money(game.money);
-    document.getElementById(
-        "todayRevenue"
-    ).textContent =
-        money(
-            game.revenueToday +
-            game.tipsToday
-        );
-    document.getElementById(
-        "todayCustomers"
-    ).textContent =
-        game.customersToday;
-    document.getElementById(
-        "dayNumber"
-    ).textContent =
-        game.day;
-    const hh =
-        String(game.hour)
-            .padStart(2, "0");
-    const mm =
-        String(game.minute)
-            .padStart(2, "0");
-    document.getElementById(
-        "shopClock"
-    ).textContent =
-        `${hh}:${mm}`;
-    document.getElementById(
-        "dayLabel"
-    ).textContent =
-        `Ngày ${game.day} · ${hh}:${mm}`;
-    const status =
-        document.getElementById(
-            "openStatus"
-        );
-    const toggle =
-        document.getElementById(
-            "openCloseBtn"
-        );
-    if (game.isOpen) {
-        status.textContent =
-            "🟢 Đang mở cửa";
-        status.classList.remove("closed");
-        toggle.textContent =
-            "🔴 Đóng cửa";
-    } else {
-        status.textContent =
-            "🔴 Đang đóng cửa";
-        status.classList.add("closed");
-        toggle.textContent =
-            "🟢 Mở cửa";
-    }
-    const serve =
-        document.getElementById(
-            "serveBtn"
-        );
-    serve.disabled =
-        !game.customer ||
-        !game.isOpen;
-}
-/* =========================================================
-   INITIALIZATION
-========================================================= */
-function initGame() {
-    updateShelf();
-    renderInventory();
-    renderUpgrades();
-    renderReviews();
-    updateUI();
-    /*
-       Khách đầu tiên xuất hiện nhanh
-       để người chơi hiểu gameplay.
-    */
-    setTimeout(() => {
-        if (
-            game.isOpen &&
-            !game.customer
-        ) {
-            spawnCustomer();
-        }
-    }, 1000);
-    requestAnimationFrame(gameLoop);
-}
-/* =========================================================
-   START
-========================================================= */
-initGame();
-</script>
+
+            <button
+                class="main-button"
+                onclick="startNextDay()"
+            >
+                ☀️ BẮT ĐẦU NGÀY MỚI
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+    <div
+        id="toastContainer"
+        class="toast-container"
+    ></div>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
