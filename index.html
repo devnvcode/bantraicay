@@ -2,48 +2,59 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
+
 <meta
   name="viewport"
   content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
 >
+
 <meta name="theme-color" content="#ffe5eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
+
 <title>Tiệm Kem Ngọt Ngào</title>
 
 <style>
 /* =========================================================
    TIỆM KEM NGỌT NGÀO
-   ALL-IN-ONE INDEX.HTML
+   SINGLE FILE - HTML + CSS + JAVASCRIPT
    Cozy Kawaii / Mobile First
 ========================================================= */
 
 :root{
-  --pink:#f6aebd;
+  --pink:#f5aebd;
+  --pink-dark:#df8298;
   --pink-soft:#ffe5eb;
-  --pink-light:#fff1f4;
-  --cream:#fff8e9;
-  --cream-2:#fffdf7;
-  --yellow:#f7d66b;
-  --yellow-soft:#fff1b9;
-  --mint:#a9d9c8;
-  --mint-soft:#e5f5ef;
-  --blue:#a9cce6;
-  --lav:#c9b9e9;
-  --brown:#855d43;
-  --brown-dark:#684532;
-  --wood:#b77d52;
-  --wood-light:#dca77a;
-  --ink:#624b42;
-  --muted:#9b8580;
-  --white:#fff;
-  --red:#e98282;
-  --green:#76b99e;
-  --shadow:0 7px 18px rgba(111,77,63,.10);
-  --shadow-small:0 3px 10px rgba(111,77,63,.09);
+  --cream:#fff8ec;
+  --milk:#fffdf8;
+  --yellow:#f6d77a;
+  --yellow-soft:#fff1bd;
+  --mint:#9ed8c2;
+  --mint-soft:#dff4e9;
+  --brown:#9b684b;
+  --brown-dark:#714633;
+  --wood:#c58a60;
+  --wood-light:#dfa477;
+  --red:#e87982;
+  --text:#5f4a43;
+  --muted:#9b8880;
+  --line:#eadbd2;
+  --white:#ffffff;
+  --green:#75bd9b;
+  --danger:#d86e73;
+
   --radius-xl:28px;
-  --radius-lg:20px;
-  --radius-md:15px;
-  --radius-sm:11px;
+  --radius-lg:22px;
+  --radius-md:17px;
+  --radius-sm:12px;
+
+  --soft-shadow:
+    0 7px 18px rgba(111,78,63,.10),
+    0 2px 5px rgba(111,78,63,.06);
+
+  --card-shadow:
+    0 5px 14px rgba(111,78,63,.09);
+
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 
 *{
@@ -56,404 +67,413 @@ body{
   width:100%;
   height:100%;
   margin:0;
-  overflow:hidden;
 }
 
 body{
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(255,255,255,.85) 0 3px,transparent 4px),
+    #f8e6df;
+  color:var(--text);
   font-family:
-    ui-rounded,
-    "SF Pro Rounded",
-    "Arial Rounded MT Bold",
-    system-ui,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
     sans-serif;
-  color:var(--ink);
-  background:
-    linear-gradient(180deg,#fff0f3 0%,#fff9ee 48%,#edf7f2 100%);
-  overscroll-behavior:none;
 }
 
 button{
   font:inherit;
   border:0;
   cursor:pointer;
-  color:inherit;
   touch-action:manipulation;
 }
 
 button:active{
-  transform:scale(.97);
+  transform:translateY(1px) scale(.985);
 }
 
 button:disabled{
-  opacity:.48;
   cursor:not-allowed;
-  transform:none!important;
+  opacity:.5;
 }
 
-#game{
-  width:min(100%,520px);
-  height:100dvh;
-  min-height:100vh;
-  margin:auto;
+#app{
   position:relative;
+  width:100%;
+  height:100dvh;
+  max-width:540px;
+  margin:0 auto;
   overflow:hidden;
   background:
-    radial-gradient(circle at 15% 12%,rgba(255,255,255,.8) 0 35px,transparent 36px),
-    linear-gradient(180deg,#fff5f5,#fffaf0 45%,#f1f8f3);
-  isolation:isolate;
+    linear-gradient(
+      180deg,
+      #fff8f3 0%,
+      #fffdf9 52%,
+      #fdf0e9 100%
+    );
 }
 
 /* =========================================================
-   DECORATIVE CLOUDS
+   DECORATION
 ========================================================= */
 
 .cloud{
   position:absolute;
   z-index:1;
+  width:75px;
+  height:25px;
+  border-radius:999px;
+  background:rgba(255,255,255,.75);
   pointer-events:none;
-  opacity:.72;
+  opacity:.65;
 }
 
-.cloud::before,
-.cloud::after{
+.cloud:before,
+.cloud:after{
   content:"";
   position:absolute;
+  bottom:3px;
   border-radius:50%;
-  background:rgba(255,255,255,.75);
+  background:inherit;
 }
 
-.cloud-a{
-  width:75px;
-  height:20px;
-  left:-20px;
-  top:125px;
-  animation:cloudFloat 16s linear infinite;
+.cloud:before{
+  width:32px;
+  height:32px;
+  left:12px;
 }
 
-.cloud-a::before{
-  width:34px;
-  height:34px;
-  left:14px;
-  bottom:0;
+.cloud:after{
+  width:42px;
+  height:42px;
+  left:31px;
 }
 
-.cloud-a::after{
-  width:25px;
-  height:25px;
-  left:43px;
-  bottom:0;
+.cloud.one{
+  top:112px;
+  left:-18px;
+  animation:cloudFloat 9s ease-in-out infinite;
 }
 
-.cloud-b{
-  width:70px;
-  height:19px;
-  right:-15px;
-  top:225px;
-  animation:cloudFloatReverse 19s linear infinite;
+.cloud.two{
+  top:198px;
+  right:-20px;
+  transform:scale(.72);
+  animation:cloudFloat 11s ease-in-out infinite reverse;
 }
 
-.cloud-b::before{
-  width:30px;
-  height:30px;
-  left:14px;
-  bottom:0;
-}
-
-.cloud-b::after{
-  width:23px;
-  height:23px;
-  left:40px;
-  bottom:0;
+.cloud.three{
+  bottom:150px;
+  left:-25px;
+  transform:scale(.55);
+  animation:cloudFloat 13s ease-in-out infinite;
 }
 
 @keyframes cloudFloat{
-  0%{transform:translateX(0)}
-  50%{transform:translateX(18px)}
-  100%{transform:translateX(0)}
+  0%,100%{transform:translateX(0) scale(.72)}
+  50%{transform:translateX(18px) scale(.72)}
 }
 
-@keyframes cloudFloatReverse{
-  0%{transform:translateX(0)}
-  50%{transform:translateX(-18px)}
-  100%{transform:translateX(0)}
+.sticker{
+  position:absolute;
+  z-index:2;
+  pointer-events:none;
+  user-select:none;
+}
+
+.sticker.star{
+  font-size:21px;
+  transform:rotate(-12deg);
+  opacity:.72;
+}
+
+.sticker.flower{
+  font-size:25px;
+  opacity:.7;
 }
 
 /* =========================================================
-   PAGES
+   SCREENS
 ========================================================= */
 
-.page{
+.screen{
   position:absolute;
   inset:0;
+  display:flex;
+  flex-direction:column;
   opacity:0;
   visibility:hidden;
   pointer-events:none;
-  transform:translateY(8px);
+  transform:translateY(12px);
   transition:
-    opacity .25s ease,
-    transform .25s ease,
-    visibility .25s ease;
+    opacity .35s ease,
+    transform .35s ease,
+    visibility .35s ease;
 }
 
-.page.active{
+.screen.active{
   opacity:1;
   visibility:visible;
   pointer-events:auto;
   transform:translateY(0);
 }
 
-/* =========================================================
-   SHOP PAGE
-========================================================= */
-
-.shop-page{
-  display:flex;
-  flex-direction:column;
-}
-
-.shop-scroll{
+.scroll-content{
   flex:1;
   min-height:0;
   overflow-y:auto;
   overflow-x:hidden;
-  padding-bottom:96px;
+  overscroll-behavior:contain;
+  padding-bottom:110px;
   scrollbar-width:none;
 }
 
-.shop-scroll::-webkit-scrollbar{
+.scroll-content::-webkit-scrollbar{
   display:none;
 }
 
 /* =========================================================
-   AWNING
+   AWNING / SHOP HEADER
 ========================================================= */
 
-.awning{
-  height:78px;
+.shop-top{
   position:relative;
-  overflow:hidden;
-  z-index:4;
-  background:
-    repeating-linear-gradient(
-      100deg,
-      #f7aebc 0 34px,
-      #fff9ef 34px 68px
-    );
-  border-bottom:5px solid rgba(118,76,57,.12);
-  box-shadow:0 4px 10px rgba(99,69,56,.10);
+  flex:none;
+  padding-top:env(safe-area-inset-top,0px);
+  background:#fff8f2;
 }
 
-.awning::before{
+.awning{
+  position:relative;
+  height:76px;
+  overflow:hidden;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #f5afbd 0 34px,
+      #fff8eb 34px 68px
+    );
+  border-bottom:5px solid #e4bda8;
+  box-shadow:
+    0 4px 0 rgba(113,70,50,.05);
+}
+
+.awning:before{
+  content:"";
+  position:absolute;
+  left:-4%;
+  right:-4%;
+  bottom:-22px;
+  height:43px;
+  border-radius:0 0 50% 50%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #ef9fb0 0 34px,
+      #fff5e6 34px 68px
+    );
+  box-shadow:
+    inset 0 8px 12px rgba(255,255,255,.36);
+}
+
+.awning:after{
   content:"";
   position:absolute;
   inset:0;
   background:
     linear-gradient(
-      180deg,
-      rgba(255,255,255,.5),
-      transparent 42%,
-      rgba(116,72,55,.08)
+      110deg,
+      transparent 0 23%,
+      rgba(255,255,255,.35) 24%,
+      transparent 29% 52%,
+      rgba(255,255,255,.3) 53%,
+      transparent 58%
     );
   pointer-events:none;
 }
 
-.awning::after{
-  content:"";
+.awning-lights{
   position:absolute;
-  left:-5%;
-  right:-5%;
-  bottom:-17px;
-  height:36px;
-  border-radius:50%;
-  background:
-    repeating-linear-gradient(
-      100deg,
-      #f7aebc 0 34px,
-      #fff9ef 34px 68px
-    );
-  box-shadow:0 -3px 4px rgba(99,69,56,.08);
-}
-
-.awning-folds{
-  position:absolute;
-  inset:0;
-  background:
-    repeating-linear-gradient(
-      100deg,
-      transparent 0 30px,
-      rgba(123,72,57,.08) 31px 34px,
-      transparent 35px 66px
-    );
-  pointer-events:none;
-}
-
-.lights{
-  position:absolute;
-  left:18px;
-  right:18px;
-  bottom:7px;
-  height:24px;
-  z-index:3;
+  top:11px;
+  left:0;
+  right:0;
   display:flex;
   justify-content:space-around;
-  align-items:flex-end;
+  padding:0 28px;
+  z-index:4;
 }
 
-.light{
-  width:10px;
-  height:15px;
-  border-radius:50% 50% 45% 45%;
-  background:#f4cf68;
-  border:2px solid #fff1c3;
-  box-shadow:0 2px 5px rgba(117,80,53,.15);
-  animation:lightBob 2.6s ease-in-out infinite;
-}
-
-.light:nth-child(2){animation-delay:.25s}
-.light:nth-child(3){animation-delay:.5s}
-.light:nth-child(4){animation-delay:.75s}
-.light:nth-child(5){animation-delay:1s}
-.light:nth-child(6){animation-delay:1.25s}
-.light:nth-child(7){animation-delay:1.5s}
-
-@keyframes lightBob{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-3px)}
-}
-
-/* =========================================================
-   WOOD SIGN
-========================================================= */
-
-.shop-sign{
+.lantern{
   position:relative;
-  z-index:7;
-  width:84%;
-  margin:-3px auto 0;
-  min-height:67px;
-  padding:10px 18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  border:4px solid #8d5e43;
-  border-radius:15px 15px 20px 20px;
-  background:
-    linear-gradient(180deg,#dba97c,#bc8057);
-  box-shadow:
-    0 5px 0 #795039,
-    0 9px 15px rgba(94,62,45,.15);
+  width:12px;
+  height:16px;
+  border-radius:7px 7px 5px 5px;
+  background:#f4ca73;
+  border:2px solid rgba(117,77,56,.25);
 }
 
-.shop-sign::before{
+.lantern:before{
   content:"";
   position:absolute;
-  inset:5px;
-  border:1px solid rgba(255,255,255,.25);
-  border-radius:10px;
-  pointer-events:none;
+  top:-9px;
+  left:50%;
+  width:1px;
+  height:9px;
+  background:#8b6657;
+}
+
+.lantern:nth-child(2){
+  background:#f19cae;
+  transform:translateY(8px);
+}
+
+.lantern:nth-child(3){
+  background:#9fd7bf;
+}
+
+.lantern:nth-child(4){
+  background:#f2d47c;
+  transform:translateY(5px);
+}
+
+.lantern:nth-child(5){
+  background:#e99aae;
+}
+
+.sign{
+  position:absolute;
+  z-index:8;
+  top:45px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(82%,350px);
+  min-height:58px;
+  padding:9px 18px 12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:
+    linear-gradient(
+      180deg,
+      #d99b6e,
+      #b97852
+    );
+  border:4px solid #f2c49c;
+  border-radius:17px;
+  box-shadow:
+    0 6px 0 rgba(104,63,44,.10),
+    inset 0 2px 0 rgba(255,255,255,.28);
+  color:#fffaf2;
 }
 
 .sign-title{
-  position:relative;
-  color:#fff8e7;
-  font-size:clamp(22px,6vw,29px);
+  font-size:22px;
+  line-height:1;
   font-weight:900;
   letter-spacing:.3px;
-  text-shadow:0 2px 0 rgba(95,61,42,.22);
+  text-shadow:0 2px 0 rgba(92,54,39,.18);
 }
 
 .sign-sub{
-  position:absolute;
-  right:11px;
-  bottom:-21px;
-  font-size:16px;
-}
-
-/* =========================================================
-   HEADER STATUS
-========================================================= */
-
-.status-bar{
-  position:relative;
-  z-index:8;
-  margin:16px 13px 10px;
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  gap:8px;
-  align-items:center;
-}
-
-.status-pill{
-  min-width:0;
-  padding:9px 10px;
-  border-radius:15px;
-  background:rgba(255,255,255,.84);
-  border:1px solid rgba(124,84,68,.09);
-  box-shadow:var(--shadow-small);
-  text-align:center;
-}
-
-.status-label{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
+  margin-top:5px;
+  font-size:9px;
   font-weight:800;
-  margin-bottom:2px;
-}
-
-.status-value{
-  font-size:14px;
-  font-weight:900;
-  white-space:nowrap;
-}
-
-.status-time{
-  background:var(--yellow-soft);
+  letter-spacing:2px;
+  opacity:.86;
 }
 
 /* =========================================================
-   COUNTER SCENE
+   SHOP INFO BAR
 ========================================================= */
 
-.counter{
+.info-bar{
   position:relative;
-  height:143px;
-  margin:0 12px 13px;
-  border-radius:24px;
+  z-index:9;
+  display:grid;
+  grid-template-columns:1fr 1.15fr 1fr;
+  gap:7px;
+  padding:36px 12px 9px;
+  background:#fffaf5;
+}
+
+.info-pill{
+  min-width:0;
+  padding:8px 7px;
+  text-align:center;
+  background:#fff;
+  border:1px solid #eaded7;
+  border-radius:14px;
+  box-shadow:0 3px 8px rgba(101,70,57,.05);
+}
+
+.info-label{
+  display:block;
+  font-size:8px;
+  color:#ad9a91;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+}
+
+.info-value{
+  display:block;
+  margin-top:2px;
+  font-size:14px;
+  font-weight:950;
+  color:var(--brown-dark);
+}
+
+/* =========================================================
+   COUNTER
+========================================================= */
+
+.counter-scene{
+  position:relative;
+  margin:4px 12px 9px;
+  min-height:142px;
+  border:2px solid #b77951;
+  border-radius:22px;
   overflow:hidden;
   background:
-    linear-gradient(180deg,#d5a174 0%,#c68b5f 67%,#a86e4c 68%,#b97c55 100%);
-  border:3px solid rgba(112,71,50,.16);
-  box-shadow:var(--shadow);
+    linear-gradient(
+      180deg,
+      #e8b180 0 67%,
+      #bf794f 67% 100%
+    );
+  box-shadow:
+    var(--soft-shadow),
+    inset 0 3px 0 rgba(255,255,255,.22);
 }
 
 .counter-back{
   position:absolute;
-  left:0;
-  right:0;
-  top:0;
-  height:57px;
+  inset:0 0 47px;
   background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.15),
+      transparent
+    ),
     repeating-linear-gradient(
       90deg,
-      rgba(255,255,255,.13) 0 22px,
-      rgba(119,75,50,.06) 22px 44px
+      rgba(122,71,45,.05) 0 2px,
+      transparent 2px 31px
     );
 }
 
-.counter-rim{
+.counter-top{
   position:absolute;
   left:0;
   right:0;
-  bottom:27px;
-  height:17px;
-  background:#dca77a;
-  border-top:2px solid rgba(255,255,255,.28);
-  border-bottom:2px solid rgba(105,67,48,.16);
+  bottom:38px;
+  height:14px;
+  background:#9e6041;
+  border-top:2px solid rgba(255,255,255,.25);
 }
 
 .counter-front{
@@ -461,488 +481,424 @@ button:disabled{
   left:0;
   right:0;
   bottom:0;
-  height:29px;
-  background:#9d6849;
+  height:39px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.08) 0 3px,
+      transparent 3px 30px
+    ),
+    #b86f49;
 }
+
+.counter-label{
+  position:absolute;
+  left:14px;
+  bottom:9px;
+  color:#fff0dd;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.8px;
+}
+
+/* =========================================================
+   ICE CREAM JARS
+========================================================= */
 
 .jar-row{
   position:absolute;
   left:10px;
-  right:122px;
-  bottom:38px;
-  height:85px;
+  right:150px;
+  top:20px;
+  height:76px;
   display:flex;
   align-items:flex-end;
-  gap:7px;
+  justify-content:space-around;
+  gap:5px;
 }
 
 .jar{
-  width:42px;
-  height:66px;
-  flex:1;
-  min-width:0;
   position:relative;
-  border-radius:9px 9px 12px 12px;
-  background:rgba(240,247,242,.76);
-  border:2px solid rgba(100,82,74,.25);
+  width:39px;
+  height:67px;
+  flex:none;
+  border-radius:10px 10px 12px 12px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.25),
+      transparent 28% 72%,
+      rgba(255,255,255,.18)
+    ),
+    #c9cfd0;
+  border:2px solid #9ea6a7;
   box-shadow:
-    inset 0 5px 8px rgba(255,255,255,.6),
-    0 3px 5px rgba(83,55,42,.12);
+    inset 0 2px 2px rgba(255,255,255,.8),
+    0 3px 5px rgba(91,65,54,.14);
 }
 
-.jar::before{
-  content:"";
+.jar-lid{
   position:absolute;
-  left:4px;
-  right:4px;
-  top:-8px;
-  height:11px;
+  left:-3px;
+  right:-3px;
+  top:-7px;
+  height:13px;
   border-radius:50%;
-  background:#e8ecea;
-  border:2px solid rgba(93,82,77,.25);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.94),
+      rgba(196,203,203,.8)
+    );
+  border:2px solid #9ea5a6;
 }
 
-.jar-fill{
+.jar-ice{
   position:absolute;
   left:4px;
   right:4px;
-  bottom:4px;
-  height:68%;
+  bottom:5px;
+  height:45px;
   border-radius:5px 5px 9px 9px;
 }
 
-.jar-label{
+.jar-tag{
   position:absolute;
+  bottom:-18px;
   left:50%;
-  bottom:7px;
   transform:translateX(-50%);
-  font-size:10px;
-  font-weight:900;
   white-space:nowrap;
-  color:#5f514b;
-  background:rgba(255,255,255,.72);
-  padding:2px 4px;
-  border-radius:5px;
+  font-size:7px;
+  font-weight:900;
+  color:#714f42;
 }
 
-.choco{background:#80503d}
-.strawberry{background:#ed8e9f}
-.vanilla{background:#f4dda0}
-.matcha{background:#9fc69e}
-.butter{background:#f1c96a}
-.durian{background:#cbd48c}
+/* =========================================================
+   CAT SVG AREA
+========================================================= */
 
-/* cactus */
+.cat-bed{
+  position:absolute;
+  right:12px;
+  bottom:48px;
+  width:132px;
+  height:91px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.bed{
+  position:absolute;
+  left:4px;
+  right:4px;
+  bottom:0;
+  height:40px;
+  border-radius:50%;
+  background:
+    radial-gradient(
+      ellipse at 50% 25%,
+      #fff2df 0 28%,
+      #e7b8a9 30% 65%,
+      #d99c8d 67%
+    );
+  border:2px solid #c98778;
+}
+
+.cat-svg{
+  position:relative;
+  z-index:3;
+  width:100px;
+  height:84px;
+  overflow:visible;
+}
+
+.cat-z{
+  position:absolute;
+  z-index:5;
+  top:-12px;
+  right:8px;
+  color:#876f68;
+  font-weight:900;
+  font-style:italic;
+  animation:zzzFloat 2.6s ease-in-out infinite;
+}
+
+.cat-z span{
+  position:absolute;
+  white-space:nowrap;
+}
+
+.cat-z .z1{
+  font-size:13px;
+  right:0;
+  top:0;
+}
+
+.cat-z .z2{
+  font-size:17px;
+  right:12px;
+  top:-17px;
+}
+
+.cat-z .z3{
+  font-size:21px;
+  right:31px;
+  top:-38px;
+}
+
+@keyframes zzzFloat{
+  0%,100%{transform:translateY(3px);opacity:.55}
+  50%{transform:translateY(-5px);opacity:1}
+}
 
 .cactus{
   position:absolute;
-  right:98px;
-  bottom:39px;
-  width:40px;
-  height:51px;
+  left:10px;
+  bottom:47px;
+  width:38px;
+  height:60px;
 }
 
 .cactus-pot{
   position:absolute;
   bottom:0;
-  left:5px;
-  width:30px;
-  height:21px;
-  border-radius:5px 5px 10px 10px;
-  background:#e89d89;
-  border-bottom:3px solid rgba(114,71,57,.13);
+  left:6px;
+  width:27px;
+  height:22px;
+  border-radius:4px 4px 10px 10px;
+  background:#e49c75;
+  border:2px solid #c47d5c;
 }
 
 .cactus-body{
   position:absolute;
   left:11px;
-  bottom:16px;
+  bottom:17px;
   width:18px;
-  height:33px;
-  border-radius:12px 12px 8px 8px;
-  background:#78b990;
-}
-
-.cactus-body::before,
-.cactus-body::after{
-  content:"";
-  position:absolute;
-  background:#78b990;
-  border-radius:10px;
-}
-
-.cactus-body::before{
-  width:12px;
-  height:18px;
-  left:-8px;
-  top:11px;
-}
-
-.cactus-body::after{
-  width:12px;
-  height:16px;
-  right:-8px;
-  top:5px;
-}
-
-.cactus-flower{
-  position:absolute;
-  top:-7px;
-  left:15px;
-  font-size:11px;
-}
-
-/* =========================================================
-   SLEEPING CAT
-========================================================= */
-
-.cat-bed{
-  position:absolute;
-  right:8px;
-  bottom:34px;
-  width:105px;
-  height:75px;
-}
-
-.bed{
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:100%;
-  height:31px;
-  border-radius:50%;
-  background:#e6b4c6;
-  border:3px solid rgba(112,75,67,.13);
-  box-shadow:inset 0 5px 7px rgba(255,255,255,.35);
-}
-
-.cat{
-  position:absolute;
-  left:17px;
-  bottom:20px;
-  width:69px;
-  height:48px;
-  border-radius:48% 52% 43% 57%;
-  background:#e7b878;
-  border:3px solid rgba(101,72,55,.2);
-  transform:rotate(-3deg);
-}
-
-.cat-head{
-  position:absolute;
-  left:-3px;
-  top:-22px;
-  width:43px;
   height:39px;
-  border-radius:50%;
-  background:#efc789;
-  border:3px solid rgba(101,72,55,.2);
+  border-radius:11px 11px 8px 8px;
+  background:#8bc49c;
+  border:2px solid #639f79;
 }
 
-.ear{
-  position:absolute;
-  width:16px;
-  height:16px;
-  background:#e7b878;
-  border:3px solid rgba(101,72,55,.2);
-  transform:rotate(45deg);
-  top:-7px;
-  border-radius:4px 5px 3px 3px;
-}
-
-.ear.left{left:3px}
-.ear.right{right:2px}
-
-.cat-eye{
-  position:absolute;
-  top:17px;
-  width:8px;
-  height:2px;
-  border-radius:4px;
-  background:#6c5044;
-}
-
-.cat-eye.left{left:9px}
-.cat-eye.right{right:9px}
-
-.cat-nose{
-  position:absolute;
-  left:19px;
-  top:23px;
-  width:6px;
-  height:4px;
-  border-radius:50%;
-  background:#c98383;
-}
-
-.cat-tail{
-  position:absolute;
-  right:-17px;
-  bottom:5px;
-  width:27px;
-  height:31px;
-  border:7px solid #e7b878;
-  border-left:0;
-  border-radius:0 24px 24px 0;
-  transform:rotate(16deg);
-}
-
-.zzz{
-  position:absolute;
-  right:4px;
-  top:-11px;
-  color:#856e83;
-  font-weight:900;
-  animation:zzzFloat 3s ease-in-out infinite;
-}
-
-.zzz span{
-  display:block;
-  line-height:.8;
-}
-
-.zzz span:nth-child(2){
-  font-size:12px;
-  margin-left:9px;
-}
-
-.zzz span:nth-child(3){
-  font-size:9px;
-  margin-left:17px;
-}
-
-@keyframes zzzFloat{
-  0%,100%{transform:translateY(5px);opacity:.45}
-  50%{transform:translateY(-5px);opacity:1}
-}
-
-/* =========================================================
-   SECTION CARD
-========================================================= */
-
-.section{
-  margin:0 12px 13px;
-  padding:14px;
-  border-radius:23px;
-  background:rgba(255,255,255,.87);
-  border:1px solid rgba(122,85,68,.09);
-  box-shadow:var(--shadow);
-}
-
-.section-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-}
-
-.section-title strong{
-  font-size:16px;
-}
-
-.section-title small{
-  color:var(--muted);
-  font-weight:800;
-}
-
-/* =========================================================
-   CUSTOMER AREA
-========================================================= */
-
-.customer-box{
-  min-height:174px;
-  position:relative;
-  display:grid;
-  grid-template-columns:104px 1fr;
-  gap:10px;
-  align-items:center;
-}
-
-.customer-avatar-area{
-  height:142px;
-  position:relative;
-  display:flex;
-  justify-content:center;
-  align-items:flex-end;
-}
-
-.patience-ring{
-  --progress:100;
-  position:absolute;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:62px;
-  height:62px;
-  border-radius:50%;
-  background:
-    conic-gradient(
-      var(--mint) calc(var(--progress) * 1%),
-      #eee8e4 0
-    );
-  display:grid;
-  place-items:center;
-  transition:background .08s linear;
-}
-
-.patience-ring::before{
+.cactus-body:before{
   content:"";
   position:absolute;
-  inset:5px;
-  border-radius:50%;
+  left:-8px;
+  top:15px;
+  width:11px;
+  height:17px;
+  border-radius:8px 2px 2px 8px;
+  border:3px solid #8bc49c;
+  border-right:0;
+}
+
+/* =========================================================
+   CUSTOMER
+========================================================= */
+
+.customer-card{
+  position:relative;
+  margin:8px 12px;
+  padding:10px;
+  min-height:158px;
   background:#fffdf9;
+  border:2px solid #efddd4;
+  border-radius:22px;
+  box-shadow:var(--card-shadow);
 }
 
-.patience-time{
-  position:relative;
-  z-index:2;
-  font-size:12px;
-  font-weight:900;
+.customer-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
 }
 
-.customer-chibi{
-  width:79px;
-  height:92px;
-  position:relative;
-  margin-top:39px;
+.customer-name-wrap{
+  min-width:0;
 }
 
-.hair{
-  position:absolute;
-  left:10px;
-  top:3px;
-  width:59px;
-  height:67px;
-  border-radius:50% 50% 44% 44%;
-  background:#8b665d;
-  border:3px solid rgba(79,59,53,.15);
+.customer-name{
+  font-size:16px;
+  font-weight:950;
+  color:var(--brown-dark);
 }
 
-.face{
-  position:absolute;
-  left:15px;
-  top:12px;
-  width:49px;
-  height:51px;
-  border-radius:47% 47% 45% 45%;
-  background:#ffd5bd;
-  border:2px solid rgba(108,73,62,.12);
-}
-
-.eye{
-  position:absolute;
-  top:25px;
-  width:6px;
-  height:7px;
-  border-radius:50%;
-  background:#634e4a;
-}
-
-.eye.left{left:13px}
-.eye.right{right:13px}
-
-.mouth{
-  position:absolute;
-  left:20px;
-  top:36px;
-  width:10px;
-  height:5px;
-  border-bottom:2px solid #a96e6e;
-  border-radius:0 0 10px 10px;
-}
-
-.body{
-  position:absolute;
-  bottom:0;
-  left:16px;
-  width:48px;
-  height:36px;
-  border-radius:24px 24px 12px 12px;
-  background:#a9d5c6;
-  border:2px solid rgba(86,75,68,.12);
-}
-
-.cheek{
-  position:absolute;
-  top:34px;
-  width:8px;
-  height:5px;
-  border-radius:50%;
-  background:#f2a7a7;
-  opacity:.75;
-}
-
-.cheek.left{left:7px}
-.cheek.right{right:7px}
-
-.customer-chibi.angry .mouth{
-  top:38px;
-  border-bottom:0;
-  border-top:2px solid #a35c63;
-  border-radius:10px 10px 0 0;
-}
-
-.customer-chibi.angry .eye{
-  height:2px;
-  top:27px;
-  border-radius:0;
-  transform:rotate(-15deg);
-}
-
-.customer-chibi.angry .eye.right{
-  transform:rotate(15deg);
+.customer-mood{
+  margin-top:2px;
+  font-size:9px;
+  color:#a18b83;
+  font-weight:800;
 }
 
 .order-bubble{
   position:relative;
-  padding:12px 13px;
-  min-height:100px;
-  border-radius:17px;
-  background:#fff8dd;
-  border:2px solid #eedb9b;
-  box-shadow:var(--shadow-small);
+  flex:1;
+  min-width:0;
+  margin-left:7px;
+  padding:9px 11px;
+  background:#fff3c9;
+  border:2px solid #ead28a;
+  border-radius:15px;
+  font-size:10px;
+  line-height:1.35;
+  font-weight:800;
+  color:#755d49;
 }
 
-.order-bubble::before{
+.order-bubble:before{
   content:"";
   position:absolute;
-  left:-9px;
-  top:35px;
-  width:17px;
-  height:17px;
-  background:#fff8dd;
-  border-left:2px solid #eedb9b;
-  border-bottom:2px solid #eedb9b;
+  left:-8px;
+  top:18px;
+  width:12px;
+  height:12px;
+  background:#fff3c9;
+  border-left:2px solid #ead28a;
+  border-bottom:2px solid #ead28a;
   transform:rotate(45deg);
 }
 
-.customer-name{
-  font-size:14px;
-  font-weight:900;
-  color:#775448;
+.customer-body{
+  position:relative;
+  height:101px;
+  margin-top:3px;
 }
 
-.customer-speech{
-  margin-top:6px;
+.customer-art{
+  position:absolute;
+  left:7px;
+  bottom:-3px;
+  width:113px;
+  height:105px;
+  overflow:visible;
+}
+
+.customer-art .blink{
+  transform-origin:center;
+  animation:blink 4.2s infinite;
+}
+
+@keyframes blink{
+  0%,45%,48%,100%{transform:scaleY(1)}
+  46%,47%{transform:scaleY(.08)}
+}
+
+.customer-art.angry .mouth{
+  transform:rotate(180deg);
+}
+
+.customer-art.angry .brow{
+  transform:rotate(10deg);
+}
+
+.customer-art.angry .cheek{
+  fill:#e99698;
+}
+
+.customer-art.happy .eye-star{
+  opacity:1;
+}
+
+.eye-star{
+  opacity:0;
+}
+
+/* patience */
+.patience-box{
+  position:absolute;
+  right:6px;
+  bottom:7px;
+  width:67px;
+  height:67px;
+}
+
+.patience-ring{
+  position:relative;
+  width:67px;
+  height:67px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:
+    conic-gradient(
+      var(--green) calc(var(--progress) * 1%),
+      #eadfda 0
+    );
+  transition:background .1s linear;
+}
+
+.patience-ring:before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:50%;
+  background:#fffdf9;
+}
+
+.patience-number{
+  position:relative;
+  z-index:2;
   font-size:13px;
-  line-height:1.4;
-  font-weight:750;
+  font-weight:950;
+  color:#7c6258;
 }
 
-.order-detail{
-  display:flex;
-  flex-wrap:wrap;
-  gap:5px;
-  margin-top:8px;
-}
-
-.order-chip{
-  padding:4px 7px;
-  border-radius:8px;
-  background:#fff;
-  font-size:10px;
+.patience-label{
+  position:absolute;
+  left:50%;
+  bottom:-15px;
+  transform:translateX(-50%);
+  width:90px;
+  text-align:center;
+  font-size:7px;
   font-weight:900;
-  color:#816b62;
+  color:#a58d84;
+}
+
+.customer-card.impatient .patience-ring{
+  background:
+    conic-gradient(
+      var(--red) calc(var(--progress) * 1%),
+      #eadfda 0
+    );
+}
+
+.customer-card.angry-state{
+  border-color:#e5aaaa;
+  background:#fff6f4;
+  animation:angryShake .25s linear 2;
+}
+
+@keyframes angryShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-3px)}
+  75%{transform:translateX(3px)}
+}
+
+.angry-bubble{
+  position:absolute;
+  right:67px;
+  bottom:52px;
+  max-width:155px;
+  padding:7px 9px;
+  border-radius:12px 12px 3px 12px;
+  background:#ffe0df;
+  border:1px solid #e9b1ae;
+  color:#8b514e;
+  font-size:9px;
+  line-height:1.3;
+  font-weight:900;
+  opacity:0;
+  transform:translateY(5px);
+}
+
+.customer-card.angry-state .angry-bubble{
+  opacity:1;
+  transform:translateY(0);
+  transition:.25s ease;
 }
 
 /* =========================================================
@@ -950,735 +906,802 @@ button:disabled{
 ========================================================= */
 
 .workspace{
-  padding:14px;
-}
-
-.steps{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-  margin-bottom:12px;
-}
-
-.step{
-  height:34px;
-  border-radius:11px;
-  background:#f4eeea;
-  color:#9a8580;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  font-size:11px;
-  font-weight:900;
-  transition:
-    background .2s ease,
-    color .2s ease;
-}
-
-.step.active{
-  background:var(--pink-soft);
-  color:#a15d6c;
-}
-
-.step.done{
-  background:var(--mint-soft);
-  color:#528b75;
-}
-
-/*
-   IMPORTANT:
-   ICE STAGE LUÔN CÓ KÍCH THƯỚC CỐ ĐỊNH.
-   Các thành phần bên trong position:absolute.
-   Khi click không có phần tử nào chen vào flow.
-*/
-
-.ice-stage{
-  width:100%;
-  height:278px;
-  position:relative;
+  margin:9px 12px;
+  border-radius:24px;
+  background:#fffdf9;
+  border:2px solid #eadcd4;
+  box-shadow:var(--card-shadow);
   overflow:hidden;
-  border-radius:20px;
-  border:3px solid #e6d9cf;
-  background:
-    linear-gradient(180deg,#fffdf9 0%,#f8efe6 100%);
-  box-shadow:
-    inset 0 4px 0 rgba(255,255,255,.75),
-    0 4px 9px rgba(102,74,61,.08);
-  isolation:isolate;
 }
 
-.ice-stage::before{
-  content:"";
-  position:absolute;
-  left:12%;
-  right:12%;
-  bottom:28px;
-  height:12px;
-  border-radius:50%;
-  background:rgba(109,79,65,.10);
-}
-
-.stage-label{
-  position:absolute;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:5px 10px;
-  border-radius:10px;
-  background:rgba(255,255,255,.85);
-  font-size:10px;
-  font-weight:900;
-  color:#a08c84;
-  z-index:20;
-  white-space:nowrap;
-}
-
-/* fixed base */
-
-.visual-base{
-  position:absolute;
-  left:50%;
-  bottom:39px;
-  transform:translateX(-50%);
-  width:105px;
-  height:100px;
-  z-index:5;
-  display:flex;
-  justify-content:center;
-  align-items:flex-end;
-}
-
-.cone{
-  width:69px;
-  height:92px;
-  clip-path:polygon(50% 100%,4% 0,96% 0);
-  background:
-    repeating-linear-gradient(
-      45deg,
-      #e5ad70 0 8px,
-      #d99c61 8px 11px
-    );
-  border:3px solid #bd7e4f;
-  position:relative;
-}
-
-.cone::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent 0 12px,
-      rgba(115,69,42,.17) 12px 15px
-    );
-}
-
-.cup{
-  width:84px;
-  height:69px;
-  border-radius:9px 9px 25px 25px;
-  background:
-    linear-gradient(90deg,#f4c5d2,#fff0f3,#efb3c4);
-  border:3px solid #d999aa;
-  position:relative;
-}
-
-.cup::after{
-  content:"🍦";
-  position:absolute;
-  left:50%;
-  bottom:6px;
-  transform:translateX(-50%);
-  font-size:15px;
-  opacity:.22;
-}
-
-/* scoops fixed coordinates */
-
-.scoop{
-  position:absolute;
-  left:50%;
-  width:69px;
-  height:69px;
-  border-radius:50%;
-  transform:translateX(-50%) scale(1);
-  border:3px solid rgba(94,70,61,.13);
-  z-index:10;
-  box-shadow:
-    inset 7px 7px 0 rgba(255,255,255,.20),
-    0 4px 7px rgba(92,69,59,.13);
-  animation:scoopDrop .24s ease-out;
-}
-
-.scoop.one{bottom:91px}
-.scoop.two{bottom:126px}
-.scoop.three{bottom:161px}
-
-@keyframes scoopDrop{
-  0%{
-    transform:translateX(-50%) translateY(-14px) scale(.8);
-    opacity:.1;
-  }
-  70%{
-    transform:translateX(-50%) translateY(3px) scale(1.04);
-  }
-  100%{
-    transform:translateX(-50%) translateY(0) scale(1);
-    opacity:1;
-  }
-}
-
-.scoop.choco{
-  background:#81513d;
-}
-
-.scoop.strawberry{
-  background:#ed91a1;
-}
-
-.scoop.vanilla{
-  background:#f4dda4;
-}
-
-.scoop.matcha{
-  background:#9fc59a;
-}
-
-.scoop.butter{
-  background:#f0c865;
-}
-
-.scoop.durian{
-  background:#cbd38d;
-}
-
-.scoop::after{
-  content:"";
-  position:absolute;
-  width:17px;
-  height:8px;
-  border-radius:50%;
-  top:12px;
-  left:15px;
-  background:rgba(255,255,255,.24);
-  transform:rotate(-20deg);
-}
-
-/* topping fixed */
-
-.topping-layer{
-  position:absolute;
-  left:50%;
-  top:57px;
-  transform:translateX(-50%);
-  width:155px;
-  height:42px;
-  z-index:18;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  pointer-events:none;
-}
-
-.topping-item{
-  position:absolute;
-  font-size:22px;
-  animation:toppingPop .22s ease-out;
-}
-
-.topping-item:nth-child(1){transform:translate(-34px,2px) rotate(-8deg)}
-.topping-item:nth-child(2){transform:translate(0,-4px) rotate(5deg)}
-.topping-item:nth-child(3){transform:translate(35px,3px) rotate(8deg)}
-
-@keyframes toppingPop{
-  from{opacity:0;transform:translateY(-7px) scale(.7)}
-  to{opacity:1}
-}
-
-.stage-empty{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:80%;
-  text-align:center;
-  color:#b4a39c;
-  font-size:12px;
-  font-weight:800;
-  z-index:2;
-}
-
-/* options */
-
-.option-group{
-  margin-top:13px;
-}
-
-.option-heading{
+.workspace-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:7px;
+  padding:11px 12px 8px;
+  border-bottom:1px solid #f0e3dd;
 }
 
-.option-heading strong{
-  font-size:12px;
+.workspace-title{
+  font-size:14px;
+  font-weight:950;
+  color:#745348;
 }
 
-.option-heading span{
-  font-size:10px;
-  color:var(--muted);
-  font-weight:800;
+.step-indicator{
+  display:flex;
+  gap:5px;
 }
 
-.option-row{
+.step-dot{
+  width:22px;
+  height:22px;
   display:grid;
-  grid-template-columns:repeat(6,1fr);
+  place-items:center;
+  border-radius:50%;
+  background:#eee6e1;
+  color:#9a8780;
+  font-size:9px;
+  font-weight:950;
+}
+
+.step-dot.active{
+  background:var(--pink);
+  color:#fff;
+}
+
+.step-dot.done{
+  background:var(--mint);
+  color:#fff;
+}
+
+/*
+  QUAN TRỌNG:
+  .ice-stage có kích thước cố định.
+  Tất cả base / scoop / topping nằm absolute.
+  Không element nào tham gia flow bên trong sân khấu.
+*/
+.ice-stage{
+  position:relative;
+  width:100%;
+  height:265px;
+  overflow:hidden;
+  background:
+    radial-gradient(
+      ellipse at 50% 83%,
+      rgba(163,108,75,.16) 0 23%,
+      transparent 24%
+    ),
+    linear-gradient(
+      180deg,
+      #fffaf2,
+      #f9eee4
+    );
+  border-bottom:1px solid #eadcd4;
+}
+
+.ice-stage:before{
+  content:"";
+  position:absolute;
+  left:13px;
+  right:13px;
+  bottom:12px;
+  height:16px;
+  border-radius:50%;
+  background:rgba(117,78,58,.08);
+}
+
+.stage-step-label{
+  position:absolute;
+  top:9px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:20;
+  padding:5px 10px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid #eadbd4;
+  color:#92786e;
+  font-size:8px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+/* fixed cone */
+.preview-cone{
+  position:absolute;
+  z-index:7;
+  left:50%;
+  bottom:30px;
+  width:75px;
+  height:92px;
+  transform:translateX(-50%);
+  display:none;
+  clip-path:polygon(8% 0,92% 0,63% 100%,37% 100%);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(118,76,48,.20) 0 3px,
+      transparent 3px 11px
+    ),
+    linear-gradient(
+      90deg,
+      #f0c47c,
+      #ffe0a5 50%,
+      #e7ae63
+    );
+  border:2px solid #c78b4f;
+}
+
+.preview-cup{
+  position:absolute;
+  z-index:7;
+  left:50%;
+  bottom:29px;
+  width:91px;
+  height:76px;
+  transform:translateX(-50%);
+  display:none;
+  border-radius:10px 10px 23px 23px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.3),
+      transparent 25% 75%,
+      rgba(170,190,190,.18)
+    ),
+    #d8eeee;
+  border:3px solid #9dbfc0;
+}
+
+.preview-cup:before{
+  content:"";
+  position:absolute;
+  left:7px;
+  right:7px;
+  top:-9px;
+  height:19px;
+  border-radius:50%;
+  background:#e9f6f4;
+  border:3px solid #9dbfc0;
+}
+
+.preview-cup:after{
+  content:"NGỌT NGÀO";
+  position:absolute;
+  left:50%;
+  top:35px;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font-size:6px;
+  font-weight:950;
+  color:#7da7a7;
+}
+
+.preview-cone.visible,
+.preview-cup.visible{
+  display:block;
+}
+
+/* scoops: fixed coordinates */
+.scoop{
+  position:absolute;
+  z-index:10;
+  left:50%;
+  width:64px;
+  height:64px;
+  transform:translateX(-50%) scale(.3);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  opacity:0;
+  transition:
+    opacity .18s ease,
+    transform .28s cubic-bezier(.2,.9,.25,1);
+  border:2px solid rgba(91,65,54,.16);
+  box-shadow:
+    inset -8px -9px 0 rgba(87,54,45,.08),
+    inset 6px 5px 0 rgba(255,255,255,.26),
+    0 4px 8px rgba(92,62,49,.12);
+}
+
+.scoop.show{
+  opacity:1;
+  transform:translateX(-50%) scale(1);
+}
+
+.scoop.s1{
+  bottom:88px;
+}
+
+.scoop.s2{
+  bottom:125px;
+}
+
+.scoop.s3{
+  bottom:161px;
+}
+
+.scoop-face{
+  position:absolute;
+  bottom:17px;
+  display:flex;
+  gap:11px;
+  opacity:.5;
+}
+
+.scoop-face i{
+  width:4px;
+  height:5px;
+  border-radius:50%;
+  background:#674d43;
+}
+
+/* topping */
+.topping-layer{
+  position:absolute;
+  z-index:16;
+  left:50%;
+  top:52px;
+  width:150px;
+  height:65px;
+  transform:translateX(-50%);
+  pointer-events:none;
+  text-align:center;
+  opacity:0;
+  transition:opacity .18s ease;
+}
+
+.topping-layer.show{
+  opacity:1;
+}
+
+.topping-label{
+  display:inline-block;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.9);
+  border:1px solid #eadbd3;
+  font-size:9px;
+  font-weight:950;
+  color:#80675d;
+}
+
+.sprinkles{
+  margin-top:6px;
+  font-size:17px;
+  letter-spacing:2px;
+}
+
+/* controls */
+.controls{
+  padding:10px;
+}
+
+.control-section{
+  margin-bottom:10px;
+}
+
+.control-title{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin-bottom:7px;
+  font-size:9px;
+  color:#947d74;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.options{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
   gap:6px;
 }
 
-.option-btn{
+.option{
   min-width:0;
-  height:65px;
-  padding:5px 2px;
-  border-radius:12px;
-  background:#fff9f7;
-  border:2px solid #eee3dc;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
+  min-height:55px;
+  padding:6px 4px;
+  border-radius:13px;
+  background:#fff;
+  border:1.5px solid #e9ddd7;
+  color:#765c52;
+  box-shadow:0 2px 5px rgba(91,66,54,.04);
   transition:
-    border-color .18s ease,
-    background .18s ease,
-    transform .18s ease;
+    transform .15s ease,
+    border-color .15s ease,
+    background .15s ease;
 }
 
-.option-btn.selected{
+.option:hover{
+  transform:translateY(-1px);
+}
+
+.option.selected{
   border-color:var(--pink);
-  background:var(--pink-soft);
+  background:#fff0f3;
 }
 
-.option-icon{
-  font-size:22px;
-  line-height:1;
+.option .emoji{
+  display:block;
+  font-size:21px;
+  line-height:22px;
 }
 
-.option-name{
-  font-size:8px;
-  line-height:1.1;
-  font-weight:900;
-  text-align:center;
+.option .name{
+  display:block;
+  margin-top:3px;
+  font-size:7px;
+  font-weight:950;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.option-stock{
-  font-size:8px;
-  color:var(--muted);
+.option .stock{
+  display:block;
+  margin-top:2px;
+  font-size:6px;
+  color:#aa958d;
   font-weight:800;
 }
 
-/* actions */
-
 .action-row{
   display:grid;
-  grid-template-columns:1fr 1.45fr;
+  grid-template-columns:1fr 1.5fr;
   gap:8px;
-  margin-top:14px;
+  margin-top:5px;
 }
 
-.action{
-  min-height:46px;
-  border-radius:15px;
+.btn{
+  min-height:43px;
+  padding:0 12px;
+  border-radius:14px;
   font-weight:950;
-  font-size:13px;
-  box-shadow:var(--shadow-small);
-  transition:transform .18s ease,filter .18s ease;
+  font-size:11px;
+  letter-spacing:.2px;
+  transition:
+    transform .15s ease,
+    background .15s ease;
 }
 
-.action.reset{
+.btn-reset{
   background:#f3ebe7;
-  color:#806d65;
+  color:#806b62;
 }
 
-.action.serve{
-  background:linear-gradient(180deg,#f6b5c2,#e99aaa);
-  color:white;
-  border:2px solid rgba(143,77,92,.12);
+.btn-serve{
+  background:#e59aaa;
+  color:#fff;
+  border-bottom:4px solid #ca788a;
 }
 
-.action:not(:disabled):hover{
-  filter:brightness(1.02);
+.btn-serve:disabled{
+  background:#e9d8dc;
+  border-bottom-color:#d6c2c6;
 }
 
 /* =========================================================
-   NAV
+   BOTTOM NAV
 ========================================================= */
 
 .bottom-nav{
   position:absolute;
-  z-index:80;
-  left:10px;
-  right:10px;
-  bottom:calc(8px + env(safe-area-inset-bottom));
-  height:70px;
-  padding:6px;
+  z-index:70;
+  left:9px;
+  right:9px;
+  bottom:calc(7px + var(--safe-bottom));
+  height:67px;
   display:grid;
   grid-template-columns:repeat(4,1fr);
+  padding:6px;
   gap:5px;
   border-radius:22px;
-  background:rgba(255,252,247,.95);
-  border:1px solid rgba(114,81,66,.10);
-  box-shadow:0 8px 24px rgba(90,63,51,.14);
+  background:rgba(255,253,249,.97);
+  border:1px solid #eaded7;
+  box-shadow:
+    0 6px 16px rgba(90,65,55,.12);
 }
 
 .nav-btn{
-  border-radius:17px;
+  position:relative;
+  min-width:0;
+  border-radius:16px;
   background:transparent;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:2px;
-  color:#a18e87;
-  font-weight:900;
-  font-size:9px;
+  color:#a08c84;
   transition:
     background .2s ease,
     color .2s ease,
     transform .2s ease;
 }
 
-.nav-btn .nav-icon{
-  font-size:21px;
-  line-height:1;
+.nav-btn.active{
+  background:#fff0f3;
+  color:#c87587;
 }
 
-.nav-btn.active{
-  background:var(--pink-soft);
-  color:#a15d6c;
-  transform:translateY(-2px);
+.nav-icon{
+  display:block;
+  font-size:19px;
+  line-height:20px;
+}
+
+.nav-text{
+  display:block;
+  margin-top:2px;
+  font-size:7px;
+  font-weight:950;
 }
 
 /* =========================================================
-   INVENTORY PAGE
+   INVENTORY / UPGRADE / REVIEW
 ========================================================= */
 
-.simple-page{
-  display:flex;
-  flex-direction:column;
-}
-
-.page-head{
+.subpage-header{
+  flex:none;
   padding:
-    calc(18px + env(safe-area-inset-top))
-    16px
-    13px;
-  background:rgba(255,248,245,.95);
-  border-bottom:1px solid rgba(111,77,63,.08);
+    calc(12px + env(safe-area-inset-top,0px))
+    15px
+    12px;
+  background:#fff9f5;
+  border-bottom:1px solid #ecdfd8;
 }
 
-.page-head-row{
+.subpage-title{
+  font-size:22px;
+  font-weight:950;
+  color:#704c40;
+}
+
+.subpage-desc{
+  margin-top:3px;
+  font-size:9px;
+  font-weight:700;
+  color:#aa9389;
+}
+
+.section-card{
+  margin:11px 12px;
+  padding:12px;
+  border-radius:21px;
+  background:#fffdf9;
+  border:1px solid #eaded7;
+  box-shadow:var(--card-shadow);
+}
+
+.section-card-title{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-}
-
-.page-title{
-  font-size:23px;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:9px;
+  font-size:13px;
   font-weight:950;
 }
 
-.page-subtitle{
-  margin-top:3px;
-  font-size:11px;
-  color:var(--muted);
-  font-weight:800;
-}
-
-.page-scroll{
-  flex:1;
-  min-height:0;
-  overflow:auto;
-  padding:14px 12px 100px;
-  scrollbar-width:none;
-}
-
-.page-scroll::-webkit-scrollbar{
-  display:none;
-}
-
-.stock-card{
-  padding:13px;
-  margin-bottom:10px;
-  border-radius:19px;
-  background:rgba(255,255,255,.9);
-  border:1px solid rgba(112,78,62,.09);
-  box-shadow:var(--shadow-small);
-}
-
-.stock-main{
+.inventory-grid{
   display:grid;
-  grid-template-columns:54px 1fr auto;
-  gap:10px;
-  align-items:center;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
 }
 
-.stock-emoji{
-  width:54px;
-  height:54px;
+.inventory-item{
+  position:relative;
+  padding:10px;
+  border-radius:16px;
+  background:#fff;
+  border:1px solid #eee1da;
+}
+
+.inventory-top{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.inventory-emoji{
+  width:39px;
+  height:39px;
   display:grid;
   place-items:center;
-  border-radius:16px;
-  background:var(--cream);
-  font-size:29px;
+  border-radius:12px;
+  background:#f7eee8;
+  font-size:22px;
 }
 
-.stock-name{
-  font-size:14px;
-  font-weight:950;
-}
-
-.stock-info{
+.inventory-name{
   font-size:10px;
-  color:var(--muted);
-  font-weight:800;
-  margin-top:3px;
-}
-
-.stock-number{
-  text-align:right;
   font-weight:950;
-  color:#856151;
 }
 
-.mini-bar{
-  height:7px;
-  border-radius:10px;
-  background:#eee8e3;
+.inventory-count{
+  margin-top:2px;
+  font-size:8px;
+  color:#a48d83;
+  font-weight:800;
+}
+
+.progress{
+  height:6px;
+  margin:8px 0;
+  border-radius:999px;
   overflow:hidden;
-  margin-top:9px;
+  background:#eee7e2;
 }
 
-.mini-bar-fill{
+.progress > span{
+  display:block;
   height:100%;
   border-radius:inherit;
-  background:#a9d9c8;
+  background:#a8d5bf;
   transition:width .25s ease;
 }
 
-.stock-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-  margin-top:10px;
-}
-
-.small-action{
-  min-height:37px;
-  border-radius:11px;
-  background:#f5eee9;
-  color:#7d665d;
-  font-size:10px;
+.mini-btn{
+  width:100%;
+  min-height:32px;
+  border-radius:10px;
+  background:#f9e9dc;
+  color:#805c4e;
+  font-size:8px;
   font-weight:950;
 }
 
-.small-action.buy{
-  background:#fff0ba;
+.upgrade-list{
+  display:grid;
+  gap:9px;
 }
-
-/* =========================================================
-   UPGRADE PAGE
-========================================================= */
 
 .upgrade-card{
-  padding:15px;
-  margin-bottom:10px;
-  border-radius:21px;
-  background:rgba(255,255,255,.91);
-  border:1px solid rgba(110,78,64,.08);
-  box-shadow:var(--shadow-small);
-}
-
-.upgrade-top{
-  display:flex;
+  display:grid;
+  grid-template-columns:45px 1fr auto;
   align-items:center;
-  gap:11px;
+  gap:9px;
+  padding:10px;
+  border:1px solid #eee0d8;
+  border-radius:16px;
+  background:#fff;
 }
 
 .upgrade-icon{
-  width:52px;
-  height:52px;
-  border-radius:16px;
-  background:var(--mint-soft);
+  width:45px;
+  height:45px;
   display:grid;
   place-items:center;
-  font-size:27px;
-}
-
-.upgrade-info{
-  flex:1;
+  border-radius:14px;
+  background:#fff1bf;
+  font-size:24px;
 }
 
 .upgrade-name{
+  font-size:11px;
   font-weight:950;
-  font-size:15px;
 }
 
 .upgrade-desc{
-  color:var(--muted);
-  font-size:10px;
-  line-height:1.35;
   margin-top:3px;
+  font-size:8px;
+  line-height:1.35;
+  color:#a08c84;
+  font-weight:700;
 }
 
-.level{
-  display:flex;
-  gap:4px;
-  margin-top:8px;
-}
-
-.level i{
-  width:16px;
-  height:6px;
-  border-radius:6px;
-  background:#ece5e0;
-}
-
-.level i.on{
-  background:var(--pink);
-}
-
-.upgrade-buy{
-  margin-top:12px;
-  width:100%;
-  min-height:40px;
-  border-radius:12px;
-  background:#f5eee8;
-  font-size:11px;
+.upgrade-level{
+  margin-top:3px;
+  font-size:7px;
+  color:#c28172;
   font-weight:950;
 }
 
-.upgrade-buy.ready{
-  background:#ffe8b0;
+.buy-upgrade{
+  min-width:73px;
+  min-height:35px;
+  border-radius:11px;
+  background:#e4f3eb;
+  color:#548a72;
+  font-size:8px;
+  font-weight:950;
 }
 
-/* =========================================================
-   REVIEW PAGE
-========================================================= */
-
+/* reviews */
 .rating-hero{
+  margin:12px;
   padding:18px 15px;
-  border-radius:23px;
-  background:
-    linear-gradient(145deg,#fff3bd,#fff8dc);
-  border:2px solid #f0dfa2;
   text-align:center;
-  margin-bottom:13px;
-}
-
-.rating-label{
-  font-size:11px;
-  font-weight:900;
-  color:#9a8050;
+  border-radius:24px;
+  background:
+    linear-gradient(
+      135deg,
+      #fff1bb,
+      #fff9e9
+    );
+  border:1px solid #efdca5;
 }
 
 .rating-number{
-  font-size:46px;
+  font-size:48px;
   line-height:1;
   font-weight:1000;
-  color:#765d43;
-  margin:4px 0;
+  color:#765d49;
 }
 
 .rating-stars{
-  font-size:23px;
-  letter-spacing:2px;
+  margin-top:5px;
+  font-size:21px;
+  letter-spacing:1px;
 }
 
-.rating-count{
+.rating-caption{
   margin-top:4px;
-  color:#a68d6b;
-  font-size:10px;
+  font-size:8px;
+  color:#9d8779;
   font-weight:800;
+}
+
+.review-list{
+  padding:0 12px 120px;
 }
 
 .review-card{
   position:relative;
-  padding:13px;
   margin-bottom:9px;
-  display:grid;
-  grid-template-columns:45px 1fr;
-  gap:10px;
+  padding:11px;
   border-radius:18px;
   background:#fff;
-  border:1px solid rgba(111,78,65,.08);
-  box-shadow:var(--shadow-small);
-  animation:reviewIn .25s ease-out;
+  border:1px solid #eee0d9;
+  box-shadow:0 3px 8px rgba(92,64,53,.05);
 }
 
-@keyframes reviewIn{
-  from{
-    opacity:0;
-    transform:translateY(7px);
-  }
-  to{
-    opacity:1;
-    transform:none;
-  }
+.review-top{
+  display:flex;
+  align-items:center;
+  gap:9px;
 }
 
 .review-avatar{
-  width:45px;
-  height:45px;
-  border-radius:15px;
+  width:42px;
+  height:42px;
+  flex:none;
   display:grid;
   place-items:center;
+  border-radius:14px;
+  border:2px solid #ecd9d0;
+  background:#ffeef0;
   font-size:23px;
-  background:#ffe9ef;
 }
 
-.review-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:5px;
+.review-info{
+  min-width:0;
+  flex:1;
 }
 
-.reviewer-name{
-  font-size:12px;
+.review-name{
+  font-size:11px;
   font-weight:950;
+  color:#765348;
 }
 
 .review-time{
-  font-size:9px;
-  color:#ad9b95;
-  white-space:nowrap;
+  margin-top:2px;
+  font-size:7px;
+  color:#ad9990;
+  font-weight:800;
 }
 
 .review-stars{
-  margin-top:3px;
+  margin-top:7px;
   font-size:15px;
   letter-spacing:1px;
 }
 
 .review-text{
-  margin-top:4px;
-  font-size:11px;
-  line-height:1.45;
+  margin-top:5px;
+  font-size:9px;
+  line-height:1.5;
+  color:#725f58;
   font-weight:700;
-  color:#75645e;
 }
 
-.review-card.bad{
-  background:#fff7f4;
-  border-color:#f2d5cc;
+.review-reaction{
+  margin-top:7px;
+  font-size:14px;
 }
 
-.review-card.bad .review-avatar{
-  background:#ffe2dc;
+/* =========================================================
+   WAREHOUSE + DAILY SUMMARY
+========================================================= */
+
+.warehouse-screen{
+  background:
+    linear-gradient(
+      180deg,
+      #fff8ef,
+      #f7ece5
+    );
+}
+
+.day-banner{
+  position:relative;
+  margin:12px;
+  padding:17px;
+  overflow:hidden;
+  border-radius:24px;
+  background:
+    linear-gradient(
+      135deg,
+      #dff1e8,
+      #fff1d2
+    );
+  border:1px solid #d7e4d9;
+}
+
+.day-banner:after{
+  content:"🍦";
+  position:absolute;
+  right:16px;
+  bottom:-5px;
+  font-size:62px;
+  transform:rotate(-8deg);
+  opacity:.75;
+}
+
+.day-banner-title{
+  position:relative;
+  z-index:2;
+  font-size:20px;
+  font-weight:1000;
+  color:#6c554a;
+}
+
+.day-banner-sub{
+  position:relative;
+  z-index:2;
+  margin-top:4px;
+  max-width:75%;
+  font-size:9px;
+  line-height:1.4;
+  font-weight:700;
+  color:#8b7770;
+}
+
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.summary-item{
+  padding:12px;
+  border-radius:16px;
+  background:#fff;
+  border:1px solid #eee1d9;
+}
+
+.summary-item-label{
+  font-size:8px;
+  color:#a08b82;
+  font-weight:800;
+}
+
+.summary-item-value{
+  margin-top:4px;
+  font-size:20px;
+  font-weight:1000;
+  color:#765345;
+}
+
+.next-day-btn{
+  width:100%;
+  min-height:48px;
+  margin-top:11px;
+  border-radius:15px;
+  background:#e49aaa;
+  border-bottom:4px solid #ca788a;
+  color:#fff;
+  font-size:11px;
+  font-weight:950;
 }
 
 /* =========================================================
@@ -1687,16 +1710,16 @@ button:disabled{
 
 .modal{
   position:fixed;
+  z-index:1000;
   inset:0;
-  z-index:500;
-  padding:20px;
   display:grid;
   place-items:center;
-  background:rgba(76,53,46,.36);
+  padding:18px;
+  background:rgba(83,59,52,.34);
   opacity:0;
   visibility:hidden;
   pointer-events:none;
-  transition:opacity .22s ease,visibility .22s ease;
+  transition:opacity .25s ease,visibility .25s ease;
 }
 
 .modal.show{
@@ -1706,244 +1729,261 @@ button:disabled{
 }
 
 .modal-card{
-  width:min(100%,410px);
+  width:min(100%,390px);
   max-height:90dvh;
   overflow:auto;
-  padding:23px 19px;
-  border-radius:28px;
-  background:#fffdf8;
-  border:3px solid rgba(132,91,69,.12);
-  box-shadow:0 16px 40px rgba(70,47,39,.2);
-  text-align:center;
-  animation:modalIn .28s cubic-bezier(.2,.8,.2,1);
+  border-radius:29px;
+  background:#fffaf6;
+  border:2px solid #ead8d0;
+  box-shadow:
+    0 16px 35px rgba(77,54,47,.18);
+  padding:20px;
+  transform:translateY(10px) scale(.97);
+  transition:transform .28s cubic-bezier(.2,.8,.25,1);
 }
 
-@keyframes modalIn{
-  from{
-    opacity:0;
-    transform:translateY(16px) scale(.96);
-  }
-  to{
-    opacity:1;
-    transform:none;
-  }
+.modal.show .modal-card{
+  transform:translateY(0) scale(1);
 }
 
-.modal-icon{
-  font-size:54px;
-  line-height:1;
+.welcome-art{
+  width:145px;
+  height:110px;
+  margin:0 auto 5px;
 }
 
 .modal-title{
-  margin-top:9px;
+  text-align:center;
+  font-size:25px;
+  font-weight:1000;
+  color:#754f42;
+}
+
+.modal-sub{
+  margin:8px auto 15px;
+  max-width:310px;
+  text-align:center;
+  font-size:10px;
+  line-height:1.5;
+  color:#9a8279;
+  font-weight:700;
+}
+
+.big-start{
+  width:100%;
+  min-height:51px;
+  border-radius:17px;
+  background:#e59aaa;
+  border-bottom:5px solid #c9798b;
+  color:#fff;
+  font-size:12px;
+  font-weight:1000;
+}
+
+.summary-modal-title{
+  text-align:center;
   font-size:24px;
   font-weight:1000;
 }
 
-.modal-text{
-  margin:8px auto 17px;
-  max-width:330px;
-  color:#907c74;
-  font-size:12px;
-  line-height:1.55;
-  font-weight:700;
+.summary-date{
+  text-align:center;
+  margin-top:3px;
+  color:#aa9288;
+  font-size:9px;
+  font-weight:800;
 }
 
-.primary-btn{
-  width:100%;
-  min-height:49px;
-  border-radius:16px;
-  background:linear-gradient(180deg,#f5b2c1,#e999aa);
-  color:white;
-  font-weight:1000;
-  box-shadow:0 5px 0 #c77b8d;
+.summary-profit{
+  margin:15px 0;
+  padding:15px;
+  text-align:center;
+  border-radius:18px;
+  background:#e8f5ec;
+  border:1px solid #cee6d6;
 }
 
-.secondary-btn{
-  width:100%;
-  min-height:43px;
-  margin-top:8px;
-  border-radius:15px;
-  background:#f2ebe7;
-  color:#7d6860;
+.summary-profit-label{
+  font-size:8px;
   font-weight:900;
+  color:#789485;
+}
+
+.summary-profit-value{
+  margin-top:4px;
+  font-size:32px;
+  font-weight:1000;
+  color:#528268;
+}
+
+.modal-close{
+  width:100%;
+  min-height:44px;
+  margin-top:11px;
+  border-radius:14px;
+  background:#eee6e1;
+  color:#7d6a61;
+  font-size:10px;
+  font-weight:950;
 }
 
 /* =========================================================
-   OPENING CURTAIN
+   OPENING / CLOSING TRANSITION
 ========================================================= */
 
-.opening{
+.curtain-overlay{
   position:fixed;
+  z-index:2000;
   inset:0;
-  z-index:1000;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  background:#ffe9ed;
   pointer-events:none;
-  display:none;
+  opacity:1;
+  transition:opacity .3s ease;
 }
 
-.opening.show{
-  display:block;
+.curtain-overlay.hide{
+  opacity:0;
+  visibility:hidden;
 }
 
 .curtain{
   position:absolute;
   top:0;
   bottom:0;
-  width:52%;
+  width:50%;
   background:
     repeating-linear-gradient(
       90deg,
-      #e998ab 0 28px,
-      #f7bdca 28px 56px
+      #eea5b5 0 27px,
+      #ffe9e8 27px 54px
     );
-  box-shadow:0 0 0 3px rgba(117,70,62,.08);
   transition:transform 1.5s cubic-bezier(.7,0,.2,1);
 }
 
 .curtain.left{
   left:0;
-  transform-origin:left center;
+  transform-origin:left;
+  box-shadow:8px 0 20px rgba(117,75,61,.12);
 }
 
 .curtain.right{
   right:0;
-  transform-origin:right center;
+  transform-origin:right;
+  box-shadow:-8px 0 20px rgba(117,75,61,.12);
 }
 
-.opening.opened .curtain.left{
+.curtain-overlay.open .left{
   transform:translateX(-100%);
 }
 
-.opening.opened .curtain.right{
+.curtain-overlay.open .right{
   transform:translateX(100%);
 }
 
 .opening-message{
-  position:absolute;
-  inset:0;
-  display:grid;
-  place-items:center;
-  z-index:2;
-  color:#fff9e9;
+  position:relative;
+  z-index:10;
+  padding:15px 20px;
   text-align:center;
-  transition:opacity .4s ease;
-}
-
-.opening.opened .opening-message{
-  opacity:0;
-}
-
-.opening-message-inner{
-  padding:17px 25px;
   border-radius:20px;
-  background:rgba(102,62,59,.18);
+  background:rgba(255,253,248,.94);
+  border:1px solid #ead7cf;
+  box-shadow:0 10px 24px rgba(91,65,53,.12);
+  transition:opacity .5s ease;
+}
+
+.curtain-overlay.open .opening-message{
+  opacity:0;
 }
 
 .opening-message strong{
   display:block;
-  font-size:26px;
+  font-size:21px;
+  color:#755043;
 }
 
 .opening-message span{
   display:block;
   margin-top:5px;
-  font-size:12px;
-  font-weight:800;
-}
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-.summary-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin:15px 0;
-}
-
-.summary-item{
-  padding:12px 7px;
-  border-radius:15px;
-  background:#f8f2ec;
-}
-
-.summary-item small{
-  display:block;
   font-size:9px;
-  color:#a18e86;
-  font-weight:900;
-}
-
-.summary-item strong{
-  display:block;
-  margin-top:4px;
-  font-size:16px;
+  color:#a58e85;
+  font-weight:800;
 }
 
 /* =========================================================
    TOAST
 ========================================================= */
 
-#toast{
+.toast{
   position:fixed;
+  z-index:3000;
   left:50%;
-  bottom:94px;
-  z-index:900;
+  bottom:88px;
+  width:max-content;
   max-width:calc(100% - 30px);
-  padding:11px 15px;
-  border-radius:14px;
-  background:#604b43;
-  color:#fffaf3;
-  font-size:11px;
-  font-weight:850;
+  padding:10px 14px;
+  border-radius:999px;
+  background:#6f554b;
+  color:#fff;
+  font-size:9px;
+  line-height:1.3;
+  font-weight:900;
   text-align:center;
-  box-shadow:0 7px 18px rgba(58,43,37,.2);
-  transform:translate(-50%,16px);
   opacity:0;
+  visibility:hidden;
+  transform:translate(-50%,8px);
+  transition:
+    opacity .2s ease,
+    transform .2s ease,
+    visibility .2s ease;
   pointer-events:none;
-  transition:opacity .22s ease,transform .22s ease;
 }
 
-#toast.show{
+.toast.show{
   opacity:1;
+  visibility:visible;
   transform:translate(-50%,0);
 }
 
 /* =========================================================
-   RESPONSIVE
+   SMALL RESPONSIVE
 ========================================================= */
 
-@media(max-width:360px){
-  .option-row{
-    gap:4px;
+@media (max-height:700px){
+  .awning{
+    height:65px;
   }
 
-  .option-btn{
-    height:61px;
+  .sign{
+    top:38px;
+    min-height:52px;
   }
 
-  .customer-box{
-    grid-template-columns:91px 1fr;
+  .sign-title{
+    font-size:19px;
   }
 
-  .customer-speech{
-    font-size:11px;
+  .counter-scene{
+    min-height:126px;
   }
 
   .ice-stage{
-    height:265px;
+    height:245px;
+  }
+
+  .customer-card{
+    min-height:148px;
   }
 }
 
-@media(min-width:521px){
-  body{
-    padding:0;
-  }
-
-  #game{
-    border-left:1px solid rgba(100,70,58,.08);
-    border-right:1px solid rgba(100,70,58,.08);
+@media (min-width:520px){
+  #app{
+    border-left:1px solid #eadcd4;
+    border-right:1px solid #eadcd4;
+    box-shadow:0 0 35px rgba(92,65,54,.10);
   }
 }
 </style>
@@ -1951,918 +1991,1430 @@ button:disabled{
 
 <body>
 
-<div id="game">
+<div id="app">
 
-  <!-- DECORATIVE CLOUDS -->
-  <div class="cloud cloud-a"></div>
-  <div class="cloud cloud-b"></div>
+  <!-- Decorative clouds -->
+  <div class="cloud one"></div>
+  <div class="cloud two"></div>
+  <div class="cloud three"></div>
+
+  <div class="sticker star" style="top:160px;left:14px;">✦</div>
+  <div class="sticker star" style="top:300px;right:14px;">✧</div>
+  <div class="sticker flower" style="bottom:125px;right:10px;">🌼</div>
 
   <!-- =====================================================
-       SHOP PAGE
+       SHOP SCREEN
   ====================================================== -->
-  <section id="shopPage" class="page shop-page active">
+  <section id="shopScreen" class="screen active">
 
-    <div class="shop-scroll">
+    <header class="shop-top">
 
-      <!-- AWNING -->
       <div class="awning">
-        <div class="awning-folds"></div>
 
-        <div class="lights">
-          <i class="light"></i>
-          <i class="light"></i>
-          <i class="light"></i>
-          <i class="light"></i>
-          <i class="light"></i>
-          <i class="light"></i>
-          <i class="light"></i>
+        <div class="awning-lights">
+          <span class="lantern"></span>
+          <span class="lantern"></span>
+          <span class="lantern"></span>
+          <span class="lantern"></span>
+          <span class="lantern"></span>
         </div>
+
       </div>
 
-      <!-- WOOD SIGN -->
-      <div class="shop-sign">
-        <div class="sign-title">🍦 Tiệm Kem Ngọt Ngào 🍓</div>
-        <div class="sign-sub">♡</div>
+      <div class="sign">
+        <div class="sign-title">Tiệm Kem Ngọt Ngào</div>
+        <div class="sign-sub">HANDMADE ICE CREAM · 09:00 — 21:00</div>
       </div>
 
-      <!-- STATUS -->
-      <div class="status-bar">
-        <div class="status-pill">
-          <span class="status-label">GIỜ MỞ CỬA</span>
-          <span id="clock" class="status-value">09:00</span>
+      <div class="info-bar">
+
+        <div class="info-pill">
+          <span class="info-label">Giờ mở cửa</span>
+          <span id="gameTime" class="info-value">09:00</span>
         </div>
 
-        <div class="status-pill status-time">
-          <span class="status-label">NGÀY</span>
-          <span id="dayStatus" class="status-value">ĐANG ĐÓNG</span>
+        <div class="info-pill">
+          <span class="info-label">Ví tiền</span>
+          <span id="cashValue" class="info-value">500.000đ</span>
         </div>
 
-        <div class="status-pill">
-          <span class="status-label">TIỀN</span>
-          <span id="money" class="status-value">500.000đ</span>
+        <div class="info-pill">
+          <span class="info-label">Ngày</span>
+          <span id="dayValue" class="info-value">Ngày 1</span>
         </div>
+
       </div>
+
+    </header>
+
+    <div class="scroll-content">
 
       <!-- COUNTER -->
-      <div class="counter">
+      <div class="counter-scene">
 
         <div class="counter-back"></div>
 
-        <div class="jar-row">
+        <div class="jar-row" id="counterJars"></div>
 
-          <div class="jar">
-            <div id="jarChoco" class="jar-fill choco"></div>
-            <div class="jar-label">Socola</div>
-          </div>
-
-          <div class="jar">
-            <div id="jarStrawberry" class="jar-fill strawberry"></div>
-            <div class="jar-label">Dâu</div>
-          </div>
-
-          <div class="jar">
-            <div id="jarVanilla" class="jar-fill vanilla"></div>
-            <div class="jar-label">Vani</div>
-          </div>
-
-          <div class="jar">
-            <div id="jarMatcha" class="jar-fill matcha"></div>
-            <div class="jar-label">Matcha</div>
-          </div>
-
-          <div class="jar">
-            <div id="jarButter" class="jar-fill butter"></div>
-            <div class="jar-label">Bơ</div>
-          </div>
-
-          <div class="jar">
-            <div id="jarDurian" class="jar-fill durian"></div>
-            <div class="jar-label">Sầu</div>
-          </div>
-
-        </div>
-
-        <!-- CACTUS -->
         <div class="cactus">
-          <div class="cactus-flower">🌸</div>
           <div class="cactus-body"></div>
           <div class="cactus-pot"></div>
         </div>
 
-        <!-- SLEEPING CAT -->
         <div class="cat-bed">
+
           <div class="bed"></div>
 
-          <div class="cat">
-            <div class="cat-head">
-              <div class="ear left"></div>
-              <div class="ear right"></div>
-              <div class="cat-eye left"></div>
-              <div class="cat-eye right"></div>
-              <div class="cat-nose"></div>
-            </div>
-            <div class="cat-tail"></div>
+          <div class="cat-z">
+            <span class="z1">z</span>
+            <span class="z2">z</span>
+            <span class="z3">Z</span>
           </div>
 
-          <div class="zzz">
-            <span>Z</span>
-            <span>z</span>
-            <span>z</span>
-          </div>
+          <!-- Detailed SVG cat -->
+          <svg class="cat-svg" viewBox="0 0 160 125" aria-label="Mèo ngủ">
+            <!-- tail -->
+            <path
+              d="M126 79
+                 C153 76 154 101 135 104
+                 C123 106 116 99 121 91
+                 C124 87 131 89 133 94"
+              fill="none"
+              stroke="#9b765f"
+              stroke-width="15"
+              stroke-linecap="round"
+            />
+
+            <!-- body -->
+            <ellipse
+              cx="84"
+              cy="79"
+              rx="52"
+              ry="31"
+              fill="#c99979"
+              stroke="#765548"
+              stroke-width="3"
+            />
+
+            <!-- belly -->
+            <ellipse
+              cx="87"
+              cy="86"
+              rx="34"
+              ry="20"
+              fill="#e9c2a1"
+            />
+
+            <!-- back leg -->
+            <ellipse
+              cx="47"
+              cy="92"
+              rx="18"
+              ry="12"
+              fill="#c08c70"
+              stroke="#765548"
+              stroke-width="3"
+            />
+
+            <!-- head -->
+            <path
+              d="M43 61
+                 C34 49 34 27 48 19
+                 L42 5
+                 C41 2 45 1 49 4
+                 L65 14
+                 C76 9 92 9 103 15
+                 L119 5
+                 C123 2 126 4 124 9
+                 L119 25
+                 C130 39 127 58 114 67
+                 C98 78 59 77 43 61Z"
+              fill="#c99979"
+              stroke="#765548"
+              stroke-width="3"
+              stroke-linejoin="round"
+            />
+
+            <!-- folded ears -->
+            <path
+              d="M48 17 L48 32 Q58 26 65 18"
+              fill="#b17e67"
+            />
+
+            <path
+              d="M103 18 Q111 26 119 30 L120 15"
+              fill="#b17e67"
+            />
+
+            <!-- face -->
+            <ellipse
+              cx="67"
+              cy="45"
+              rx="7"
+              ry="5"
+              fill="#5e4a43"
+            />
+
+            <ellipse
+              cx="99"
+              cy="45"
+              rx="7"
+              ry="5"
+              fill="#5e4a43"
+            />
+
+            <!-- closed eyelids -->
+            <path
+              d="M60 44 Q67 50 74 44"
+              fill="none"
+              stroke="#5e4a43"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+
+            <path
+              d="M92 44 Q99 50 106 44"
+              fill="none"
+              stroke="#5e4a43"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+
+            <!-- cheeks -->
+            <ellipse
+              cx="53"
+              cy="55"
+              rx="8"
+              ry="4"
+              fill="#e99798"
+              opacity=".72"
+            />
+
+            <ellipse
+              cx="111"
+              cy="55"
+              rx="8"
+              ry="4"
+              fill="#e99798"
+              opacity=".72"
+            />
+
+            <!-- muzzle -->
+            <ellipse
+              cx="82"
+              cy="57"
+              rx="15"
+              ry="10"
+              fill="#f0d0b4"
+            />
+
+            <!-- nose -->
+            <path
+              d="M78 55 Q82 52 86 55 Q84 60 82 60 Q80 60 78 55"
+              fill="#8f5e65"
+            />
+
+            <!-- sleepy mouth -->
+            <path
+              d="M82 60 Q78 65 74 63
+                 M82 60 Q86 65 90 63"
+              fill="none"
+              stroke="#765548"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+
+            <!-- whiskers -->
+            <path d="M58 57 L35 52" stroke="#765548" stroke-width="1.5"/>
+            <path d="M58 62 L33 63" stroke="#765548" stroke-width="1.5"/>
+            <path d="M106 57 L130 52" stroke="#765548" stroke-width="1.5"/>
+            <path d="M106 62 L132 64" stroke="#765548" stroke-width="1.5"/>
+
+            <!-- paw -->
+            <ellipse
+              cx="111"
+              cy="83"
+              rx="16"
+              ry="8"
+              fill="#d8aa89"
+              stroke="#765548"
+              stroke-width="2"
+            />
+
+            <!-- tiny stripes -->
+            <path d="M73 18 L76 27" stroke="#916850" stroke-width="3" stroke-linecap="round"/>
+            <path d="M84 16 L85 26" stroke="#916850" stroke-width="3" stroke-linecap="round"/>
+            <path d="M95 18 L93 27" stroke="#916850" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+
         </div>
 
-        <div class="counter-rim"></div>
-        <div class="counter-front"></div>
+        <div class="counter-top"></div>
+
+        <div class="counter-front">
+          <span class="counter-label">🍦 TIỆM KEM NHỎ XINH 🍦</span>
+        </div>
+
       </div>
 
       <!-- CUSTOMER -->
-      <div class="section">
+      <div id="customerCard" class="customer-card">
 
-        <div class="section-title">
-          <strong>🧑‍🍳 Khách đang chờ</strong>
-          <small id="customerState">Đang chuẩn bị...</small>
-        </div>
+        <div class="customer-header">
 
-        <div class="customer-box">
-
-          <div class="customer-avatar-area">
-
-            <div id="patienceRing" class="patience-ring">
-              <span id="patienceTime" class="patience-time">--</span>
-            </div>
-
-            <div id="customerChibi" class="customer-chibi">
-
-              <div class="hair"></div>
-
-              <div class="face">
-                <div class="eye left"></div>
-                <div class="eye right"></div>
-                <div class="mouth"></div>
-                <div class="cheek left"></div>
-                <div class="cheek right"></div>
-              </div>
-
-              <div class="body"></div>
-
-            </div>
-          </div>
-
-          <div class="order-bubble">
-
+          <div class="customer-name-wrap">
             <div id="customerName" class="customer-name">
-              Chưa có khách
+              Đang chờ khách...
             </div>
 
-            <div id="customerSpeech" class="customer-speech">
-              Mở cửa để đón khách nhé!
+            <div id="customerMood" class="customer-mood">
+              Khách đang xem menu
             </div>
+          </div>
 
-            <div id="orderDetails" class="order-detail"></div>
-
+          <div id="orderBubble" class="order-bubble">
+            Chào bạn! Mình đang chuẩn bị đơn...
           </div>
 
         </div>
+
+        <div class="customer-body">
+
+          <!-- Detailed kawaii customer SVG -->
+          <svg
+            id="customerArt"
+            class="customer-art happy"
+            viewBox="0 0 160 150"
+            aria-label="Khách hàng"
+          >
+
+            <!-- body -->
+            <path
+              d="M48 116
+                 Q80 96 112 116
+                 L127 150
+                 L33 150Z"
+              fill="#9dcfca"
+              stroke="#765b53"
+              stroke-width="3"
+            />
+
+            <!-- collar -->
+            <path
+              d="M63 111 L80 128 L97 111"
+              fill="#fff7ed"
+              stroke="#765b53"
+              stroke-width="2"
+            />
+
+            <!-- hair back -->
+            <path
+              d="M41 65
+                 Q35 22 79 17
+                 Q126 14 126 67
+                 L116 107
+                 Q102 123 79 119
+                 Q53 122 42 101Z"
+              fill="#684d54"
+              stroke="#4d3e3e"
+              stroke-width="3"
+            />
+
+            <!-- neck -->
+            <path
+              d="M67 93 L67 116 Q80 123 93 116 L93 93"
+              fill="#f4c6a7"
+              stroke="#765b53"
+              stroke-width="2"
+            />
+
+            <!-- face -->
+            <path
+              d="M50 49
+                 Q52 25 80 25
+                 Q109 25 111 50
+                 L106 83
+                 Q101 104 80 108
+                 Q59 104 54 83Z"
+              fill="#f4c6a7"
+              stroke="#765b53"
+              stroke-width="3"
+            />
+
+            <!-- hair fringe -->
+            <path
+              d="M46 53
+                 Q46 23 78 20
+                 Q108 18 116 45
+                 Q101 38 91 51
+                 Q83 37 75 53
+                 Q64 40 55 58Z"
+              fill="#684d54"
+              stroke="#4d3e3e"
+              stroke-width="2"
+            />
+
+            <!-- ears -->
+            <ellipse
+              cx="50"
+              cy="66"
+              rx="7"
+              ry="12"
+              fill="#f0bfa4"
+              stroke="#765b53"
+              stroke-width="2"
+            />
+
+            <ellipse
+              cx="110"
+              cy="66"
+              rx="7"
+              ry="12"
+              fill="#f0bfa4"
+              stroke="#765b53"
+              stroke-width="2"
+            />
+
+            <!-- eyes -->
+            <g class="blink">
+              <ellipse
+                cx="67"
+                cy="68"
+                rx="7"
+                ry="10"
+                fill="#51424b"
+              />
+
+              <ellipse
+                cx="93"
+                cy="68"
+                rx="7"
+                ry="10"
+                fill="#51424b"
+              />
+
+              <circle
+                cx="65"
+                cy="64"
+                r="2.5"
+                fill="#fff"
+              />
+
+              <circle
+                cx="91"
+                cy="64"
+                r="2.5"
+                fill="#fff"
+              />
+
+              <circle
+                class="eye-star"
+                cx="70"
+                cy="72"
+                r="1.5"
+                fill="#fff"
+              />
+
+              <circle
+                class="eye-star"
+                cx="96"
+                cy="72"
+                r="1.5"
+                fill="#fff"
+              />
+            </g>
+
+            <!-- brows -->
+            <path
+              class="brow"
+              d="M59 54 Q67 49 74 54"
+              fill="none"
+              stroke="#63484a"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+
+            <path
+              class="brow"
+              d="M86 54 Q94 49 101 54"
+              fill="none"
+              stroke="#63484a"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+
+            <!-- blush -->
+            <ellipse
+              class="cheek"
+              cx="55"
+              cy="81"
+              rx="10"
+              ry="5"
+              fill="#ef9a9e"
+              opacity=".68"
+            />
+
+            <ellipse
+              class="cheek"
+              cx="105"
+              cy="81"
+              rx="10"
+              ry="5"
+              fill="#ef9a9e"
+              opacity=".68"
+            />
+
+            <!-- nose -->
+            <path
+              d="M79 72 Q80 76 77 78"
+              fill="none"
+              stroke="#a66d63"
+              stroke-width="1.7"
+              stroke-linecap="round"
+            />
+
+            <!-- smile -->
+            <path
+              class="mouth"
+              d="M72 86 Q80 93 88 86"
+              fill="none"
+              stroke="#754d51"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+
+            <!-- shirt detail -->
+            <path
+              d="M48 121 Q80 140 112 121"
+              fill="none"
+              stroke="#76aaa7"
+              stroke-width="3"
+            />
+
+            <!-- tiny bow -->
+            <path
+              d="M80 113
+                 C72 106 65 111 71 117
+                 C75 121 79 118 80 116
+                 C81 118 85 121 89 117
+                 C95 111 88 106 80 113Z"
+              fill="#ef9dae"
+              stroke="#a96877"
+              stroke-width="1.5"
+            />
+
+          </svg>
+
+          <div class="patience-box">
+
+            <div
+              id="patienceRing"
+              class="patience-ring"
+              style="--progress:100"
+            >
+              <span id="patienceNumber" class="patience-number">30</span>
+            </div>
+
+            <div class="patience-label">
+              KIÊN NHẪN
+            </div>
+
+          </div>
+
+          <div id="angryBubble" class="angry-bubble">
+            Ủa... kem của mình đâu rồi 😭
+          </div>
+
+        </div>
+
       </div>
 
       <!-- WORKSPACE -->
-      <div class="section workspace">
+      <div class="workspace">
 
-        <div class="section-title">
-          <strong>🍨 Bàn làm kem</strong>
-          <small id="buildStatus">Bước 1 / 3</small>
-        </div>
+        <div class="workspace-head">
 
-        <div class="steps">
-          <div id="step1" class="step active">1 · Đế</div>
-          <div id="step2" class="step">2 · Kem</div>
-          <div id="step3" class="step">3 · Topping</div>
+          <div class="workspace-title">
+            🍨 Bàn làm kem
+          </div>
+
+          <div class="step-indicator">
+            <span id="step1" class="step-dot active">1</span>
+            <span id="step2" class="step-dot">2</span>
+            <span id="step3" class="step-dot">3</span>
+          </div>
+
         </div>
 
         <!-- FIXED STAGE -->
         <div class="ice-stage">
 
-          <div class="stage-label" id="stageLabel">
-            Chọn ốc quế hoặc ly kem
+          <div id="stageStepLabel" class="stage-step-label">
+            Bước 1 · Chọn vỏ
           </div>
 
-          <div id="stageEmpty" class="stage-empty">
-            🍦<br>
-            Chọn đế kem bên dưới để bắt đầu
+          <div id="previewCone" class="preview-cone"></div>
+          <div id="previewCup" class="preview-cup"></div>
+
+          <div id="scoop1" class="scoop s1">
+            <div class="scoop-face">
+              <i></i><i></i>
+            </div>
           </div>
 
-          <div id="visualBase" class="visual-base"></div>
+          <div id="scoop2" class="scoop s2">
+            <div class="scoop-face">
+              <i></i><i></i>
+            </div>
+          </div>
 
-          <div id="visualScoops"></div>
+          <div id="scoop3" class="scoop s3">
+            <div class="scoop-face">
+              <i></i><i></i>
+            </div>
+          </div>
 
-          <div id="toppingLayer" class="topping-layer"></div>
+          <div id="toppingLayer" class="topping-layer">
+            <div id="toppingLabel" class="topping-label"></div>
+            <div id="sprinkles" class="sprinkles"></div>
+          </div>
 
         </div>
 
-        <!-- STEP 1 -->
-        <div class="option-group">
+        <div class="controls">
 
-          <div class="option-heading">
-            <strong>① Chọn đế</strong>
-            <span>Đặt chính giữa bàn</span>
+          <!-- BASE -->
+          <div class="control-section">
+
+            <div class="control-title">
+              <span>①</span>
+              <span>Chọn vỏ / ly</span>
+            </div>
+
+            <div class="options" id="baseOptions">
+
+              <button
+                class="option"
+                data-base="cone"
+                type="button"
+              >
+                <span class="emoji">🍦</span>
+                <span class="name">Ốc quế</span>
+              </button>
+
+              <button
+                class="option"
+                data-base="cup"
+                type="button"
+              >
+                <span class="emoji">🍨</span>
+                <span class="name">Ly kem</span>
+              </button>
+
+            </div>
+
           </div>
 
-          <div class="option-row" style="grid-template-columns:repeat(2,1fr)">
+          <!-- FLAVORS -->
+          <div class="control-section">
 
-            <button
-              class="option-btn"
-              data-base="cone"
-              onclick="chooseBase('cone')"
-            >
-              <span class="option-icon">🍦</span>
-              <span class="option-name">Ốc quế</span>
-            </button>
+            <div class="control-title">
+              <span>②</span>
+              <span>Chọn hũ kem inox · Mỗi lần click = 1 viên</span>
+            </div>
 
-            <button
-              class="option-btn"
-              data-base="cup"
-              onclick="chooseBase('cup')"
-            >
-              <span class="option-icon">🍨</span>
-              <span class="option-name">Ly kem</span>
-            </button>
+            <div id="flavorOptions" class="options"></div>
 
           </div>
-        </div>
 
-        <!-- STEP 2 -->
-        <div class="option-group">
+          <!-- TOPPINGS -->
+          <div class="control-section">
 
-          <div class="option-heading">
-            <strong>② Múc kem</strong>
-            <span id="scoopCounter">0 / 3 viên</span>
+            <div class="control-title">
+              <span>③</span>
+              <span>Topping / sốt</span>
+            </div>
+
+            <div id="toppingOptions" class="options"></div>
+
           </div>
 
-          <div class="option-row">
+          <div class="action-row">
 
             <button
-              class="option-btn"
-              data-flavor="choco"
-              onclick="chooseFlavor('choco')"
+              id="resetBuildBtn"
+              class="btn btn-reset"
+              type="button"
             >
-              <span class="option-icon">🍫</span>
-              <span class="option-name">Socola</span>
-              <span id="stockChoco" class="option-stock">0</span>
+              ↺ LÀM LẠI
             </button>
 
             <button
-              class="option-btn"
-              data-flavor="strawberry"
-              onclick="chooseFlavor('strawberry')"
+              id="serveBtn"
+              class="btn btn-serve"
+              type="button"
+              disabled
             >
-              <span class="option-icon">🍓</span>
-              <span class="option-name">Dâu</span>
-              <span id="stockStrawberry" class="option-stock">0</span>
-            </button>
-
-            <button
-              class="option-btn"
-              data-flavor="vanilla"
-              onclick="chooseFlavor('vanilla')"
-            >
-              <span class="option-icon">🌼</span>
-              <span class="option-name">Vani</span>
-              <span id="stockVanilla" class="option-stock">0</span>
-            </button>
-
-            <button
-              class="option-btn"
-              data-flavor="matcha"
-              onclick="chooseFlavor('matcha')"
-            >
-              <span class="option-icon">🍵</span>
-              <span class="option-name">Matcha</span>
-              <span id="stockMatcha" class="option-stock">0</span>
-            </button>
-
-            <button
-              class="option-btn"
-              data-flavor="butter"
-              onclick="chooseFlavor('butter')"
-            >
-              <span class="option-icon">🧈</span>
-              <span class="option-name">Bơ</span>
-              <span id="stockButter" class="option-stock">0</span>
-            </button>
-
-            <button
-              class="option-btn"
-              data-flavor="durian"
-              onclick="chooseFlavor('durian')"
-            >
-              <span class="option-icon">🥭</span>
-              <span class="option-name">Sầu riêng</span>
-              <span id="stockDurian" class="option-stock">0</span>
+              🍦 GIAO KEM
             </button>
 
           </div>
-        </div>
-
-        <!-- STEP 3 -->
-        <div class="option-group">
-
-          <div class="option-heading">
-            <strong>③ Topping / Sốt</strong>
-            <span id="toppingHint">Chọn 1</span>
-          </div>
-
-          <div class="option-row">
-
-            <button
-              class="option-btn"
-              data-topping="sprinkle"
-              onclick="chooseTopping('sprinkle')"
-            >
-              <span class="option-icon">🌈</span>
-              <span class="option-name">Cốm màu</span>
-            </button>
-
-            <button
-              class="option-btn"
-              data-topping="strawberrySauce"
-              onclick="chooseTopping('strawberrySauce')"
-            >
-              <span class="option-icon">🍓</span>
-              <span class="option-name">Sốt dâu</span>
-            </button>
-
-            <button
-              class="option-btn"
-              data-topping="cherry"
-              onclick="chooseTopping('cherry')"
-            >
-              <span class="option-icon">🍒</span>
-              <span class="option-name">Cherry</span>
-            </button>
-
-            <button
-              class="option-btn"
-              data-topping="crumb"
-              onclick="chooseTopping('crumb')"
-            >
-              <span class="option-icon">🍪</span>
-              <span class="option-name">Bánh vụn</span>
-            </button>
-
-            <button
-              class="option-btn"
-              data-topping="none"
-              onclick="chooseTopping('none')"
-            >
-              <span class="option-icon">✨</span>
-              <span class="option-name">Không topping</span>
-            </button>
-
-          </div>
-        </div>
-
-        <div class="action-row">
-
-          <button
-            class="action reset"
-            onclick="resetBuild(true)"
-          >
-            ↩ LÀM LẠI
-          </button>
-
-          <button
-            id="serveButton"
-            class="action serve"
-            onclick="serveCustomer()"
-            disabled
-          >
-            🍨 GIAO KEM
-          </button>
 
         </div>
 
       </div>
 
     </div>
-  </section>
 
-  <!-- =====================================================
-       INVENTORY PAGE
-  ====================================================== -->
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
 
-  <section id="inventoryPage" class="page simple-page">
+      <button
+        class="nav-btn active"
+        data-tab="shop"
+        type="button"
+      >
+        <span class="nav-icon">🍦</span>
+        <span class="nav-text">Tiệm Kem</span>
+      </button>
 
-    <div class="page-head">
-      <div class="page-head-row">
-        <div>
-          <div class="page-title">📦 Kho Hàng</div>
-          <div class="page-subtitle">
-            Nhập thùng kem rồi châm vào hũ inox.
-          </div>
-        </div>
+      <button
+        class="nav-btn"
+        data-tab="warehouse"
+        type="button"
+      >
+        <span class="nav-icon">📦</span>
+        <span class="nav-text">Kho Hàng</span>
+      </button>
 
-        <div class="status-pill">
-          <span class="status-label">TIỀN</span>
-          <span id="moneyInventory" class="status-value">500.000đ</span>
-        </div>
-      </div>
-    </div>
+      <button
+        class="nav-btn"
+        data-tab="upgrade"
+        type="button"
+      >
+        <span class="nav-icon">🛠️</span>
+        <span class="nav-text">Nâng Cấp</span>
+      </button>
 
-    <div id="inventoryList" class="page-scroll"></div>
+      <button
+        class="nav-btn"
+        data-tab="reviews"
+        type="button"
+      >
+        <span class="nav-icon">📱</span>
+        <span class="nav-text">Đánh Giá</span>
+      </button>
+
+    </nav>
 
   </section>
 
   <!-- =====================================================
-       UPGRADE PAGE
+       WAREHOUSE SCREEN
   ====================================================== -->
+  <section id="warehouseScreen" class="screen warehouse-screen">
 
-  <section id="upgradePage" class="page simple-page">
-
-    <div class="page-head">
-      <div class="page-head-row">
-        <div>
-          <div class="page-title">🛠️ Nâng Cấp</div>
-          <div class="page-subtitle">
-            Làm tiệm xinh hơn và phục vụ nhanh hơn.
-          </div>
-        </div>
-
-        <div class="status-pill">
-          <span class="status-label">TIỀN</span>
-          <span id="moneyUpgrade" class="status-value">500.000đ</span>
-        </div>
+    <header class="subpage-header">
+      <div class="subpage-title">📦 Kho hàng</div>
+      <div class="subpage-desc">
+        Nhập sỉ thùng kem, châm đầy hũ inox và xem tổng kết ngày.
       </div>
+    </header>
+
+    <div class="scroll-content">
+
+      <div class="day-banner">
+
+        <div class="day-banner-title">
+          🌷 Một ngày thật ngọt ngào!
+        </div>
+
+        <div class="day-banner-sub">
+          Tiệm đã đóng cửa. Hãy kiểm tra doanh thu, bổ sung nguyên liệu
+          và nâng cấp trước khi bắt đầu ngày mới.
+        </div>
+
+      </div>
+
+      <div class="section-card">
+
+        <div class="section-card-title">
+          <span>📊 Tổng kết hôm nay</span>
+          <span id="warehouseDayLabel">Ngày 1</span>
+        </div>
+
+        <div class="summary-grid">
+
+          <div class="summary-item">
+            <div class="summary-item-label">DOANH THU</div>
+            <div id="warehouseRevenue" class="summary-item-value">0đ</div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-label">CHI PHÍ</div>
+            <div id="warehouseCosts" class="summary-item-value">0đ</div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-label">KHÁCH ĐÃ PHỤC VỤ</div>
+            <div id="warehouseCustomers" class="summary-item-value">0</div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-label">ĐÁNH GIÁ</div>
+            <div id="warehouseRating" class="summary-item-value">5.0 🌟</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="section-card">
+
+        <div class="section-card-title">
+          <span>🚚 Thùng kem trong kho</span>
+          <span id="bulkTotal">0</span>
+        </div>
+
+        <div id="bulkInventory" class="inventory-grid"></div>
+
+      </div>
+
+      <div class="section-card">
+
+        <div class="section-card-title">
+          <span>🥫 Hũ kem inox</span>
+          <span id="jarCapacityLabel">12 / hũ</span>
+        </div>
+
+        <div id="warehouseJars" class="inventory-grid"></div>
+
+      </div>
+
+      <div class="section-card">
+
+        <button
+          id="nextDayBtn"
+          class="next-day-btn"
+          type="button"
+        >
+          🌞 BẮT ĐẦU NGÀY MỚI
+        </button>
+
+      </div>
+
     </div>
 
-    <div id="upgradeList" class="page-scroll"></div>
+    <nav class="bottom-nav">
+
+      <button class="nav-btn" data-tab="shop" type="button">
+        <span class="nav-icon">🍦</span>
+        <span class="nav-text">Tiệm Kem</span>
+      </button>
+
+      <button class="nav-btn active" data-tab="warehouse" type="button">
+        <span class="nav-icon">📦</span>
+        <span class="nav-text">Kho Hàng</span>
+      </button>
+
+      <button class="nav-btn" data-tab="upgrade" type="button">
+        <span class="nav-icon">🛠️</span>
+        <span class="nav-text">Nâng Cấp</span>
+      </button>
+
+      <button class="nav-btn" data-tab="reviews" type="button">
+        <span class="nav-icon">📱</span>
+        <span class="nav-text">Đánh Giá</span>
+      </button>
+
+    </nav>
 
   </section>
 
   <!-- =====================================================
-       REVIEW PAGE
+       UPGRADE SCREEN
   ====================================================== -->
+  <section id="upgradeScreen" class="screen">
 
-  <section id="reviewPage" class="page simple-page">
-
-    <div class="page-head">
-      <div class="page-title">📱 Đánh Giá</div>
-      <div class="page-subtitle">
-        Nhật ký khách hàng trong ngày hôm nay.
+    <header class="subpage-header">
+      <div class="subpage-title">🛠️ Nâng cấp tiệm</div>
+      <div class="subpage-desc">
+        Đầu tư để tiệm phục vụ khách nhẹ nhàng và hiệu quả hơn.
       </div>
+    </header>
+
+    <div class="scroll-content">
+
+      <div class="section-card">
+
+        <div class="section-card-title">
+          <span>⭐ Thiết bị & nhân sự</span>
+          <span id="upgradeCash">500.000đ</span>
+        </div>
+
+        <div id="upgradeList" class="upgrade-list"></div>
+
+      </div>
+
+      <div class="section-card">
+
+        <div class="section-card-title">
+          💡 Gợi ý
+        </div>
+
+        <div style="
+          font-size:9px;
+          line-height:1.6;
+          color:#927c73;
+          font-weight:700;
+        ">
+          Tủ đông tăng sức chứa hũ. Múc nhanh giúp khách kiên nhẫn lâu hơn.
+          Nhân viên sẽ tự động châm nguyên liệu từ kho khi hũ gần hết.
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="page-scroll">
+    <nav class="bottom-nav">
+
+      <button class="nav-btn" data-tab="shop" type="button">
+        <span class="nav-icon">🍦</span>
+        <span class="nav-text">Tiệm Kem</span>
+      </button>
+
+      <button class="nav-btn" data-tab="warehouse" type="button">
+        <span class="nav-icon">📦</span>
+        <span class="nav-text">Kho Hàng</span>
+      </button>
+
+      <button class="nav-btn active" data-tab="upgrade" type="button">
+        <span class="nav-icon">🛠️</span>
+        <span class="nav-text">Nâng Cấp</span>
+      </button>
+
+      <button class="nav-btn" data-tab="reviews" type="button">
+        <span class="nav-icon">📱</span>
+        <span class="nav-text">Đánh Giá</span>
+      </button>
+
+    </nav>
+
+  </section>
+
+  <!-- =====================================================
+       REVIEWS SCREEN
+  ====================================================== -->
+  <section id="reviewsScreen" class="screen">
+
+    <header class="subpage-header">
+      <div class="subpage-title">📱 Đánh Giá</div>
+      <div class="subpage-desc">
+        Những lời nhắn được tạo từ trải nghiệm thực tế của khách.
+      </div>
+    </header>
+
+    <div class="scroll-content">
 
       <div class="rating-hero">
 
-        <div class="rating-label">ĐIỂM ĐÁNH GIÁ TRUNG BÌNH</div>
+        <div id="ratingNumber" class="rating-number">5.0</div>
 
-        <div id="averageRating" class="rating-number">5.0</div>
-
-        <div id="averageStars" class="rating-stars">
-          🌟🌟🌟🌟🌟
+        <div
+          id="ratingStars"
+          class="rating-stars"
+        >
+          🌟 🌟 🌟 🌟 🌟
         </div>
 
-        <div id="reviewCount" class="rating-count">
-          0 lượt đánh giá
+        <div id="ratingCaption" class="rating-caption">
+          Chưa có khách phàn nàn hôm nay 💕
         </div>
 
       </div>
 
-      <div id="reviewsList"></div>
+      <div id="reviewList" class="review-list"></div>
 
     </div>
+
+    <nav class="bottom-nav">
+
+      <button class="nav-btn" data-tab="shop" type="button">
+        <span class="nav-icon">🍦</span>
+        <span class="nav-text">Tiệm Kem</span>
+      </button>
+
+      <button class="nav-btn" data-tab="warehouse" type="button">
+        <span class="nav-icon">📦</span>
+        <span class="nav-text">Kho Hàng</span>
+      </button>
+
+      <button class="nav-btn" data-tab="upgrade" type="button">
+        <span class="nav-icon">🛠️</span>
+        <span class="nav-text">Nâng Cấp</span>
+      </button>
+
+      <button class="nav-btn active" data-tab="reviews" type="button">
+        <span class="nav-icon">📱</span>
+        <span class="nav-text">Đánh Giá</span>
+      </button>
+
+    </nav>
+
   </section>
-
-  <!-- =====================================================
-       BOTTOM NAV
-  ====================================================== -->
-
-  <nav class="bottom-nav">
-
-    <button
-      id="navShop"
-      class="nav-btn active"
-      onclick="switchPage('shop')"
-    >
-      <span class="nav-icon">🍦</span>
-      Tiệm Kem
-    </button>
-
-    <button
-      id="navInventory"
-      class="nav-btn"
-      onclick="switchPage('inventory')"
-    >
-      <span class="nav-icon">📦</span>
-      Kho Hàng
-    </button>
-
-    <button
-      id="navUpgrade"
-      class="nav-btn"
-      onclick="switchPage('upgrade')"
-    >
-      <span class="nav-icon">🛠️</span>
-      Nâng Cấp
-    </button>
-
-    <button
-      id="navReview"
-      class="nav-btn"
-      onclick="switchPage('review')"
-    >
-      <span class="nav-icon">📱</span>
-      Đánh Giá
-    </button>
-
-  </nav>
 
 </div>
 
-<!-- =========================================================
+<!-- =======================================================
      WELCOME MODAL
-========================================================= -->
-
+======================================================= -->
 <div id="welcomeModal" class="modal show">
 
   <div class="modal-card">
 
-    <div class="modal-icon">🍦</div>
+    <div class="welcome-art">
 
-    <div class="modal-title">
-      Tiệm Kem Ngọt Ngào
+      <svg viewBox="0 0 180 130" width="145" height="110">
+
+        <ellipse
+          cx="90"
+          cy="113"
+          rx="55"
+          ry="10"
+          fill="#e8cfc3"
+        />
+
+        <path
+          d="M61 85 L90 121 L119 85Z"
+          fill="#e8b875"
+          stroke="#b97e50"
+          stroke-width="3"
+        />
+
+        <circle
+          cx="90"
+          cy="72"
+          r="35"
+          fill="#fff1df"
+          stroke="#d49a79"
+          stroke-width="3"
+        />
+
+        <path
+          d="M58 68 Q90 37 122 68"
+          fill="#8b5b49"
+        />
+
+        <circle
+          cx="77"
+          cy="74"
+          r="4"
+          fill="#5c4841"
+        />
+
+        <circle
+          cx="103"
+          cy="74"
+          r="4"
+          fill="#5c4841"
+        />
+
+        <circle
+          cx="79"
+          cy="72"
+          r="1.8"
+          fill="#fff"
+        />
+
+        <circle
+          cx="105"
+          cy="72"
+          r="1.8"
+          fill="#fff"
+        />
+
+        <path
+          d="M82 85 Q90 91 98 85"
+          fill="none"
+          stroke="#765148"
+          stroke-width="3"
+          stroke-linecap="round"
+        />
+
+        <ellipse
+          cx="67"
+          cy="84"
+          rx="8"
+          ry="4"
+          fill="#efa2a6"
+          opacity=".7"
+        />
+
+        <ellipse
+          cx="113"
+          cy="84"
+          rx="8"
+          ry="4"
+          fill="#efa2a6"
+          opacity=".7"
+        />
+
+      </svg>
+
     </div>
 
-    <div class="modal-text">
-      Mở cửa tiệm, đón những vị khách dễ thương
-      và tự tay làm từng ly kem thật xinh nhé! 🍓🌈
+    <div class="modal-title">
+      Tiệm Kem Ngọt Ngào 🍦
+    </div>
+
+    <div class="modal-sub">
+      Một tiệm kem nhỏ xinh đang chờ bạn.
+      Mở cửa, múc từng viên kem thật gọn,
+      làm khách vui và xây dựng tiệm của riêng mình.
     </div>
 
     <button
-      class="primary-btn"
-      onclick="openShop()"
+      id="startBusinessBtn"
+      class="big-start"
+      type="button"
     >
-      🏪 BẮT ĐẦU KINH DOANH
+      🍨 BẮT ĐẦU KINH DOANH
     </button>
 
   </div>
+
 </div>
 
-<!-- =========================================================
+<!-- =======================================================
      OPENING CURTAIN
-========================================================= -->
-
-<div id="opening" class="opening">
+======================================================= -->
+<div id="curtainOverlay" class="curtain-overlay">
 
   <div class="curtain left"></div>
   <div class="curtain right"></div>
 
   <div class="opening-message">
-    <div class="opening-message-inner">
-      <strong>🌷 NGÀY MỚI BẮT ĐẦU! 🍦</strong>
-      <span>Tiệm Kem Ngọt Ngào đã mở cửa</span>
-    </div>
+    <strong>Ngày mới bắt đầu! 🍦</strong>
+    <span>Mở cửa tiệm thật nhẹ nhàng...</span>
   </div>
 
 </div>
 
-<!-- =========================================================
-     SUMMARY MODAL
-========================================================= -->
-
+<!-- =======================================================
+     DAILY SUMMARY MODAL
+======================================================= -->
 <div id="summaryModal" class="modal">
 
   <div class="modal-card">
 
-    <div class="modal-icon">🌙</div>
-
-    <div class="modal-title">
-      Hôm nay đóng cửa rồi!
+    <div class="summary-modal-title">
+      🌙 Hết một ngày rồi!
     </div>
 
-    <div class="modal-text">
-      Cảm ơn bạn đã chăm chỉ bán kem.
-      Đây là kết quả kinh doanh hôm nay:
+    <div id="summaryDate" class="summary-date">
+      Ngày 1
+    </div>
+
+    <div class="summary-profit">
+
+      <div class="summary-profit-label">
+        LỢI NHUẬN TRONG NGÀY
+      </div>
+
+      <div id="summaryProfit" class="summary-profit-value">
+        +0đ
+      </div>
+
     </div>
 
     <div class="summary-grid">
 
       <div class="summary-item">
-        <small>DOANH THU</small>
-        <strong id="summaryRevenue">0đ</strong>
+        <div class="summary-item-label">DOANH THU</div>
+        <div id="summaryRevenue" class="summary-item-value">0đ</div>
       </div>
 
       <div class="summary-item">
-        <small>CHI PHÍ</small>
-        <strong id="summaryCost">0đ</strong>
+        <div class="summary-item-label">CHI PHÍ</div>
+        <div id="summaryCosts" class="summary-item-value">0đ</div>
       </div>
 
       <div class="summary-item">
-        <small>LỢI NHUẬN</small>
-        <strong id="summaryProfit">0đ</strong>
+        <div class="summary-item-label">KHÁCH</div>
+        <div id="summaryCustomers" class="summary-item-value">0</div>
       </div>
 
       <div class="summary-item">
-        <small>KHÁCH PHỤC VỤ</small>
-        <strong id="summaryCustomers">0</strong>
+        <div class="summary-item-label">RATING</div>
+        <div id="summaryRating" class="summary-item-value">5.0 🌟</div>
       </div>
 
     </div>
 
     <button
-      class="primary-btn"
-      onclick="closeSummary()"
+      id="summaryWarehouseBtn"
+      class="next-day-btn"
+      type="button"
     >
-      🌸 XEM TIỆM
+      📦 ĐI TỚI KHO HÀNG
     </button>
 
   </div>
+
 </div>
 
-<!-- TOAST -->
-<div id="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script>
 "use strict";
 
 /* =========================================================
-   GAME CONFIG
+   DATA
 ========================================================= */
 
-const GAME = {
-  startMinute: 9 * 60,
-  endMinute: 21 * 60,
-
-  /*
-    1 phút trong game = 700ms thực tế.
-    Một ngày 12 tiếng ≈ 8,4 phút.
-  */
-  gameMinuteMs: 700,
-
-  customerPatienceMs: 22000,
-
-  stockCapacity: 18,
-  initialStock: 10,
-  initialBulk: 24,
-
-  startingMoney: 500000
-};
-
-/* =========================================================
-   FLAVOR DATA
-========================================================= */
-
-const FLAVORS = {
-  choco:{
+const FLAVORS = [
+  {
+    id:"choco",
     name:"Sô-cô-la",
-    short:"Socola",
     emoji:"🍫",
-    className:"choco",
-    price:16000
+    color:"#82513f",
+    light:"#a66c51"
   },
-
-  strawberry:{
+  {
+    id:"strawberry",
     name:"Dâu",
-    short:"Dâu",
     emoji:"🍓",
-    className:"strawberry",
-    price:15000
+    color:"#ee9aa4",
+    light:"#f4b8bd"
   },
-
-  vanilla:{
+  {
+    id:"vanilla",
     name:"Vani",
-    short:"Vani",
-    emoji:"🌼",
-    className:"vanilla",
-    price:14000
-  },
-
-  matcha:{
-    name:"Matcha",
-    short:"Matcha",
-    emoji:"🍵",
-    className:"matcha",
-    price:17000
-  },
-
-  butter:{
-    name:"Bơ",
-    short:"Bơ",
-    emoji:"🧈",
-    className:"butter",
-    price:16000
-  },
-
-  durian:{
-    name:"Sầu riêng",
-    short:"Sầu",
-    emoji:"🥭",
-    className:"durian",
-    price:20000
-  }
-};
-
-const BASES = {
-  cone:{
-    name:"Ốc quế",
     emoji:"🍦",
-    price:7000
+    color:"#f4dca7",
+    light:"#ffedc7"
   },
-
-  cup:{
-    name:"Ly kem",
-    emoji:"🍨",
-    price:6000
+  {
+    id:"matcha",
+    name:"Matcha",
+    emoji:"🍵",
+    color:"#8fbd91",
+    light:"#afd3a6"
+  },
+  {
+    id:"butter",
+    name:"Bơ",
+    emoji:"🧈",
+    color:"#e9c55d",
+    light:"#f6dc83"
+  },
+  {
+    id:"durian",
+    name:"Sầu riêng",
+    emoji:"🥭",
+    color:"#d5cf6b",
+    light:"#e7df89"
   }
-};
+];
 
-const TOPPINGS = {
-  sprinkle:{
+const TOPPINGS = [
+  {
+    id:"sprinkle",
     name:"Cốm màu",
     emoji:"🌈",
-    price:3000
+    visual:"🌈"
   },
-
-  strawberrySauce:{
+  {
+    id:"strawberrySauce",
     name:"Sốt dâu",
     emoji:"🍓",
-    price:4000
+    visual:"🍓"
   },
-
-  cherry:{
+  {
+    id:"cherry",
     name:"Cherry",
     emoji:"🍒",
-    price:5000
+    visual:"🍒"
   },
-
-  crumb:{
+  {
+    id:"cookie",
     name:"Bánh vụn",
     emoji:"🍪",
-    price:3000
+    visual:"🍪"
   },
-
-  none:{
+  {
+    id:"marshmallow",
+    name:"Kẹo mềm",
+    emoji:"🍡",
+    visual:"🍡"
+  },
+  {
+    id:"none",
     name:"Không topping",
-    emoji:"✨",
-    price:0
+    emoji:"🤍",
+    visual:""
   }
-};
-
-/* =========================================================
-   DYNAMIC NAME COMPONENTS
-   Không tạo tên bằng một danh sách tên hoàn chỉnh.
-   Tên được ghép từ họ / tên đệm / tên chính.
-========================================================= */
-
-const NAME_FIRST = [
-  "An","Anh","Bảo","Chi","Duy","Đức","Gia","Hà","Hải",
-  "Hân","Hiếu","Hoài","Huy","Khang","Khánh","Kiên","Lam",
-  "Lan","Linh","Long","Mai","Minh","My","Nam","Ngân",
-  "Ngọc","Nhi","Phúc","Quân","Quỳnh","Thảo","Trang","Trí",
-  "Tuấn","Vy","Yến","Nhật","Khôi","Thiên","Tú","Thư"
 ];
 
-const NAME_MIDDLE = [
-  "Gia","Minh","Hoàng","Khánh","Ngọc","Thanh","Quốc",
-  "Anh","Đình","Thiên","Tuệ","Bảo","Hải","Nhật",
-  "Phương","Kim","Mộc","Xuân","Thu","Đức","Gia","Thái"
+/*
+  Kho tên được tách thành nhiều phần.
+  Game ghép họ + tên đệm + tên chính + nickname.
+  Vì vậy không phải chỉ random một mảng tên hoàn chỉnh.
+*/
+
+const FAMILY_NAMES = [
+  "Nguyễn","Trần","Lê","Phạm","Hoàng","Huỳnh",
+  "Phan","Vũ","Võ","Đặng","Bùi","Đỗ","Ngô",
+  "Dương","Lý","Mai","Đinh","Trương","Cao",
+  "Tạ","Lâm","Hồ","Đào","Tô","Hà","Quách",
+  "Chu","Thái","Lương","Châu"
 ];
 
-const NAME_LAST = [
-  "An","Anh","Bảo","Châu","Duy","Hân","Hà","Hải","Huy",
-  "Khang","Khánh","Linh","Long","Mai","Minh","Nam","Ngân",
-  "Ngọc","Nhi","Phúc","Quân","Quỳnh","Thảo","Trang","Trí",
-  "Tuấn","Vy","Yến","Khôi","Thư","Tâm","My","Lan"
+const MIDDLE_NAMES = [
+  "Minh","Gia","Khánh","Hoàng","Ngọc","Anh",
+  "Thanh","Bảo","Thiên","Tuệ","Hải","Quốc",
+  "Đức","Thảo","Nhật","Phương","Trúc","Mỹ",
+  "Kim","Xuân","Quỳnh","Hồng","Thiện","Tú",
+  "Uyên","Nhã","Linh","Đăng","Khôi","An"
 ];
 
-const NAME_SURNAME = [
-  "Nguyễn","Trần","Lê","Phạm","Hoàng","Vũ","Đặng","Bùi",
-  "Đỗ","Phan","Ngô","Dương","Lý","Mai","Đinh","Tạ"
+const FIRST_NAMES = [
+  "Nam","An","Hân","Quân","Vy","Linh","Khang",
+  "Nhi","Minh","Anh","Duy","Chi","Phúc","Trang",
+  "Thư","Kiệt","My","Long","Huy","Ngân","Tâm",
+  "Yến","Khôi","Bình","Thảo","Lan","Tuấn","Mai",
+  "Khoa","Trâm","Phương","Nhung","Đạt","Ly",
+  "Hà","Dương","Sơn","Châu","Tú","Mộc"
 ];
 
-/* =========================================================
-   DYNAMIC SPEECH PARTS
-========================================================= */
+const NAME_NICKNAMES = [
+  "bé", "bạn", "mình", "em", "chị", "anh"
+];
 
-const SPEECH_OPEN = [
-  "Dạ shop ơi",
+/*
+  Các mảnh thoại được trộn.
+  Không lưu câu hoàn chỉnh duy nhất.
+*/
+
+const OPENINGS = [
+  "Dạ shop",
   "Shop ơi",
-  "Em chào shop nha",
-  "Cho em một phần",
-  "Em muốn gọi",
-  "Chị ơi cho em",
-  "Anh ơi làm giúp em",
-  "Dạ cho em"
+  "Cho mình hỏi",
+  "Mình muốn gọi",
+  "Em ghé tiệm một chút",
+  "Cho em xin",
+  "Hôm nay mình muốn ăn",
+  "Bạn ơi cho mình"
 ];
 
-const SPEECH_MID = [
-  "một chiếc",
+const QUANTITY_PHRASES = [
+  "1 phần",
   "một phần",
+  "1 ly",
   "một ly",
+  "1 cây",
   "một cây",
-  "một chiếc kem",
-  "một phần kem"
+  "một chiếc",
+  "1 chiếc"
 ];
 
-const SPEECH_END = [
+const REQUEST_ENDINGS = [
   "nhé!",
   "nha!",
-  "giúp em với ạ!",
-  "cho em xin nhé!",
+  "giúp mình với!",
+  "cho mình nhé!",
   "ạ!",
-  "được không ạ?"
+  "nè!",
+  "được không ạ?",
+  "với nha!"
 ];
 
-const HAPPY_START = [
-  "Kem ngon quá!",
-  "Ui kem xinh quá!",
-  "Ăn thích ghê!",
-  "Kem béo thơm quá!",
-  "Phục vụ nhanh thật!",
-  "Món kem dễ thương quá!",
-  "Vị này đúng gu mình luôn!",
-  "Tuyệt quá trời luôn!"
+const REVIEW_POSITIVE_OPEN = [
+  "Kem",
+  "Phần kem",
+  "Ly kem",
+  "Chiếc ốc quế",
+  "Món hôm nay",
+  "Đơn kem"
 ];
 
-const HAPPY_MIDDLE = [
-  "Kem mịn và thơm",
-  "Phần kem rất vừa miệng",
-  "Topping nhìn cực xinh",
-  "Vị kem đậm đà",
-  "Ốc quế giòn ngon",
-  "Ly kem được làm rất đẹp",
-  "Mùi thơm dễ chịu",
-  "Ăn xong vẫn còn muốn gọi thêm"
+const REVIEW_POSITIVE_MID = [
+  "béo ngậy mà không ngấy",
+  "thơm và vừa miệng",
+  "mát lạnh, ăn rất vui",
+  "mềm mịn, vị rõ ràng",
+  "đẹp mắt và rất ngon",
+  "ngọt vừa đủ",
+  "thơm nhẹ, hậu vị dễ chịu",
+  "đầy đặn và cực kỳ đáng yêu",
+  "ăn xong vẫn còn muốn gọi thêm",
+  "đúng kiểu kem mình thích"
 ];
 
-const HAPPY_END = [
-  "mình sẽ quay lại!",
-  "lần sau mình gọi tiếp nha!",
-  "đúng là tiệm ruột mới!",
-  "cho shop 5 sao luôn!",
-  "rất đáng yêu!",
-  "mình thích quá!",
-  "bạn bán kem dễ thương ghê!",
-  "nhất định sẽ giới thiệu bạn bè!"
+const REVIEW_POSITIVE_END = [
+  "Mình rất thích!",
+  "Lần sau mình sẽ quay lại.",
+  "Tiệm làm nhanh nữa!",
+  "Đóng gói cũng xinh.",
+  "Nhìn món là thấy vui rồi.",
+  "Bạn bán hàng dễ thương quá.",
+  "Cho tiệm một chiếc tim ❤️",
+  "Một buổi ăn kem thật vui!",
+  "Mình sẽ rủ bạn bè tới.",
+  "Rất hợp cho một buổi chiều nhẹ nhàng."
 ];
 
-const ANGRY_START = [
-  "Mình chờ hơi lâu rồi...",
-  "Ơ mình đợi lâu quá...",
-  "Kem đâu rồi shop ơi...",
-  "Mình phải đi mất rồi...",
-  "Ui hết kiên nhẫn mất...",
-  "Chờ mãi chưa có kem...",
-  "Mình trễ giờ rồi...",
-  "Tiếc quá, mình không chờ thêm được..."
+const REVIEW_NEGATIVE_OPEN = [
+  "Mình chờ",
+  "Đợi hơi lâu",
+  "Tiệm hôm nay",
+  "Mình đứng chờ",
+  "Đơn kem của mình",
+  "Thời gian đợi"
 ];
 
-const ANGRY_END = [
-  "lần sau làm nhanh hơn nhé 😭",
-  "mình đành đi trước vậy!",
-  "mong shop chú ý thời gian nha!",
-  "hy vọng lần sau đỡ phải chờ!",
-  "mình buồn xíu đó!",
-  "hẹn hôm khác vậy!",
-  "chưa kịp ăn kem luôn!",
-  "thôi mình đi đây 🥲"
+const REVIEW_NEGATIVE_MID = [
+  "khá lâu",
+  "lâu hơn mình nghĩ",
+  "đến lúc hết kiên nhẫn",
+  "chưa được phục vụ",
+  "khiến mình phải bỏ đi",
+  "làm mình không kịp giờ"
 ];
 
-/* =========================================================
-   AVATAR POOL
-========================================================= */
+const REVIEW_NEGATIVE_END = [
+  "Hy vọng lần sau nhanh hơn.",
+  "Mình hơi buồn 😢",
+  "Tiếc quá!",
+  "Chờ lâu thật sự 😭",
+  "Lần sau mình mong đỡ phải đợi.",
+  "Mình đành đi trước vậy."
+];
+
+const POSITIVE_REACTIONS = [
+  "❤️",
+  "👍",
+  "❤️🍦",
+  "💕",
+  "👍✨",
+  "🥰",
+  "💗",
+  ""
+];
+
+const NEGATIVE_REACTIONS = [
+  "😢",
+  "😡",
+  "👎",
+  "😭",
+  "😤",
+  "😢👎"
+];
 
 const AVATARS = [
-  "🐰","🐻","🐱","🦊","🐼","🐹","🐨","🐯",
-  "🐸","🐶","🦄","🐥","🐣","🐧","🦋","🐝",
-  "🐙","🦔","🐿️","🦦"
-];
-
-/* =========================================================
-   REVIEW BUILDING BLOCKS
-========================================================= */
-
-const REVIEW_ACTIONS = [
-  "béo ngậy",
-  "mịn mượt",
-  "thơm dịu",
-  "ngọt vừa",
-  "mát lạnh",
-  "đậm vị",
-  "rất vừa miệng",
-  "ăn cực cuốn"
-];
-
-const REVIEW_COMPLIMENTS = [
-  "làm kem nhanh tay",
-  "trình bày rất xinh",
-  "đóng kem rất gọn",
-  "chăm khách dễ thương",
-  "phục vụ rất nhẹ nhàng",
-  "làm món nhìn đáng yêu",
-  "chuẩn bị món rất chỉn chu",
-  "phục vụ nhanh nhẹn"
+  "🐰","🐻","🐱","🦊","🐼","🐨","🐹",
+  "🐥","🐶","🦄","🐣","🐯","🐸","🐵",
+  "🐷","🦁","🐝","🐞","🦋","🐳"
 ];
 
 /* =========================================================
@@ -2870,91 +3422,1984 @@ const REVIEW_COMPLIMENTS = [
 ========================================================= */
 
 const state = {
-  open:false,
-  closed:false,
 
-  minute:GAME.startMinute,
+  day:1,
 
-  money:GAME.startingMoney,
+  /*
+    09:00 = 540 phút
+    21:00 = 1260 phút
+  */
+  gameMinutes:540,
 
-  revenue:0,
-  costs:0,
-  customersServed:0,
+  isOpen:false,
+  dayEnded:false,
 
-  activeCustomer:null,
+  /*
+    650ms = 1 phút trong game.
+    Một ngày khoảng 7,8 phút.
+  */
+  GAME_MINUTE_MS:650,
 
+  cash:500000,
+
+  dailyRevenue:0,
+  dailyCosts:0,
+  dailyCustomers:0,
+
+  customer:null,
+
+  /*
+    Build hiện tại.
+    Tất cả scoop được lưu dưới dạng id.
+  */
   build:{
     base:null,
     flavors:[],
     topping:null
   },
 
-  stock:{
-    choco:GAME.initialStock,
-    strawberry:GAME.initialStock,
-    vanilla:GAME.initialStock,
-    matcha:GAME.initialStock,
-    butter:GAME.initialStock,
-    durian:GAME.initialStock
-  },
+  inventory:{},
 
-  bulk:{
-    choco:GAME.initialBulk,
-    strawberry:GAME.initialBulk,
-    vanilla:GAME.initialBulk,
-    matcha:GAME.initialBulk,
-    butter:GAME.initialBulk,
-    durian:GAME.initialBulk
-  },
+  bulk:{},
 
   upgrades:{
     freezer:0,
-    scoop:0,
+    scoopSpeed:0,
     employee:0
   },
 
   reviews:[],
-  usedNames:new Set(),
-  usedOrderSignatures:new Set(),
-  usedReviewSignatures:new Set()
+
+  /*
+    Dùng để tránh tạo cùng tên / câu thoại / review
+    ngay trong các lượt tiếp theo.
+  */
+  recentNames:[],
+  recentOrders:[],
+  recentReviews:[],
+
+  timerHandles:{
+    clock:null,
+    patience:null,
+    employee:null
+  },
+
+  currentTab:"shop"
 };
 
-let clockTimer = null;
-let patienceTimer = null;
-let employeeTimer = null;
-let spawnTimer = null;
-let toastTimer = null;
-
 /* =========================================================
-   DOM HELPERS
+   HELPERS
 ========================================================= */
 
-const $ = id => document.getElementById(id);
+function $(selector){
+  return document.querySelector(selector);
+}
 
-function money(value){
-  return Math.round(value).toLocaleString("vi-VN") + "đ";
+function $all(selector){
+  return Array.from(document.querySelectorAll(selector));
+}
+
+function randomItem(array){
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function randomInt(min,max){
+  return Math.floor(Math.random() * (max-min+1)) + min;
+}
+
+function shuffle(array){
+  const a=[...array];
+
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+
+  return a;
+}
+
+/*
+  Chọn một giá trị nhưng cố tránh các giá trị vừa dùng.
+*/
+function uniqueRandom(array, recent, limit=8){
+
+  const candidates=array.filter(item=>!recent.includes(item));
+
+  const pool=candidates.length ? candidates : array;
+
+  const value=randomItem(pool);
+
+  recent.push(value);
+
+  while(recent.length>limit){
+    recent.shift();
+  }
+
+  return value;
+}
+
+function formatMoney(value){
+  return new Intl.NumberFormat("vi-VN").format(Math.round(value)) + "đ";
+}
+
+function formatClock(minutes){
+
+  const h=Math.floor(minutes/60);
+  const m=minutes%60;
+
+  return String(h).padStart(2,"0")
+    + ":"
+    + String(m).padStart(2,"0");
 }
 
 function clamp(value,min,max){
   return Math.max(min,Math.min(max,value));
 }
 
-function randomItem(arr){
-  return arr[Math.floor(Math.random()*arr.length)];
+function vibrate(ms=8){
+  if("vibrate" in navigator){
+    try{
+      navigator.vibrate(ms);
+    }catch(e){}
+  }
 }
 
-function shuffle(arr){
-  const copy = [...arr];
+/* =========================================================
+   NAME GENERATOR
+========================================================= */
 
-  for(let i=copy.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [copy[i],copy[j]]=[copy[j],copy[i]];
+function generateCustomerName(){
+
+  let name="";
+
+  /*
+    Tạo tên từ nhiều thành phần.
+    Có thể tạo hàng trăm nghìn tổ hợp.
+  */
+  for(let attempt=0;attempt<30;attempt++){
+
+    const family=randomItem(FAMILY_NAMES);
+    const middle=randomItem(MIDDLE_NAMES);
+    const first=randomItem(FIRST_NAMES);
+
+    const style=Math.random();
+
+    if(style<.72){
+      name=`${family} ${middle} ${first}`;
+    }else if(style<.9){
+      name=`${family} ${first}`;
+    }else{
+      const nickname=randomItem(NAME_NICKNAMES);
+      name=`${family} ${middle} ${first} (${nickname})`;
+    }
+
+    if(!state.recentNames.includes(name)){
+      state.recentNames.push(name);
+
+      while(state.recentNames.length>35){
+        state.recentNames.shift();
+      }
+
+      return name;
+    }
   }
 
-  return copy;
+  /*
+    Trường hợp cực hiếm khi danh sách gần đầy,
+    tạo thêm hậu tố để không trùng hiển thị.
+  */
+  const fallback =
+    randomItem(FAMILY_NAMES)
+    + " "
+    + randomItem(FIRST_NAMES)
+    + " "
+    + randomInt(10,999);
+
+  state.recentNames.push(fallback);
+
+  return fallback;
 }
 
-function escapeHTML(value){
+/* =========================================================
+   ORDER GENERATOR
+========================================================= */
+
+function generateOrder(){
+
+  const base=randomItem(["cone","cup"]);
+
+  /*
+    Phần lớn khách gọi 1 scoop.
+    Một số khách gọi 2 hoặc 3 scoop.
+  */
+  const scoopCount =
+    Math.random()<.58 ? 1 :
+    Math.random()<.78 ? 2 : 3;
+
+  let flavors=[];
+
+  while(flavors.length<scoopCount){
+
+    const flavor=randomItem(FLAVORS).id;
+
+    /*
+      Không bắt buộc khác nhau 100%, nhưng tránh
+      đơn bị lặp vị liên tục.
+    */
+    if(
+      !flavors.includes(flavor) ||
+      Math.random()<.18
+    ){
+      flavors.push(flavor);
+    }
+  }
+
+  const topping=
+    Math.random()<.20
+      ? "none"
+      : randomItem(TOPPINGS.filter(t=>t.id!=="none")).id;
+
+  return {
+    base,
+    flavors,
+    topping
+  };
+}
+
+function getFlavor(id){
+  return FLAVORS.find(f=>f.id===id);
+}
+
+function getTopping(id){
+  return TOPPINGS.find(t=>t.id===id);
+}
+
+function baseLabel(id){
+  return id==="cone" ? "ốc quế" : "ly kem";
+}
+
+function buildOrderSpeech(order){
+
+  const opening=uniqueRandom(
+    OPENINGS,
+    state.recentOrders,
+    7
+  );
+
+  const quantity=randomItem(QUANTITY_PHRASES);
+
+  const flavorText=order.flavors
+    .map(id=>getFlavor(id).name.toLowerCase())
+    .join(" + ");
+
+  const toppingText=
+    order.topping==="none"
+      ? ""
+      : " thêm " + getTopping(order.topping).name.toLowerCase();
+
+  const ending=randomItem(REQUEST_ENDINGS);
+
+  return `${opening} ${quantity} ${baseLabel(order.base)} vị ${flavorText}${toppingText} ${ending}`;
+}
+
+/* =========================================================
+   REVIEW GENERATOR
+========================================================= */
+
+function generatePositiveReview(customer){
+
+  const opening=randomItem(REVIEW_POSITIVE_OPEN);
+  const mid=randomItem(REVIEW_POSITIVE_MID);
+  const ending=randomItem(REVIEW_POSITIVE_END);
+
+  const review=
+    `${opening} ${mid}. ${ending}`;
+
+  /*
+    Cùng một review không được xuất hiện lại.
+  */
+  if(state.recentReviews.includes(review)){
+    return generatePositiveReview(customer);
+  }
+
+  state.recentReviews.push(review);
+
+  while(state.recentReviews.length>80){
+    state.recentReviews.shift();
+  }
+
+  return review;
+}
+
+function generateNegativeReview(customer){
+
+  const opening=randomItem(REVIEW_NEGATIVE_OPEN);
+  const mid=randomItem(REVIEW_NEGATIVE_MID);
+  const ending=randomItem(REVIEW_NEGATIVE_END);
+
+  const review=
+    `${opening} ${mid}. ${ending}`;
+
+  if(state.recentReviews.includes(review)){
+    return generateNegativeReview(customer);
+  }
+
+  state.recentReviews.push(review);
+
+  while(state.recentReviews.length>80){
+    state.recentReviews.shift();
+  }
+
+  return review;
+}
+
+function getGameTimeLabel(){
+  return `Hôm nay · ${formatClock(state.gameMinutes)}`;
+}
+
+function addReview(stars,customer,served){
+
+  const text=served
+    ? generatePositiveReview(customer)
+    : generateNegativeReview(customer);
+
+  const reaction=served
+    ? uniqueRandom(POSITIVE_REACTIONS,[],1)
+    : uniqueRandom(NEGATIVE_REACTIONS,[],1);
+
+  const review={
+    id:Date.now()+Math.random(),
+    name:customer.name,
+    avatar:randomItem(AVATARS),
+    stars,
+    text,
+    reaction,
+    time:getGameTimeLabel(),
+    served
+  };
+
+  state.reviews.unshift(review);
+
+  /*
+    Giữ số review đủ lớn nhưng không phình vô hạn.
+  */
+  if(state.reviews.length>100){
+    state.reviews.pop();
+  }
+
+  renderReviews();
+}
+
+/* =========================================================
+   RATING
+========================================================= */
+
+function getAverageRating(){
+
+  if(!state.reviews.length){
+    return 5;
+  }
+
+  const total=state.reviews.reduce(
+    (sum,review)=>sum+review.stars,
+    0
+  );
+
+  return total/state.reviews.length;
+}
+
+/* =========================================================
+   INVENTORY INIT
+========================================================= */
+
+function initializeInventory(){
+
+  FLAVORS.forEach(flavor=>{
+    state.inventory[flavor.id]=12;
+    state.bulk[flavor.id]=18;
+  });
+}
+
+/* =========================================================
+   RENDER COUNTER JARS
+========================================================= */
+
+function renderCounterJars(){
+
+  const container=$("#counterJars");
+
+  container.innerHTML="";
+
+  FLAVORS.slice(0,5).forEach(flavor=>{
+
+    const jar=document.createElement("div");
+
+    jar.className="jar";
+
+    jar.innerHTML=`
+      <div class="jar-lid"></div>
+      <div
+        class="jar-ice"
+        style="
+          background:
+            linear-gradient(
+              90deg,
+              rgba(255,255,255,.2),
+              transparent 35% 65%,
+              rgba(255,255,255,.18)
+            ),
+            ${flavor.color};
+        "
+      ></div>
+      <div class="jar-tag">${flavor.name}</div>
+    `;
+
+    container.appendChild(jar);
+  });
+}
+
+/* =========================================================
+   RENDER FLAVOR OPTIONS
+========================================================= */
+
+function renderFlavorOptions(){
+
+  const container=$("#flavorOptions");
+
+  container.innerHTML="";
+
+  FLAVORS.forEach(flavor=>{
+
+    const button=document.createElement("button");
+
+    button.type="button";
+    button.className="option";
+
+    if(state.build.flavors.length){
+      /*
+        Nếu flavor đã được chọn trong build,
+        đánh dấu trực quan.
+      */
+      if(state.build.flavors.includes(flavor.id)){
+        button.classList.add("selected");
+      }
+    }
+
+    button.innerHTML=`
+      <span
+        class="emoji"
+        style="font-size:20px;"
+      >
+        ${flavor.emoji}
+      </span>
+
+      <span class="name">
+        ${flavor.name}
+      </span>
+
+      <span class="stock">
+        ${state.inventory[flavor.id]} viên
+      </span>
+    `;
+
+    button.addEventListener("click",()=>{
+
+      if(!state.isOpen){
+        showToast("Tiệm đang đóng cửa 📦");
+        return;
+      }
+
+      addScoop(flavor.id);
+    });
+
+    container.appendChild(button);
+  });
+}
+
+/* =========================================================
+   RENDER TOPPING OPTIONS
+========================================================= */
+
+function renderToppingOptions(){
+
+  const container=$("#toppingOptions");
+
+  container.innerHTML="";
+
+  TOPPINGS.forEach(topping=>{
+
+    const button=document.createElement("button");
+
+    button.type="button";
+    button.className="option";
+
+    if(state.build.topping===topping.id){
+      button.classList.add("selected");
+    }
+
+    button.innerHTML=`
+      <span class="emoji">${topping.emoji}</span>
+      <span class="name">${topping.name}</span>
+    `;
+
+    button.addEventListener("click",()=>{
+
+      if(!state.build.base){
+        showToast("Hãy chọn ốc quế hoặc ly trước nhé 🍦");
+        return;
+      }
+
+      state.build.topping=topping.id;
+
+      renderBuild();
+      vibrate(8);
+    });
+
+    container.appendChild(button);
+  });
+}
+
+/* =========================================================
+   SCOOP VISUAL
+========================================================= */
+
+function updateScoopElement(element,flavorId,show){
+
+  if(!show){
+
+    element.classList.remove("show");
+    element.style.background="";
+    return;
+  }
+
+  const flavor=getFlavor(flavorId);
+
+  element.style.background=`
+    radial-gradient(
+      circle at 30% 25%,
+      ${flavor.light} 0 12%,
+      transparent 13%
+    ),
+    ${flavor.color}
+  `;
+
+  element.classList.add("show");
+}
+
+/* =========================================================
+   RENDER BUILD
+========================================================= */
+
+function renderBuild(){
+
+  const build=state.build;
+
+  $("#previewCone").classList.toggle(
+    "visible",
+    build.base==="cone"
+  );
+
+  $("#previewCup").classList.toggle(
+    "visible",
+    build.base==="cup"
+  );
+
+  updateScoopElement(
+    $("#scoop1"),
+    build.flavors[0],
+    Boolean(build.flavors[0])
+  );
+
+  updateScoopElement(
+    $("#scoop2"),
+    build.flavors[1],
+    Boolean(build.flavors[1])
+  );
+
+  updateScoopElement(
+    $("#scoop3"),
+    build.flavors[2],
+    Boolean(build.flavors[2])
+  );
+
+  const toppingLayer=$("#toppingLayer");
+
+  if(build.topping){
+
+    const topping=getTopping(build.topping);
+
+    $("#toppingLabel").textContent=
+      `${topping.emoji} ${topping.name}`;
+
+    $("#sprinkles").textContent=
+      build.topping==="sprinkle"
+        ? "• ✦ • ✧ • ✦ •"
+        : topping.visual;
+
+    toppingLayer.classList.add("show");
+
+  }else{
+
+    toppingLayer.classList.remove("show");
+  }
+
+  updateSteps();
+
+  $("#serveBtn").disabled=
+    !isBuildComplete();
+
+  renderFlavorOptions();
+  renderToppingOptions();
+}
+
+function updateSteps(){
+
+  const b=state.build;
+
+  $("#step1").className=
+    "step-dot "
+    + (
+      b.base
+        ? "done"
+        : "active"
+    );
+
+  $("#step2").className=
+    "step-dot "
+    + (
+      b.base && b.flavors.length
+        ? "done"
+        : b.base
+          ? "active"
+          : ""
+    );
+
+  $("#step3").className=
+    "step-dot "
+    + (
+      b.topping
+        ? "done"
+        : b.flavors.length
+          ? "active"
+          : ""
+    );
+
+  let label="Bước 1 · Chọn vỏ";
+
+  if(b.base && !b.flavors.length){
+    label="Bước 2 · Múc kem";
+  }
+
+  if(b.flavors.length && !b.topping){
+    label="Bước 3 · Chọn topping";
+  }
+
+  if(b.flavors.length && b.topping){
+    label="Hoàn thành · Sẵn sàng giao";
+  }
+
+  $("#stageStepLabel").textContent=label;
+}
+
+/* =========================================================
+   BASE SELECT
+========================================================= */
+
+$all("[data-base]").forEach(button=>{
+
+  button.addEventListener("click",()=>{
+
+    if(!state.isOpen){
+      showToast("Tiệm đang đóng cửa 📦");
+      return;
+    }
+
+    state.build.base=button.dataset.base;
+
+    $all("[data-base]").forEach(btn=>{
+      btn.classList.toggle(
+        "selected",
+        btn.dataset.base===state.build.base
+      );
+    });
+
+    renderBuild();
+    vibrate(8);
+  });
+
+});
+
+/* =========================================================
+   SCOOP
+========================================================= */
+
+function addScoop(flavorId){
+
+  if(!state.build.base){
+    showToast("Bước 1 trước nhé: chọn vỏ hoặc ly 🍦");
+    return;
+  }
+
+  if(state.build.flavors.length>=3){
+    showToast("Tối đa 3 viên kem trong một phần 🍨");
+    return;
+  }
+
+  if(state.inventory[flavorId]<=0){
+    showToast("Hũ này hết kem rồi, vào kho nhập thêm nhé 📦");
+    return;
+  }
+
+  state.inventory[flavorId]--;
+
+  state.build.flavors.push(flavorId);
+
+  renderBuild();
+
+  showToast(`Đã múc ${getFlavor(flavorId).name} 🍨`);
+
+  vibrate(10);
+}
+
+/* =========================================================
+   RESET BUILD
+========================================================= */
+
+function resetBuild(refund=true){
+
+  if(refund){
+
+    state.build.flavors.forEach(id=>{
+      state.inventory[id]++;
+    });
+  }
+
+  state.build={
+    base:null,
+    flavors:[],
+    topping:null
+  };
+
+  renderBuild();
+}
+
+/* =========================================================
+   CHECK ORDER
+========================================================= */
+
+function sameArray(a,b){
+
+  if(a.length!==b.length){
+    return false;
+  }
+
+  const aa=[...a].sort();
+  const bb=[...b].sort();
+
+  return aa.every(
+    (value,index)=>value===bb[index]
+  );
+}
+
+function isBuildComplete(){
+
+  if(!state.customer){
+    return false;
+  }
+
+  const build=state.build;
+  const order=state.customer.order;
+
+  return Boolean(
+    build.base &&
+    build.flavors.length &&
+    build.topping &&
+    build.base===order.base &&
+    sameArray(build.flavors,order.flavors) &&
+    build.topping===order.topping
+  );
+}
+
+/* =========================================================
+   CUSTOMER GENERATION
+========================================================= */
+
+function createCustomer(){
+
+  if(!state.isOpen || state.dayEnded){
+    return;
+  }
+
+  if(state.customer){
+    return;
+  }
+
+  const name=generateCustomerName();
+  const order=generateOrder();
+  const speech=buildOrderSpeech(order);
+
+  /*
+    Tăng patience bằng upgrade Múc nhanh.
+  */
+  const basePatience=22000;
+  const bonus=state.upgrades.scoopSpeed*3500;
+
+  const patienceMs=basePatience+bonus;
+
+  state.customer={
+    id:Date.now()+Math.random(),
+    name,
+    order,
+    speech,
+    patienceMs,
+    expiresAt:performance.now()+patienceMs,
+    angry:false
+  };
+
+  $("#customerName").textContent=name;
+  $("#customerMood").textContent="Đang chờ kem 🍦";
+  $("#orderBubble").textContent=speech;
+  $("#customerCard").classList.remove("angry-state","impatient");
+  $("#customerArt").classList.remove("angry");
+
+  $("#angryBubble").textContent=
+    randomItem([
+      "Ơ... kem của mình đâu rồi 😭",
+      "Mình chờ hơi lâu rồi đó 🥺",
+      "Chắc mình phải đi trước mất...",
+      "Kem ơi kem, sao lâu vậy 😢",
+      "Hình như bụng mình đang biểu tình 😭"
+    ]);
+
+  state.build={
+    base:null,
+    flavors:[],
+    topping:null
+  };
+
+  renderBuild();
+  updatePatienceRing();
+
+  startPatienceTimer();
+}
+
+/* =========================================================
+   PATIENCE TIMER
+========================================================= */
+
+function startPatienceTimer(){
+
+  clearInterval(state.timerHandles.patience);
+
+  state.timerHandles.patience=setInterval(
+    updatePatienceRing,
+    80
+  );
+}
+
+function stopPatienceTimer(){
+
+  clearInterval(state.timerHandles.patience);
+  state.timerHandles.patience=null;
+}
+
+function updatePatienceRing(){
+
+  const customer=state.customer;
+
+  if(!customer){
+    $("#patienceRing").style.setProperty(
+      "--progress",
+      100
+    );
+
+    $("#patienceNumber").textContent="—";
+
+    return;
+  }
+
+  const remaining=Math.max(
+    0,
+    customer.expiresAt-performance.now()
+  );
+
+  const progress=clamp(
+    remaining/customer.patienceMs*100,
+    0,
+    100
+  );
+
+  const seconds=Math.ceil(remaining/1000);
+
+  $("#patienceRing").style.setProperty(
+    "--progress",
+    progress
+  );
+
+  $("#patienceNumber").textContent=seconds;
+
+  if(progress<35){
+    $("#customerCard").classList.add("impatient");
+  }else{
+    $("#customerCard").classList.remove("impatient");
+  }
+
+  if(remaining<=0){
+
+    stopPatienceTimer();
+
+    customerTimeout();
+  }
+}
+
+/* =========================================================
+   CUSTOMER TIMEOUT
+========================================================= */
+
+function customerTimeout(){
+
+  if(!state.customer){
+    return;
+  }
+
+  const customer=state.customer;
+
+  customer.angry=true;
+
+  $("#customerCard").classList.add("angry-state");
+  $("#customerArt").classList.remove("happy");
+  $("#customerArt").classList.add("angry");
+
+  $("#customerMood").textContent=
+    "Đang giận 😡";
+
+  $("#patienceNumber").textContent="0";
+
+  addReview(
+    1,
+    customer,
+    false
+  );
+
+  /*
+    Trả lại những nguyên liệu đã múc sai/dang dở.
+  */
+  state.build.flavors.forEach(id=>{
+    state.inventory[id]++;
+  });
+
+  state.build={
+    base:null,
+    flavors:[],
+    topping:null
+  };
+
+  renderBuild();
+
+  showToast("Khách hết kiên nhẫn và bỏ về 😭");
+
+  setTimeout(()=>{
+
+    if(state.customer===customer){
+
+      state.customer=null;
+
+      if(state.isOpen && !state.dayEnded){
+        createCustomer();
+      }else{
+        clearCustomerVisual();
+      }
+    }
+
+  },1800);
+}
+
+/* =========================================================
+   SERVE
+========================================================= */
+
+$("#serveBtn").addEventListener("click",()=>{
+
+  if(!state.isOpen){
+    showToast("Tiệm đã đóng cửa.");
+    return;
+  }
+
+  if(!state.customer){
+    showToast("Chưa có khách nào đang chờ.");
+    return;
+  }
+
+  if(!isBuildComplete()){
+
+    showToast(
+      "Kem chưa đúng đơn. Kiểm tra lại vỏ, vị và topping nhé 🍦"
+    );
+
+    return;
+  }
+
+  serveCustomer();
+});
+
+function calculateOrderPrice(){
+
+  const scoopCount=state.build.flavors.length;
+
+  let price=
+    state.build.base==="cone"
+      ? 22000
+      : 25000;
+
+  price+=scoopCount*8000;
+
+  if(
+    state.build.topping &&
+    state.build.topping!=="none"
+  ){
+    price+=4000;
+  }
+
+  return price;
+}
+
+function serveCustomer(){
+
+  const customer=state.customer;
+
+  stopPatienceTimer();
+
+  const revenue=calculateOrderPrice();
+
+  const ingredientCost=
+    3500+
+    state.build.flavors.length*2800;
+
+  state.cash+=revenue;
+
+  state.dailyRevenue+=revenue;
+
+  state.dailyCosts+=ingredientCost;
+
+  state.dailyCustomers++;
+
+  addReview(
+    5,
+    customer,
+    true
+  );
+
+  $("#customerMood").textContent=
+    "Rất vui! Cảm ơn bạn 💕";
+
+  $("#orderBubble").textContent=
+    randomItem([
+      "Oa, đúng món mình gọi rồi! 🥰",
+      "Đẹp quá, cảm ơn shop nha! 💕",
+      "Nhìn ngon quá trời luôn!",
+      "Kem xinh quá, mình thích lắm!",
+      "Nhanh ghê! Cảm ơn tiệm nhiều nhé!"
+    ]);
+
+  showToast(
+    `Giao kem thành công +${formatMoney(revenue)} 🍦`
+  );
+
+  vibrate(18);
+
+  renderAll();
+
+  /*
+    Cho khách rời đi nhẹ nhàng trước khi khách mới xuất hiện.
+  */
+  setTimeout(()=>{
+
+    if(state.customer===customer){
+
+      state.customer=null;
+
+      clearCustomerVisual();
+
+      resetBuild(false);
+
+      if(
+        state.isOpen &&
+        !state.dayEnded &&
+        state.gameMinutes<1260
+      ){
+
+        setTimeout(createCustomer,700);
+      }
+    }
+
+  },950);
+}
+
+/* =========================================================
+   CLEAR CUSTOMER
+========================================================= */
+
+function clearCustomerVisual(){
+
+  $("#customerName").textContent=
+    "Đang chờ khách...";
+
+  $("#customerMood").textContent=
+    "Tiệm đang chuẩn bị khách mới";
+
+  $("#orderBubble").textContent=
+    "Một khách đáng yêu sắp bước vào!";
+
+  $("#customerArt").removeClass("angry");
+  $("#customerArt").addClass("happy");
+
+  $("#customerCard")
+    .classList.remove(
+      "angry-state",
+      "impatient"
+    );
+
+  $("#patienceNumber").textContent="—";
+
+  $("#patienceRing").style.setProperty(
+    "--progress",
+    100
+  );
+}
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+function startGameClock(){
+
+  clearInterval(state.timerHandles.clock);
+
+  state.timerHandles.clock=setInterval(
+    gameMinuteTick,
+    state.GAME_MINUTE_MS
+  );
+}
+
+function stopGameClock(){
+
+  clearInterval(state.timerHandles.clock);
+  state.timerHandles.clock=null;
+}
+
+function gameMinuteTick(){
+
+  if(!state.isOpen || state.dayEnded){
+    return;
+  }
+
+  state.gameMinutes++;
+
+  $("#gameTime").textContent=
+    formatClock(state.gameMinutes);
+
+  /*
+    Nhân viên tự động hỗ trợ.
+  */
+  if(
+    state.upgrades.employee>0 &&
+    state.gameMinutes%3===0
+  ){
+    autoEmployeeAction();
+  }
+
+  /*
+    Hết giờ.
+  */
+  if(state.gameMinutes>=1260){
+
+    state.gameMinutes=1260;
+
+    $("#gameTime").textContent="21:00";
+
+    closeShop();
+    return;
+  }
+
+  /*
+    Nếu chưa có khách thì thỉnh thoảng tạo khách.
+  */
+  if(
+    !state.customer &&
+    Math.random()<.45
+  ){
+    createCustomer();
+  }
+
+  renderHeader();
+}
+
+/* =========================================================
+   OPEN SHOP
+========================================================= */
+
+function openShop(){
+
+  state.isOpen=true;
+  state.dayEnded=false;
+
+  state.gameMinutes=540;
+
+  $("#gameTime").textContent="09:00";
+
+  const curtain=$("#curtainOverlay");
+
+  curtain.classList.remove("hide");
+  curtain.classList.remove("open");
+
+  /*
+    Để modal welcome đóng trước.
+  */
+  setTimeout(()=>{
+
+    curtain.classList.add("open");
+
+  },80);
+
+  setTimeout(()=>{
+
+    curtain.classList.add("hide");
+
+    createCustomer();
+    startGameClock();
+
+  },1650);
+
+}
+
+/* =========================================================
+   CLOSE SHOP
+========================================================= */
+
+function closeShop(){
+
+  if(state.dayEnded){
+    return;
+  }
+
+  state.dayEnded=true;
+  state.isOpen=false;
+
+  stopGameClock();
+  stopPatienceTimer();
+
+  /*
+    Nếu khách đang làm dở thì đánh giá 1 sao
+    vì tiệm đã hết giờ.
+  */
+  if(state.customer){
+
+    const customer=state.customer;
+
+    if(!customer.angry){
+
+      customer.angry=true;
+
+      addReview(
+        1,
+        customer,
+        false
+      );
+    }
+  }
+
+  state.customer=null;
+
+  state.build={
+    base:null,
+    flavors:[],
+    topping:null
+  };
+
+  renderBuild();
+
+  showClosingTransition();
+
+  setTimeout(()=>{
+
+    showDailySummary();
+
+  },700);
+}
+
+/* =========================================================
+   CLOSE BUTTON / MANUAL CLOSE
+========================================================= */
+
+function manualClose(){
+
+  if(!state.isOpen){
+    showToast("Tiệm hiện không mở cửa.");
+    return;
+  }
+
+  const ok=confirm(
+    "Bạn muốn đóng cửa tiệm ngay bây giờ?"
+  );
+
+  if(ok){
+    closeShop();
+  }
+}
+
+/* =========================================================
+   CLOSING TRANSITION
+========================================================= */
+
+function showClosingTransition(){
+
+  const curtain=$("#curtainOverlay");
+
+  curtain.classList.remove("hide");
+  curtain.classList.remove("open");
+
+  /*
+    Dùng lại curtain nhưng đổi message.
+  */
+  const message=curtain.querySelector(".opening-message");
+
+  message.innerHTML=`
+    <strong>Tiệm đóng cửa 🌙</strong>
+    <span>Đang chuẩn bị tổng kết ngày...</span>
+  `;
+
+  /*
+    Đóng rèm từ hai phía vào.
+  */
+  setTimeout(()=>{
+    curtain.classList.remove("open");
+  },30);
+}
+
+function showDailySummary(){
+
+  renderSummary();
+
+  $("#summaryModal").classList.add("show");
+}
+
+function renderSummary(){
+
+  const profit=
+    state.dailyRevenue-state.dailyCosts;
+
+  $("#summaryDate").textContent=
+    `Ngày ${state.day} · 09:00 — 21:00`;
+
+  $("#summaryRevenue").textContent=
+    formatMoney(state.dailyRevenue);
+
+  $("#summaryCosts").textContent=
+    formatMoney(state.dailyCosts);
+
+  $("#summaryProfit").textContent=
+    (profit>=0?"+":"")
+    +formatMoney(profit);
+
+  $("#summaryCustomers").textContent=
+    state.dailyCustomers;
+
+  $("#summaryRating").textContent=
+    getAverageRating().toFixed(1)
+    +" 🌟";
+}
+
+/* =========================================================
+   GO TO WAREHOUSE
+========================================================= */
+
+$("#summaryWarehouseBtn").addEventListener(
+  "click",
+  ()=>{
+
+    $("#summaryModal").classList.remove("show");
+
+    /*
+      Mở màn hình kho sau transition.
+    */
+    setTimeout(()=>{
+      switchTab("warehouse");
+      renderWarehouse();
+    },150);
+
+  }
+);
+
+/* =========================================================
+   NEXT DAY
+========================================================= */
+
+$("#nextDayBtn").addEventListener(
+  "click",
+  ()=>{
+
+    /*
+      Ngày mới.
+    */
+    state.day++;
+
+    state.gameMinutes=540;
+
+    state.isOpen=false;
+    state.dayEnded=false;
+
+    state.dailyRevenue=0;
+    state.dailyCosts=0;
+    state.dailyCustomers=0;
+
+    state.customer=null;
+
+    state.build={
+      base:null,
+      flavors:[],
+      topping:null
+    };
+
+    /*
+      Mỗi ngày bắt đầu vẫn giữ tiền, nâng cấp và kho.
+    */
+
+    $("#curtainOverlay").classList.remove("hide");
+    $("#curtainOverlay").classList.remove("open");
+
+    const message=
+      $("#curtainOverlay .opening-message");
+
+    message.innerHTML=`
+      <strong>Ngày ${state.day} bắt đầu! 🌞</strong>
+      <span>Tiệm kem lại mở cửa rồi...</span>
+    `;
+
+    setTimeout(()=>{
+
+      switchTab("shop");
+      openShop();
+
+    },300);
+
+  }
+);
+
+/* =========================================================
+   WAREHOUSE
+========================================================= */
+
+function renderWarehouse(){
+
+  $("#warehouseDayLabel").textContent=
+    `Ngày ${state.day}`;
+
+  $("#warehouseRevenue").textContent=
+    formatMoney(state.dailyRevenue);
+
+  $("#warehouseCosts").textContent=
+    formatMoney(state.dailyCosts);
+
+  $("#warehouseCustomers").textContent=
+    state.dailyCustomers;
+
+  $("#warehouseRating").textContent=
+    getAverageRating().toFixed(1)+" 🌟";
+
+  $("#jarCapacityLabel").textContent=
+    `${getJarCapacity()} / hũ`;
+
+  const totalBulk=
+    Object.values(state.bulk)
+      .reduce((sum,v)=>sum+v,0);
+
+  $("#bulkTotal").textContent=
+    `${totalBulk} viên`;
+
+  renderBulk();
+  renderWarehouseJars();
+}
+
+function renderBulk(){
+
+  const container=$("#bulkInventory");
+
+  container.innerHTML="";
+
+  FLAVORS.forEach(flavor=>{
+
+    const item=document.createElement("div");
+
+    item.className="inventory-item";
+
+    item.innerHTML=`
+      <div class="inventory-top">
+
+        <div class="inventory-emoji">
+          📦
+        </div>
+
+        <div>
+          <div class="inventory-name">
+            Thùng ${flavor.name}
+          </div>
+
+          <div class="inventory-count">
+            ${state.bulk[flavor.id]} viên trong kho
+          </div>
+        </div>
+
+      </div>
+
+      <div style="
+        margin-top:7px;
+        font-size:7px;
+        color:#aa9289;
+        font-weight:800;
+      ">
+        Giá nhập: 45.000đ / thùng
+      </div>
+
+      <button
+        class="mini-btn"
+        style="margin-top:8px;"
+        data-buy-bulk="${flavor.id}"
+      >
+        NHẬP 1 THÙNG
+      </button>
+    `;
+
+    container.appendChild(item);
+  });
+
+  $all("[data-buy-bulk]").forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+      buyBulk(button.dataset.buyBulk);
+
+    });
+
+  });
+}
+
+function buyBulk(flavorId){
+
+  const cost=45000;
+
+  if(state.cash<cost){
+    showToast("Không đủ tiền để nhập thùng 📦");
+    return;
+  }
+
+  state.cash-=cost;
+
+  state.dailyCosts+=cost;
+
+  /*
+    Một thùng = 18 viên.
+  */
+  state.bulk[flavorId]+=18;
+
+  renderAll();
+
+  renderWarehouse();
+
+  showToast(
+    `Đã nhập 1 thùng ${getFlavor(flavorId).name} 📦`
+  );
+
+  vibrate(10);
+}
+
+function getJarCapacity(){
+
+  return 12+
+    state.upgrades.freezer*4;
+}
+
+function renderWarehouseJars(){
+
+  const container=$("#warehouseJars");
+
+  container.innerHTML="";
+
+  FLAVORS.forEach(flavor=>{
+
+    const count=state.inventory[flavor.id];
+    const capacity=getJarCapacity();
+
+    const percent=
+      clamp(count/capacity*100,0,100);
+
+    const item=document.createElement("div");
+
+    item.className="inventory-item";
+
+    item.innerHTML=`
+      <div class="inventory-top">
+
+        <div
+          class="inventory-emoji"
+          style="
+            background:${flavor.light};
+          "
+        >
+          ${flavor.emoji}
+        </div>
+
+        <div>
+          <div class="inventory-name">
+            ${flavor.name}
+          </div>
+
+          <div class="inventory-count">
+            ${count} / ${capacity} viên
+          </div>
+        </div>
+
+      </div>
+
+      <div class="progress">
+        <span style="width:${percent}%"></span>
+      </div>
+
+      <button
+        class="mini-btn"
+        data-fill-jar="${flavor.id}"
+      >
+        CHÂM ĐẦY HŨ
+      </button>
+    `;
+
+    container.appendChild(item);
+  });
+
+  $all("[data-fill-jar]").forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+      fillJar(button.dataset.fillJar);
+
+    });
+
+  });
+}
+
+function fillJar(flavorId){
+
+  const capacity=getJarCapacity();
+
+  const current=state.inventory[flavorId];
+  const missing=Math.max(0,capacity-current);
+
+  if(missing<=0){
+    showToast("Hũ này đã đầy rồi 🥫");
+    return;
+  }
+
+  const available=state.bulk[flavorId];
+
+  if(available<=0){
+    showToast("Kho không còn thùng vị này 📦");
+    return;
+  }
+
+  const amount=Math.min(
+    missing,
+    available
+  );
+
+  state.inventory[flavorId]+=amount;
+  state.bulk[flavorId]-=amount;
+
+  renderAll();
+  renderWarehouse();
+
+  showToast(
+    `Đã châm ${amount} viên vào hũ ${getFlavor(flavorId).name}`
+  );
+}
+
+/* =========================================================
+   EMPLOYEE AUTOMATION
+========================================================= */
+
+function autoEmployeeAction(){
+
+  if(state.upgrades.employee<=0){
+    return;
+  }
+
+  const capacity=getJarCapacity();
+
+  FLAVORS.forEach(flavor=>{
+
+    const current=state.inventory[flavor.id];
+
+    if(
+      current<=Math.floor(capacity*.25) &&
+      state.bulk[flavor.id]>0
+    ){
+
+      const amount=Math.min(
+        capacity-current,
+        state.bulk[flavor.id]
+      );
+
+      state.inventory[flavor.id]+=amount;
+      state.bulk[flavor.id]-=amount;
+    }
+  });
+
+  /*
+    Nhân viên cũng giúp khách kiên nhẫn hơn một chút.
+  */
+  if(state.customer){
+
+    state.customer.expiresAt+=
+      state.upgrades.employee*900;
+  }
+
+  renderFlavorOptions();
+}
+
+/* =========================================================
+   UPGRADES
+========================================================= */
+
+const UPGRADE_DATA=[
+  {
+    id:"freezer",
+    icon:"🧊",
+    name:"Tủ đông lớn",
+    description:"Tăng 4 viên sức chứa cho mỗi hũ inox.",
+    baseCost:120000,
+    step:80000
+  },
+  {
+    id:"scoopSpeed",
+    icon:"🥄",
+    name:"Muỗng múc nhanh",
+    description:"Tăng thời gian kiên nhẫn của khách.",
+    baseCost:150000,
+    step:100000
+  },
+  {
+    id:"employee",
+    icon:"👩🏻‍🍳",
+    name:"Nhân viên phụ",
+    description:"Tự động châm hũ từ kho và hỗ trợ khách.",
+    baseCost:280000,
+    step:180000
+  }
+];
+
+function upgradeCost(data){
+
+  return data.baseCost+
+    state.upgrades[data.id]*data.step;
+}
+
+function renderUpgrades(){
+
+  const container=$("#upgradeList");
+
+  container.innerHTML="";
+
+  UPGRADE_DATA.forEach(data=>{
+
+    const level=state.upgrades[data.id];
+
+    const item=document.createElement("div");
+
+    item.className="upgrade-card";
+
+    item.innerHTML=`
+      <div class="upgrade-icon">
+        ${data.icon}
+      </div>
+
+      <div>
+
+        <div class="upgrade-name">
+          ${data.name}
+        </div>
+
+        <div class="upgrade-desc">
+          ${data.description}
+        </div>
+
+        <div class="upgrade-level">
+          Cấp ${level}
+        </div>
+
+      </div>
+
+      <button
+        class="buy-upgrade"
+        data-upgrade="${data.id}"
+        type="button"
+      >
+        ${formatMoney(upgradeCost(data))}
+      </button>
+    `;
+
+    container.appendChild(item);
+  });
+
+  $all("[data-upgrade]").forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+      buyUpgrade(button.dataset.upgrade);
+
+    });
+
+  });
+}
+
+function buyUpgrade(id){
+
+  const data=
+    UPGRADE_DATA.find(
+      item=>item.id===id
+    );
+
+  if(!data){
+    return;
+  }
+
+  const cost=upgradeCost(data);
+
+  if(state.cash<cost){
+    showToast("Ví tiền chưa đủ cho nâng cấp này 💰");
+    return;
+  }
+
+  state.cash-=cost;
+
+  state.dailyCosts+=cost;
+
+  state.upgrades[id]++;
+
+  renderAll();
+
+  showToast(
+    `${data.name} đã lên cấp ${state.upgrades[id]} ✨`
+  );
+
+  vibrate(12);
+}
+
+/* =========================================================
+   REVIEWS
+========================================================= */
+
+function renderReviews(){
+
+  const average=getAverageRating();
+
+  $("#ratingNumber").textContent=
+    average.toFixed(1);
+
+  $("#ratingStars").textContent=
+    "🌟 🌟 🌟 🌟 🌟";
+
+  if(average>=4.5){
+
+    $("#ratingCaption").textContent=
+      "Khách rất yêu tiệm kem của bạn 💕";
+
+  }else if(average>=3){
+
+    $("#ratingCaption").textContent=
+      "Tiệm đang cố gắng phục vụ tốt hơn 🌷";
+
+  }else{
+
+    $("#ratingCaption").textContent=
+      "Hôm nay khách hơi buồn... 🥺";
+  }
+
+  const container=$("#reviewList");
+
+  container.innerHTML="";
+
+  if(!state.reviews.length){
+
+    container.innerHTML=`
+      <div
+        style="
+          padding:30px 15px;
+          text-align:center;
+          color:#aa938a;
+          font-size:10px;
+          font-weight:800;
+        "
+      >
+        Chưa có đánh giá nào.<br>
+        Hãy mở cửa tiệm và phục vụ khách nhé 🍦
+      </div>
+    `;
+
+    return;
+  }
+
+  state.reviews.forEach(review=>{
+
+    const card=document.createElement("article");
+
+    card.className="review-card";
+
+    const stars=
+      review.stars===5
+        ? "🌟 🌟 🌟 🌟 🌟"
+        : "🌟";
+
+    card.innerHTML=`
+      <div class="review-top">
+
+        <div class="review-avatar">
+          ${review.avatar}
+        </div>
+
+        <div class="review-info">
+
+          <div class="review-name">
+            ${escapeHtml(review.name)}
+          </div>
+
+          <div class="review-time">
+            ${review.time}
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="review-stars">
+        ${stars}
+      </div>
+
+      <div class="review-text">
+        ${escapeHtml(review.text)}
+      </div>
+
+      ${
+        review.reaction
+          ? `<div class="review-reaction">${review.reaction}</div>`
+          : ""
+      }
+
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+function escapeHtml(value){
+
   return String(value)
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
@@ -2964,1639 +5409,158 @@ function escapeHTML(value){
 }
 
 /* =========================================================
-   DYNAMIC NAME GENERATOR
+   TAB SYSTEM
 ========================================================= */
 
-function generateCustomerName(){
-
-  let result = "";
-
-  for(let attempt=0;attempt<100;attempt++){
-
-    const surname = randomItem(NAME_SURNAME);
-    const middle = randomItem(NAME_MIDDLE);
-    const last = randomItem(NAME_LAST);
-
-    const candidate =
-      `${surname} ${middle} ${last}`;
-
-    if(!state.usedNames.has(candidate)){
-      state.usedNames.add(candidate);
-      return candidate;
-    }
-
-    result = candidate;
-  }
-
-  /*
-    Nếu đã dùng nhiều tổ hợp, thêm thành phần phụ.
-    Vẫn không dùng tên hoàn chỉnh cố định.
-  */
-  const extra = randomItem([
-    "Nhỏ","Mây","Nắng","Miu","Kem","Bông","Mầm"
-  ]);
-
-  return `${result} ${extra}`;
-}
-
-/* =========================================================
-   DYNAMIC SPEECH GENERATOR
-========================================================= */
-
-function generateOrder(){
-
-  for(let attempt=0;attempt<200;attempt++){
-
-    const baseId =
-      Math.random() < .54
-        ? "cone"
-        : "cup";
-
-    const flavorCount =
-      Math.random() < .72
-        ? 1
-        : (Math.random() < .84 ? 2 : 3);
-
-    const flavors = shuffle(Object.keys(FLAVORS))
-      .slice(0,flavorCount);
-
-    const topping =
-      randomItem(Object.keys(TOPPINGS));
-
-    const quantity =
-      Math.random() < .86
-        ? 1
-        : 2;
-
-    const signature =
-      [
-        quantity,
-        baseId,
-        [...flavors].sort().join("+"),
-        topping
-      ].join("|");
-
-    if(state.usedOrderSignatures.has(signature)){
-      continue;
-    }
-
-    state.usedOrderSignatures.add(signature);
-
-    const flavorText =
-      flavors
-        .map(id => FLAVORS[id].name)
-        .join(" + ");
-
-    const toppingText =
-      topping === "none"
-        ? "không cần topping"
-        : `thêm ${TOPPINGS[topping].name}`;
-
-    const opening = randomItem(SPEECH_OPEN);
-    const middle = randomItem(SPEECH_MID);
-    const ending = randomItem(SPEECH_END);
-
-    const quantityText =
-      quantity === 2
-        ? "hai phần"
-        : middle;
-
-    const speech =
-      `${opening}, ${quantityText} ${flavorText} ` +
-      `với ${BASES[baseId].name}, ${toppingText} ${ending}`;
-
-    return {
-      base:baseId,
-      flavors,
-      topping,
-      quantity,
-      speech
-    };
-  }
-
-  /*
-    Không bao giờ để game hết đơn.
-  */
-  return {
-    base:"cone",
-    flavors:["choco"],
-    topping:"sprinkle",
-    quantity:1,
-    speech:"Dạ shop cho em một chiếc Sô-cô-la ốc quế thêm cốm màu nhé!"
-  };
-}
-
-/* =========================================================
-   CUSTOMER CREATION
-========================================================= */
-
-function createCustomer(){
-
-  if(!state.open || state.closed || state.activeCustomer){
-    return;
-  }
-
-  const order = generateOrder();
-
-  const customer = {
-    id:Date.now()+Math.random(),
-    name:generateCustomerName(),
-    order,
-
-    createdAt:performance.now(),
-
-    patienceMs:
-      GAME.customerPatienceMs +
-      state.upgrades.scoop * 3000,
-
-    angry:false
-  };
-
-  customer.expiresAt =
-    performance.now() + customer.patienceMs;
-
-  state.activeCustomer = customer;
-
-  resetBuild(false);
-  renderCustomer();
-  startPatience();
-}
-
-/* =========================================================
-   CUSTOMER UI
-========================================================= */
-
-function renderCustomer(){
-
-  const customer = state.activeCustomer;
-
-  if(!customer){
-
-    $("customerName").textContent =
-      state.open
-        ? "Đang chờ khách..."
-        : "Tiệm đang đóng";
-
-    $("customerSpeech").textContent =
-      state.open
-        ? "Chuẩn bị bàn kem thật xinh nhé! 🍦"
-        : "Mở cửa để đón khách nhé!";
-
-    $("orderDetails").innerHTML = "";
-
-    $("customerState").textContent =
-      state.open
-        ? "Đang chờ..."
-        : "Đã đóng";
-
-    $("patienceTime").textContent = "--";
-    $("patienceRing").style.setProperty("--progress",0);
-
-    return;
-  }
-
-  $("customerName").textContent =
-    `👤 ${customer.name}`;
-
-  $("customerSpeech").textContent =
-    customer.order.speech;
-
-  const detail = customer.order;
-
-  $("orderDetails").innerHTML = `
-    <span class="order-chip">
-      ${BASES[detail.base].emoji} ${escapeHTML(BASES[detail.base].name)}
-    </span>
-
-    ${detail.flavors.map(id => `
-      <span class="order-chip">
-        ${FLAVORS[id].emoji} ${escapeHTML(FLAVORS[id].short)}
-      </span>
-    `).join("")}
-
-    <span class="order-chip">
-      ${TOPPINGS[detail.topping].emoji}
-      ${escapeHTML(TOPPINGS[detail.topping].name)}
-    </span>
-  `;
-
-  $("customerState").textContent =
-    customer.angry
-      ? "😤 Đang giận..."
-      : "💗 Đang chờ kem";
-
-  $("customerChibi").classList.toggle(
-    "angry",
-    customer.angry
-  );
-}
-
-/* =========================================================
-   PATIENCE RING
-========================================================= */
-
-function startPatience(){
-
-  clearInterval(patienceTimer);
-
-  patienceTimer = setInterval(()=>{
-
-    const customer = state.activeCustomer;
-
-    if(!customer || !state.open){
-      return;
-    }
-
-    const now = performance.now();
-
-    const remaining =
-      customer.expiresAt - now;
-
-    const progress =
-      clamp(
-        remaining / customer.patienceMs,
-        0,
-        1
-      );
-
-    $("patienceRing").style.setProperty(
-      "--progress",
-      progress * 100
-    );
-
-    $("patienceTime").textContent =
-      `${Math.ceil(Math.max(0,remaining)/1000)}s`;
-
-    if(remaining <= 0){
-
-      clearInterval(patienceTimer);
-
-      customerTimeout();
-    }
-
-  },80);
-}
-
-/* =========================================================
-   CUSTOMER TIMEOUT
-========================================================= */
-
-function customerTimeout(){
-
-  const customer = state.activeCustomer;
-
-  if(!customer || customer.angry){
-    return;
-  }
-
-  customer.angry = true;
-
-  renderCustomer();
-
-  $("customerSpeech").textContent =
-    `${randomItem(ANGRY_START)} ${randomItem(ANGRY_END)}`;
-
-  $("customerState").textContent =
-    "😤 Bỏ về";
-
-  addReview(false,customer);
-
-  showToast(
-    `😤 ${customer.name} hết kiên nhẫn rồi...`
-  );
-
-  setTimeout(()=>{
-
-    if(state.activeCustomer !== customer){
-      return;
-    }
-
-    state.activeCustomer = null;
-
-    resetBuild(false);
-    renderCustomer();
-
-    if(state.open){
-      scheduleCustomer();
-    }
-
-  },1800);
-}
-
-/* =========================================================
-   CUSTOMER SPAWN
-========================================================= */
-
-function scheduleCustomer(){
-
-  clearTimeout(spawnTimer);
-
-  if(!state.open || state.closed){
-    return;
-  }
-
-  spawnTimer = setTimeout(()=>{
-
-    if(
-      state.open &&
-      !state.closed &&
-      !state.activeCustomer
-    ){
-      createCustomer();
-    }
-
-  },800 + Math.random()*1200);
-}
-
-/* =========================================================
-   OPEN SHOP
-========================================================= */
-
-function openShop(){
-
-  if(state.open){
-    return;
-  }
-
-  $("welcomeModal").classList.remove("show");
-
-  const opening = $("opening");
-
-  opening.classList.add("show");
-
-  setTimeout(()=>{
-    opening.classList.add("opened");
-  },50);
-
-  setTimeout(()=>{
-
-    opening.classList.remove("show");
-    opening.classList.remove("opened");
-
-    state.open = true;
-    state.closed = false;
-    state.minute = GAME.startMinute;
-
-    renderAll();
-
-    startClock();
-    startEmployee();
-
-    createCustomer();
-
-  },1600);
-}
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-function startClock(){
-
-  clearInterval(clockTimer);
-
-  clockTimer = setInterval(()=>{
-
-    if(!state.open || state.closed){
-      return;
-    }
-
-    state.minute++;
-
-    if(state.minute >= GAME.endMinute){
-
-      state.minute = GAME.endMinute;
-
-      renderClock();
-
-      closeShopAutomatically();
-
-      return;
-    }
-
-    renderClock();
-
-  },GAME.gameMinuteMs);
-}
-
-function renderClock(){
-
-  const hour =
-    Math.floor(state.minute/60);
-
-  const minute =
-    state.minute%60;
-
-  const time =
-    `${String(hour).padStart(2,"0")}:${String(minute).padStart(2,"0")}`;
-
-  $("clock").textContent = time;
-
-  $("dayStatus").textContent =
-    state.open
-      ? "ĐANG MỞ"
-      : "ĐÃ ĐÓNG";
-}
-
-/* =========================================================
-   AUTO EMPLOYEE
-========================================================= */
-
-function startEmployee(){
-
-  clearInterval(employeeTimer);
-
-  employeeTimer = setInterval(()=>{
-
-    if(
-      !state.open ||
-      state.closed ||
-      state.upgrades.employee <= 0
-    ){
-      return;
-    }
-
-    /*
-      Nhân viên tự châm hũ từ kho.
-    */
-    Object.keys(state.stock).forEach(id=>{
-
-      const free =
-        getStockCapacity() - state.stock[id];
-
-      if(
-        free > 0 &&
-        state.bulk[id] > 0
-      ){
-
-        const amount =
-          Math.min(free,state.bulk[id]);
-
-        state.stock[id] += amount;
-        state.bulk[id] -= amount;
-      }
-
-    });
-
-    /*
-      Nhân viên hỗ trợ khách:
-      mỗi chu kỳ cộng thêm một chút thời gian.
-    */
-    if(state.activeCustomer){
-
-      state.activeCustomer.expiresAt +=
-        700 + state.upgrades.employee * 350;
-    }
-
-    renderInventory();
-    renderStockButtons();
-
-  },7000);
-}
-
-/* =========================================================
-   CLOSE SHOP
-========================================================= */
-
-function closeShopAutomatically(){
-
-  state.open = false;
-  state.closed = true;
-
-  clearInterval(clockTimer);
-  clearInterval(patienceTimer);
-  clearInterval(employeeTimer);
-  clearTimeout(spawnTimer);
-
-  if(state.activeCustomer){
-
-    /*
-      Khách còn đang chờ khi đóng cửa sẽ không
-      bị tính là phục vụ.
-    */
-    state.activeCustomer = null;
-  }
-
-  resetBuild(false);
-  renderAll();
-
-  setTimeout(showSummary,400);
-}
-
-function showSummary(){
-
-  const profit =
-    state.revenue - state.costs;
-
-  $("summaryRevenue").textContent =
-    money(state.revenue);
-
-  $("summaryCost").textContent =
-    money(state.costs);
-
-  $("summaryProfit").textContent =
-    money(profit);
-
-  $("summaryCustomers").textContent =
-    state.customersServed;
-
-  $("summaryModal").classList.add("show");
-}
-
-function closeSummary(){
-
-  $("summaryModal").classList.remove("show");
-
-  switchPage("review");
-}
-
-/* =========================================================
-   PAGE NAVIGATION
-========================================================= */
-
-function switchPage(page){
-
-  const pages = {
-    shop:"shopPage",
-    inventory:"inventoryPage",
-    upgrade:"upgradePage",
-    review:"reviewPage"
-  };
-
-  const navs = {
-    shop:"navShop",
-    inventory:"navInventory",
-    upgrade:"navUpgrade",
-    review:"navReview"
-  };
-
-  Object.values(pages).forEach(id=>{
-    $(id).classList.remove("active");
-  });
-
-  Object.values(navs).forEach(id=>{
-    $(id).classList.remove("active");
-  });
-
-  $(pages[page]).classList.add("active");
-  $(navs[page]).classList.add("active");
-
-  if(page === "inventory"){
-    renderInventory();
-  }
-
-  if(page === "upgrade"){
-    renderUpgrades();
-  }
-
-  if(page === "review"){
-    renderReviews();
-  }
-}
-
-/* =========================================================
-   WORKSPACE
-========================================================= */
-
-function chooseBase(id){
-
-  if(!state.open){
-    showToast("🔒 Tiệm chưa mở cửa!");
-    return;
-  }
-
-  state.build.base = id;
-
-  renderBuild();
-
-  showToast(
-    `${BASES[id].emoji} Đã đặt ${BASES[id].name} vào giữa bàn.`
-  );
-}
-
-function chooseFlavor(id){
-
-  if(!state.open){
-    showToast("🔒 Tiệm chưa mở cửa!");
-    return;
-  }
-
-  if(!state.build.base){
-
-    showToast("🍦 Chọn ốc quế hoặc ly trước nhé!");
-
-    return;
-  }
-
-  if(state.build.flavors.length >= 3){
-
-    showToast("🍨 Tối đa 3 viên kem thôi nhé!");
-
-    return;
-  }
-
-  if(state.stock[id] <= 0){
-
-    showToast(
-      `📦 Hết ${FLAVORS[id].name}. Vào Kho Hàng nhập thêm nhé!`
-    );
-
-    return;
-  }
-
-  state.stock[id]--;
-
-  state.build.flavors.push(id);
-
-  renderBuild();
-  renderStockButtons();
-  renderInventory();
-}
-
-function chooseTopping(id){
-
-  if(!state.open){
-    showToast("🔒 Tiệm chưa mở cửa!");
-    return;
-  }
-
-  if(!state.build.base){
-
-    showToast("🍦 Chọn đế trước nhé!");
-
-    return;
-  }
-
-  if(state.build.flavors.length === 0){
-
-    showToast("🍨 Múc ít nhất một viên kem trước nhé!");
-
-    return;
-  }
-
-  state.build.topping = id;
-
-  renderBuild();
-
-  showToast(
-    `${TOPPINGS[id].emoji} Đã thêm ${TOPPINGS[id].name}.`
-  );
-}
-
-/* =========================================================
-   RENDER BUILD
-========================================================= */
-
-function renderBuild(){
-
-  const build = state.build;
-
-  /* STEP LABELS */
-
-  $("step1").className =
-    "step " +
-    (
-      build.base
-        ? "done"
-        : "active"
-    );
-
-  $("step2").className =
-    "step " +
-    (
-      build.base && build.flavors.length
-        ? "done"
-        : build.base
-          ? "active"
-          : ""
-    );
-
-  $("step3").className =
-    "step " +
-    (
-      build.topping
-        ? "done"
-        : build.flavors.length
-          ? "active"
-          : ""
-    );
-
-  let status = "Bước 1 / 3";
-
-  if(build.base && !build.flavors.length){
-    status = "Bước 2 / 3";
-  }
-
-  if(build.flavors.length && !build.topping){
-    status = "Bước 3 / 3";
-  }
-
-  if(build.flavors.length && build.topping){
-    status = "Sẵn sàng giao";
-  }
-
-  $("buildStatus").textContent = status;
-
-  /* STAGE */
-
-  const stageLabel = $("stageLabel");
-  const empty = $("stageEmpty");
-
-  if(!build.base){
-
-    empty.style.display = "block";
-    stageLabel.textContent =
-      "Chọn ốc quế hoặc ly kem";
-
-  }else{
-
-    empty.style.display = "none";
-
-    stageLabel.textContent =
-      build.flavors.length
-        ? "Chiếc kem của bạn"
-        : `Đã chọn ${BASES[build.base].name}`;
-  }
-
-  /* BASE */
-
-  $("visualBase").innerHTML =
-    build.base
-      ? `<div class="${build.base === "cone" ? "cone" : "cup"}"></div>`
-      : "";
-
-  /* SCOOPS */
-
-  $("visualScoops").innerHTML =
-    build.flavors
-      .map((id,index)=>{
-
-        const position =
-          ["one","two","three"][index];
-
-        return `
-          <div
-            class="scoop ${position} ${FLAVORS[id].className}"
-            title="${escapeHTML(FLAVORS[id].name)}"
-          ></div>
-        `;
-
-      })
-      .join("");
-
-  /* TOPPING */
-
-  const topping = build.topping;
-
-  if(!topping){
-
-    $("toppingLayer").innerHTML = "";
-
-  }else{
-
-    let emojis = [];
-
-    if(topping === "sprinkle"){
-      emojis = ["🌈","🩷","💛"];
-    }
-
-    if(topping === "strawberrySauce"){
-      emojis = ["🍓","🍓","❤️"];
-    }
-
-    if(topping === "cherry"){
-      emojis = ["🍒","🍒","✨"];
-    }
-
-    if(topping === "crumb"){
-      emojis = ["🍪","🧁","🍪"];
-    }
-
-    if(topping === "none"){
-      emojis = ["✨"];
-    }
-
-    $("toppingLayer").innerHTML =
-      emojis
-        .map(emoji=>`
-          <span class="topping-item">${emoji}</span>
-        `)
-        .join("");
-  }
-
-  /* SELECTED BUTTONS */
-
-  document
-    .querySelectorAll("[data-base]")
-    .forEach(btn=>{
-
-      btn.classList.toggle(
-        "selected",
-        btn.dataset.base === build.base
-      );
-    });
-
-  document
-    .querySelectorAll("[data-flavor]")
-    .forEach(btn=>{
-
-      const count =
-        build.flavors.filter(
-          id=>id === btn.dataset.flavor
-        ).length;
-
-      btn.classList.toggle(
-        "selected",
-        count > 0
-      );
-    });
-
-  document
-    .querySelectorAll("[data-topping]")
-    .forEach(btn=>{
-
-      btn.classList.toggle(
-        "selected",
-        btn.dataset.topping === build.topping
-      );
-    });
-
-  $("scoopCounter").textContent =
-    `${build.flavors.length} / 3 viên`;
-
-  $("serveButton").disabled =
-    !canServe();
-
-  $("toppingHint").textContent =
-    build.topping
-      ? TOPPINGS[build.topping].name
-      : "Chọn 1";
-
-  renderStockButtons();
-}
-
-/* =========================================================
-   BUILD VALIDATION
-========================================================= */
-
-function sameFlavorSet(a,b){
-
-  if(a.length !== b.length){
-    return false;
-  }
-
-  const aa = [...a].sort();
-  const bb = [...b].sort();
-
-  return aa.every(
-    (value,index)=>value === bb[index]
-  );
-}
-
-function canServe(){
-
-  const customer = state.activeCustomer;
-
-  if(
-    !customer ||
-    customer.angry ||
-    !state.build.base ||
-    state.build.flavors.length === 0 ||
-    !state.build.topping
-  ){
-    return false;
-  }
-
-  return true;
-}
-
-function orderMatches(){
-
-  const customer = state.activeCustomer;
-
-  if(!customer){
-    return false;
-  }
-
-  const wanted = customer.order;
-  const made = state.build;
-
-  return (
-    wanted.base === made.base &&
-    sameFlavorSet(
-      wanted.flavors,
-      made.flavors
-    ) &&
-    wanted.topping === made.topping
-  );
-}
-
-/* =========================================================
-   SERVE CUSTOMER
-========================================================= */
-
-function serveCustomer(){
-
-  if(!state.open){
-    showToast("🔒 Tiệm đã đóng cửa!");
-    return;
-  }
-
-  if(!state.activeCustomer){
-
-    showToast("👀 Chưa có khách!");
-    return;
-  }
-
-  if(!canServe()){
-
-    showToast(
-      "🍨 Hãy hoàn thành đủ 3 bước trước nhé!"
-    );
-
-    return;
-  }
-
-  if(!orderMatches()){
-
-    const wanted = state.activeCustomer.order;
-
-    showToast(
-      `💭 Chưa đúng đơn! Khách gọi ` +
-      `${BASES[wanted.base].name} · ` +
-      `${wanted.flavors.map(id=>FLAVORS[id].name).join(" + ")} · ` +
-      `${TOPPINGS[wanted.topping].name}`
-    );
-
-    return;
-  }
-
-  const customer = state.activeCustomer;
-
-  const order = customer.order;
-
-  let revenue =
-    BASES[order.base].price;
-
-  order.flavors.forEach(id=>{
-    revenue += FLAVORS[id].price;
-  });
-
-  revenue += TOPPINGS[order.topping].price;
-
-  /*
-    Nếu gọi 2 phần thì nhân doanh thu.
-  */
-  revenue *= order.quantity;
-
-  /*
-    Bonus nâng cấp.
-  */
-  revenue += state.upgrades.scoop * 1000;
-
-  const ingredientCost =
-    2500 * order.quantity;
-
-  state.revenue += revenue;
-  state.costs += ingredientCost;
-
-  state.money += revenue - ingredientCost;
-
-  state.customersServed++;
-
-  clearInterval(patienceTimer);
-
-  addReview(true,customer);
-
-  showToast(
-    `💗 Giao kem thành công! +${money(revenue-ingredientCost)}`
-  );
-
-  state.activeCustomer = null;
-
-  resetBuild(false);
-
-  renderAll();
-
-  setTimeout(()=>{
-
-    if(state.open && !state.closed){
-      createCustomer();
-    }
-
-  },1200);
-}
-
-/* =========================================================
-   RESET BUILD
-========================================================= */
-
-function resetBuild(refund){
-
-  if(refund){
-
-    state.build.flavors.forEach(id=>{
-      state.stock[id]++;
-    });
-  }
-
-  state.build = {
-    base:null,
-    flavors:[],
-    topping:null
-  };
-
-  renderBuild();
-  renderStockButtons();
-}
-
-/* =========================================================
-   STOCK
-========================================================= */
-
-function getStockCapacity(){
-
-  return GAME.stockCapacity +
-    state.upgrades.freezer * 5;
-}
-
-function buyBulk(id){
-
-  const price = 25000;
-
-  if(state.money < price){
-
-    showToast("💰 Không đủ tiền nhập thùng!");
-
-    return;
-  }
-
-  state.money -= price;
-  state.costs += price;
-
-  state.bulk[id] += 24;
-
-  showToast(
-    `📦 Đã nhập 24 viên ${FLAVORS[id].name}.`
-  );
-
-  renderAll();
-}
-
-function refillJar(id){
-
-  const capacity = getStockCapacity();
-
-  const free =
-    capacity - state.stock[id];
-
-  if(free <= 0){
-
-    showToast(
-      `🫙 Hũ ${FLAVORS[id].name} đã đầy!`
-    );
-
-    return;
-  }
-
-  if(state.bulk[id] <= 0){
-
-    showToast(
-      `📦 Kho hết thùng ${FLAVORS[id].name}!`
-    );
-
-    return;
-  }
-
-  const amount =
-    Math.min(free,state.bulk[id]);
-
-  state.stock[id] += amount;
-  state.bulk[id] -= amount;
-
-  showToast(
-    `🫙 Đã châm ${amount} viên vào hũ.`
-  );
-
-  renderAll();
-}
-
-function renderStockButtons(){
-
-  Object.keys(FLAVORS).forEach(id=>{
-
-    const el =
-      $(
-        "stock" +
-        id.charAt(0).toUpperCase() +
-        id.slice(1)
-      );
-
-    if(el){
-      el.textContent =
-        state.stock[id];
-    }
-  });
-
-  const mapping = {
-    choco:"jarChoco",
-    strawberry:"jarStrawberry",
-    vanilla:"jarVanilla",
-    matcha:"jarMatcha",
-    butter:"jarButter",
-    durian:"jarDurian"
-  };
-
-  Object.keys(mapping).forEach(id=>{
-
-    const percentage =
-      clamp(
-        state.stock[id] /
-        getStockCapacity() *
-        100,
-        0,
-        100
-      );
-
-    $(mapping[id]).style.height =
-      `${percentage}%`;
-  });
-}
-
-/* =========================================================
-   INVENTORY UI
-========================================================= */
-
-function renderInventory(){
-
-  $("moneyInventory").textContent =
-    money(state.money);
-
-  const html =
-    Object.keys(FLAVORS)
-      .map(id=>{
-
-        const flavor = FLAVORS[id];
-
-        const stock = state.stock[id];
-        const bulk = state.bulk[id];
-
-        const percentage =
-          clamp(
-            stock / getStockCapacity() * 100,
-            0,
-            100
-          );
-
-        return `
-          <div class="stock-card">
-
-            <div class="stock-main">
-
-              <div class="stock-emoji">
-                ${flavor.emoji}
-              </div>
-
-              <div>
-                <div class="stock-name">
-                  ${escapeHTML(flavor.name)}
-                </div>
-
-                <div class="stock-info">
-                  Hũ: ${stock}/${getStockCapacity()}
-                  · Thùng: ${bulk}
-                </div>
-
-                <div class="mini-bar">
-                  <div
-                    class="mini-bar-fill"
-                    style="width:${percentage}%"
-                  ></div>
-                </div>
-              </div>
-
-              <div class="stock-number">
-                ${stock}
-              </div>
-
-            </div>
-
-            <div class="stock-actions">
-
-              <button
-                class="small-action"
-                onclick="refillJar('${id}')"
-              >
-                🫙 CHÂM HŨ
-              </button>
-
-              <button
-                class="small-action buy"
-                onclick="buyBulk('${id}')"
-              >
-                📦 NHẬP THÙNG
-              </button>
-
-            </div>
-
-          </div>
-        `;
-      })
-      .join("");
-
-  $("inventoryList").innerHTML = html;
-}
-
-/* =========================================================
-   UPGRADES
-========================================================= */
-
-const UPGRADE_DATA = {
-  freezer:{
-    icon:"🧊",
-    name:"Tủ đông xịn",
-    desc:"Tăng sức chứa mỗi hũ thêm 5 viên.",
-    max:5,
-    baseCost:90000
-  },
-
-  scoop:{
-    icon:"🥄",
-    name:"Muỗng múc nhanh",
-    desc:"Khách kiên nhẫn lâu hơn và mỗi đơn có bonus nhỏ.",
-    max:5,
-    baseCost:120000
-  },
-
-  employee:{
-    icon:"🧑‍🍳",
-    name:"Thuê nhân viên",
-    desc:"Tự động châm hũ và hỗ trợ kéo dài thời gian chờ.",
-    max:1,
-    baseCost:250000
-  }
+const SCREEN_MAP={
+  shop:"#shopScreen",
+  warehouse:"#warehouseScreen",
+  upgrade:"#upgradeScreen",
+  reviews:"#reviewsScreen"
 };
 
-function upgradeCost(id){
+function switchTab(tab){
 
-  const level =
-    state.upgrades[id];
+  state.currentTab=tab;
 
-  return Math.round(
-    UPGRADE_DATA[id].baseCost *
-    Math.pow(1.55,level)
-  );
-}
+  Object.entries(SCREEN_MAP).forEach(
+    ([key,selector])=>{
 
-function buyUpgrade(id){
+      const screen=$(selector);
 
-  const data =
-    UPGRADE_DATA[id];
+      screen.classList.toggle(
+        "active",
+        key===tab
+      );
 
-  const level =
-    state.upgrades[id];
-
-  if(level >= data.max){
-
-    showToast("⭐ Nâng cấp này đã đạt tối đa!");
-
-    return;
-  }
-
-  const cost =
-    upgradeCost(id);
-
-  if(state.money < cost){
-
-    showToast("💰 Chưa đủ tiền nâng cấp!");
-
-    return;
-  }
-
-  state.money -= cost;
-  state.costs += cost;
-
-  state.upgrades[id]++;
-
-  showToast(
-    `🛠️ ${data.name} đã lên cấp ${state.upgrades[id]}!`
-  );
-
-  renderAll();
-}
-
-function renderUpgrades(){
-
-  $("moneyUpgrade").textContent =
-    money(state.money);
-
-  $("upgradeList").innerHTML =
-    Object.keys(UPGRADE_DATA)
-      .map(id=>{
-
-        const data =
-          UPGRADE_DATA[id];
-
-        const level =
-          state.upgrades[id];
-
-        const maxed =
-          level >= data.max;
-
-        const cost =
-          upgradeCost(id);
-
-        const bars =
-          Array.from(
-            {length:data.max},
-            (_,index)=>`
-              <i class="${index < level ? "on" : ""}"></i>
-            `
-          ).join("");
-
-        return `
-          <div class="upgrade-card">
-
-            <div class="upgrade-top">
-
-              <div class="upgrade-icon">
-                ${data.icon}
-              </div>
-
-              <div class="upgrade-info">
-
-                <div class="upgrade-name">
-                  ${data.name}
-                </div>
-
-                <div class="upgrade-desc">
-                  ${data.desc}
-                </div>
-
-                <div class="level">
-                  ${bars}
-                </div>
-
-              </div>
-
-            </div>
-
-            <button
-              class="upgrade-buy ${!maxed && state.money >= cost ? "ready" : ""}"
-              onclick="buyUpgrade('${id}')"
-              ${maxed ? "disabled" : ""}
-            >
-              ${
-                maxed
-                  ? "✓ ĐÃ TỐI ĐA"
-                  : `🪙 NÂNG CẤP · ${money(cost)}`
-              }
-            </button>
-
-          </div>
-        `;
-      })
-      .join("");
-}
-
-/* =========================================================
-   REVIEWS
-========================================================= */
-
-function makeUniqueReviewSignature(text){
-
-  let signature = text;
-
-  if(!state.usedReviewSignatures.has(signature)){
-    state.usedReviewSignatures.add(signature);
-    return signature;
-  }
-
-  const extra = [
-    " 🩷",
-    " 🍦",
-    " 🌸",
-    " ✨",
-    " 🐰",
-    " 🍓",
-    " 💕"
-  ];
-
-  for(const suffix of extra){
-
-    const candidate =
-      text + suffix;
-
-    if(!state.usedReviewSignatures.has(candidate)){
-
-      state.usedReviewSignatures.add(candidate);
-
-      return candidate;
     }
-  }
+  );
 
-  return text + " " + Date.now();
-}
+  /*
+    Đồng bộ active cho tất cả bottom nav.
+  */
+  $all(".nav-btn").forEach(button=>{
 
-function generateHappyReview(){
-
-  const sentence =
-    `${randomItem(HAPPY_START)} ` +
-    `${randomItem(REVIEW_ACTIONS)}, ` +
-    `${randomItem(HAPPY_MIDDLE)}, ` +
-    `bé bán kem ${randomItem(REVIEW_COMPLIMENTS)} ` +
-    `nên ${randomItem(HAPPY_END)}`;
-
-  return makeUniqueReviewSignature(sentence);
-}
-
-function generateAngryReview(){
-
-  const sentence =
-    `${randomItem(ANGRY_START)} ` +
-    `${randomItem(ANGRY_END)}`;
-
-  return makeUniqueReviewSignature(sentence);
-}
-
-function addReview(success,customer){
-
-  const stars =
-    success ? 5 : 1;
-
-  const text =
-    success
-      ? generateHappyReview()
-      : generateAngryReview();
-
-  const avatar =
-    randomItem(
-      AVATARS.filter(
-        emoji =>
-          !state.reviews.some(
-            review => review.avatar === emoji
-          )
-      ).length
-        ? AVATARS.filter(
-            emoji =>
-              !state.reviews.some(
-                review => review.avatar === emoji
-              )
-          )
-        : AVATARS
+    button.classList.toggle(
+      "active",
+      button.dataset.tab===tab
     );
 
-  const review = {
-    id:Date.now()+Math.random(),
-    name:customer.name,
-    avatar,
-    stars,
-    text,
-    minute:state.minute,
-    success
-  };
+  });
 
-  state.reviews.unshift(review);
-
-  renderReviews();
-}
-
-/* =========================================================
-   REVIEW TIME
-========================================================= */
-
-function formatGameTime(minute){
-
-  const hour =
-    Math.floor(minute/60);
-
-  const min =
-    minute%60;
-
-  return `
-    ${String(hour).padStart(2,"0")}:
-    ${String(min).padStart(2,"0")}
-  `.trim();
-}
-
-/* =========================================================
-   REVIEW UI
-========================================================= */
-
-function renderReviews(){
-
-  const reviews =
-    state.reviews;
-
-  const average =
-    reviews.length
-      ? reviews.reduce(
-          (sum,item)=>sum+item.stars,
-          0
-        ) / reviews.length
-      : 5;
-
-  $("averageRating").textContent =
-    average.toFixed(1);
-
-  $("averageStars").textContent =
-    "🌟".repeat(
-      Math.round(average)
-    );
-
-  $("reviewCount").textContent =
-    `${reviews.length} lượt đánh giá`;
-
-  if(!reviews.length){
-
-    $("reviewsList").innerHTML = `
-      <div class="review-card">
-        <div class="review-avatar">🍦</div>
-        <div>
-          <div class="review-head">
-            <span class="reviewer-name">
-              Tiệm mới mở
-            </span>
-          </div>
-
-          <div class="review-stars">
-            🌟🌟🌟🌟🌟
-          </div>
-
-          <div class="review-text">
-            Hãy phục vụ vị khách đầu tiên để
-            nhận đánh giá nhé!
-          </div>
-        </div>
-      </div>
-    `;
-
-    return;
+  if(tab==="warehouse"){
+    renderWarehouse();
   }
 
-  $("reviewsList").innerHTML =
-    reviews
-      .map(review=>{
+  if(tab==="upgrade"){
+    renderUpgrades();
+    $("#upgradeCash").textContent=
+      formatMoney(state.cash);
+  }
 
-        const stars =
-          "🌟".repeat(review.stars);
+  if(tab==="reviews"){
+    renderReviews();
+  }
 
-        return `
-          <article
-            class="review-card ${review.stars === 1 ? "bad" : ""}"
-          >
-
-            <div class="review-avatar">
-              ${review.avatar}
-            </div>
-
-            <div>
-
-              <div class="review-head">
-
-                <span class="reviewer-name">
-                  ${escapeHTML(review.name)}
-                </span>
-
-                <span class="review-time">
-                  Hôm nay · ${formatGameTime(review.minute)}
-                </span>
-
-              </div>
-
-              <div class="review-stars">
-                ${stars}
-              </div>
-
-              <div class="review-text">
-                ${escapeHTML(review.text)}
-              </div>
-
-            </div>
-
-          </article>
-        `;
-      })
-      .join("");
+  if(tab==="shop"){
+    renderBuild();
+  }
 }
 
+$all(".nav-btn").forEach(button=>{
+
+  button.addEventListener("click",()=>{
+
+    const tab=button.dataset.tab;
+
+    /*
+      Khi tiệm đang đóng, vẫn được xem Kho,
+      Nâng cấp, Đánh giá.
+    */
+    if(tab==="shop" && state.dayEnded){
+      showToast(
+        "Tiệm đã đóng. Hãy bắt đầu ngày mới ở Kho 📦"
+      );
+      return;
+    }
+
+    switchTab(tab);
+
+  });
+
+});
+
 /* =========================================================
-   TOAST
+   WELCOME
 ========================================================= */
 
-function showToast(message){
+$("#startBusinessBtn").addEventListener(
+  "click",
+  ()=>{
 
-  const toast = $("toast");
+    $("#welcomeModal").classList.remove("show");
 
-  toast.textContent = message;
+    vibrate(15);
 
-  toast.classList.add("show");
+    setTimeout(()=>{
+      openShop();
+    },220);
 
-  clearTimeout(toastTimer);
+  }
+);
 
-  toastTimer = setTimeout(()=>{
-    toast.classList.remove("show");
-  },2400);
+/* =========================================================
+   RESET
+========================================================= */
+
+$("#resetBuildBtn").addEventListener(
+  "click",
+  ()=>{
+
+    if(
+      !state.build.base &&
+      !state.build.flavors.length &&
+      !state.build.topping
+    ){
+      showToast("Bàn kem đã sạch rồi 🍨");
+      return;
+    }
+
+    resetBuild(true);
+
+    showToast(
+      "Đã làm lại, nguyên liệu được trả về kho hũ 🍦"
+    );
+
+    vibrate(8);
+  }
+);
+
+/* =========================================================
+   OPTIONAL MANUAL CLOSE
+   Nút không chiếm chỗ trong giao diện chính.
+   Double click info time để test đóng cửa.
+========================================================= */
+
+$("#gameTime").addEventListener(
+  "dblclick",
+  manualClose
+);
+
+/* =========================================================
+   RENDER HEADER
+========================================================= */
+
+function renderHeader(){
+
+  $("#gameTime").textContent=
+    formatClock(state.gameMinutes);
+
+  $("#cashValue").textContent=
+    formatMoney(state.cash);
+
+  $("#dayValue").textContent=
+    `Ngày ${state.day}`;
 }
 
 /* =========================================================
@@ -4605,79 +5569,150 @@ function showToast(message){
 
 function renderAll(){
 
-  renderClock();
-
-  $("money").textContent =
-    money(state.money);
-
-  $("moneyInventory").textContent =
-    money(state.money);
-
-  $("moneyUpgrade").textContent =
-    money(state.money);
-
-  renderCustomer();
+  renderHeader();
+  renderCounterJars();
+  renderFlavorOptions();
+  renderToppingOptions();
   renderBuild();
-  renderStockButtons();
-  renderInventory();
-  renderUpgrades();
   renderReviews();
+  renderWarehouse();
+  renderUpgrades();
+
+  $("#upgradeCash").textContent=
+    formatMoney(state.cash);
 }
 
 /* =========================================================
    INITIAL REVIEWS
-   Chỉ là nhật ký ban đầu, không phải tên khách/order cố định.
-   Review phát sinh trong lúc chơi vẫn được sinh động.
+   Những review này chỉ tạo dữ liệu ban đầu.
+   Sau đó review thực tế được sinh động.
 ========================================================= */
 
 function seedReviews(){
 
-  const seedData = [
-    ["🐰","Bông Kem","Kem mịn thơm, quầy nhìn xinh quá trời!",5],
-    ["🐻","Mochi","Vị dâu dễ thương, topping rất đẹp!",5],
-    ["🐱","Luna","Sô-cô-la béo vừa đủ, mình thích lắm!",5],
-    ["🦊","Mây Nhỏ","Ốc quế giòn và kem mát lạnh!",5]
+  const seedData=[
+    ["Luna","🐰","Kem thơm nhẹ, nhìn chiếc ly xinh quá! 💕"],
+    ["Mochi","🐱","Sô-cô-la béo vừa đủ, ăn rất thích."],
+    ["Bông","🐻","Cốm màu đáng yêu ghê, mình rất vui! ❤️"],
+    ["Mây","🐨","Vani mịn và thơm, sẽ quay lại."],
+    ["Nấm","🐹","Ốc quế giòn, kem lạnh vừa đẹp."],
+    ["Su","🦄","Tiệm nhỏ xinh, món kem cũng xinh."],
+    ["Kem","🐼","Dâu thơm và ngọt vừa phải."],
+    ["Misa","🦊","Một buổi chiều ăn kem rất dễ thương."]
   ];
 
   seedData.forEach(
-    ([avatar,name,text,stars],index)=>{
+    ([name,avatar,text],index)=>{
 
       state.reviews.push({
-        id:`seed-${index}`,
-        avatar,
+        id:"seed-"+index,
         name,
+        avatar,
+        stars:5,
         text,
-        stars,
-        minute:state.minute,
-        success:true
+        reaction:randomItem([
+          "❤️",
+          "👍",
+          "💕",
+          "🥰",
+          ""
+        ]),
+        time:`Hôm nay · ${formatClock(9*60+index*7)}`,
+        served:true
       });
 
-      state.usedReviewSignatures.add(text);
     }
   );
 }
 
 /* =========================================================
-   KEYBOARD / ACCESSIBILITY
+   TOAST
+========================================================= */
+
+let toastTimer=null;
+
+function showToast(message){
+
+  const toast=$("#toast");
+
+  toast.textContent=message;
+
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer=setTimeout(()=>{
+    toast.classList.remove("show");
+  },1800);
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+
+function init(){
+
+  initializeInventory();
+
+  seedReviews();
+
+  renderAll();
+
+  /*
+    Hiển thị mặc định màn hình shop.
+  */
+  switchTab("shop");
+
+  /*
+    Để game không tự chạy trước khi người chơi bấm
+    BẮT ĐẦU KINH DOANH.
+  */
+  state.isOpen=false;
+
+  clearCustomerVisual();
+
+  renderBuild();
+}
+
+init();
+
+/* =========================================================
+   EXTRA: CẢNH BÁO KHI NGƯỜI DÙNG MUỐN THOÁT
+========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  event=>{
+
+    if(state.isOpen){
+
+      event.preventDefault();
+      event.returnValue="";
+    }
+
+  }
+);
+
+/* =========================================================
+   KEYBOARD SUPPORT
 ========================================================= */
 
 document.addEventListener(
   "keydown",
   event=>{
 
-    if(event.key === "Escape"){
+    if(event.key==="Escape"){
 
-      $("welcomeModal").classList.remove("show");
+      const modal=$all(".modal.show").pop();
+
+      if(modal){
+        modal.classList.remove("show");
+      }
+
     }
+
   }
 );
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-seedReviews();
-renderAll();
 
 </script>
 
