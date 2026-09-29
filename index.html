@@ -1,556 +1,286 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width,
-                 initial-scale=1.0,
-                 maximum-scale=1.0,
-                 user-scalable=no"
-    >
-
-    <meta name="theme-color" content="#fff7ef">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-
-    <title>🍦 Tiệm Kem Ngọt Ngào</title>
-
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#ffdce5">
+  <title>Tiệm Bán Kem Ngọt Ngào</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-<div id="app">
-
-    <!-- =====================================================
-         TOP BAR
-    ====================================================== -->
+  <div id="app" class="app-shell">
     <header class="topbar">
-
-        <div class="topbar-inner">
-
-            <div class="brand">
-                <div class="brand-title">
-                    🍦 Tiệm Kem
-                </div>
-
-                <div class="brand-subtitle" id="dayTimeText">
-                    Ngày 1 · 08:00
-                </div>
-            </div>
-
-            <div class="money-box">
-                💰 <span id="money">2.000</span>đ
-            </div>
-
+      <div class="brand-wrap">
+        <div class="brand-icon">🍦</div>
+        <div>
+          <div class="brand-title">TIỆM KEM NGỌT NGÀO</div>
+          <div class="brand-sub">Một ngày bán kem thật vui!</div>
         </div>
-
+      </div>
+      <div class="top-actions">
+        <div class="pill stat-pill">💰 <span id="moneyValue">300</span></div>
+        <div class="pill stat-pill">📅 Ngày <span id="dayValue">1</span></div>
+        <button id="openCloseBtn" class="btn btn-primary btn-small">MỞ CỬA TIỆM</button>
+      </div>
     </header>
 
+    <main class="main-content">
+      <section id="shopTab" class="tab-panel active" aria-label="Tiệm kem">
+        <div class="shop-head">
+          <div class="shop-head-card">
+            <div>
+              <div class="eyebrow">PHỐ KEM NHỎ</div>
+              <h1>Bán hàng hôm nay</h1>
+              <p id="shopStatusText">Tiệm đang đóng cửa. Hãy mở cửa để đón khách!</p>
+            </div>
+            <div class="day-clock">
+              <div class="day-clock-ring"><span id="dayTimer">02:00</span></div>
+              <div class="clock-label">GIỜ KINH DOANH</div>
+            </div>
+          </div>
+        </div>
 
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-    <main>
+        <div class="street-scene">
+          <div class="cloud c1"></div>
+          <div class="cloud c2"></div>
+          <div class="sun">☀️</div>
 
-        <!-- =================================================
-             TAB 1 - TIỆM KEM
-        ================================================== -->
-        <section
-            id="tab-shop"
-            class="page active"
-        >
-
-            <div class="shop-stats">
-
-                <div class="stat-card">
-                    <span>💵 Doanh thu</span>
-                    <strong id="todayRevenue">0đ</strong>
-                </div>
-
-                <div class="stat-card">
-                    <span>👥 Khách hôm nay</span>
-                    <strong id="todayCustomers">0</strong>
-                </div>
-
-                <div class="stat-card">
-                    <span>⭐ Đánh giá</span>
-                    <strong id="averageRating">5.0</strong>
-                </div>
-
-                <div class="stat-card">
-                    <span>🕐 Giờ</span>
-                    <strong id="gameClock">08:00</strong>
-                </div>
-
+          <div class="shopfront">
+            <div class="awning">
+              <span>TIỆM KEM</span>
+              <span>TIỆM KEM</span>
+              <span>TIỆM KEM</span>
             </div>
 
-
-            <!-- =================================================
-                 ICE CREAM SHOP SCENE
-            ================================================== -->
-            <section class="shop-scene">
-
-                <div class="sky"></div>
-
-                <div class="cloud cloud-1">☁️</div>
-                <div class="cloud cloud-2">☁️</div>
-
-                <div class="sun">☀️</div>
-
-                <div class="shop-building">
-
-                    <div class="awning">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-
-                    <div class="shop-sign">
-                        🍦 TIỆM KEM NGỌT NGÀO 🍦
-                    </div>
-
-                    <div class="shop-window">
-
-                        <div class="window-frame"></div>
-
-                        <div class="icecream-display">
-                            <span>🍦</span>
-                            <span>🍨</span>
-                            <span>🍧</span>
-                            <span>🍦</span>
-                        </div>
-
-                    </div>
-
-                    <div class="shop-door">
-                        <div class="door-handle"></div>
-                    </div>
-
-                    <div class="counter">
-
-                        <div class="counter-top">
-
-                            <div class="icecream-tubs">
-                                <div class="tub chocolate">🍫</div>
-                                <div class="tub strawberry">🍓</div>
-                                <div class="tub vanilla">🍦</div>
-                                <div class="tub matcha">🍵</div>
-                                <div class="tub rainbow">🌈</div>
-                            </div>
-
-                        </div>
-
-                        <div class="counter-front">
-                            🍦 NGỌT NGÀO
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- CUSTOMER AREA -->
-                <div
-                    id="customerArea"
-                    class="customer-area"
-                ></div>
-
-
-                <!-- GROUND -->
-                <div class="street">
-
-                    <div class="street-line"></div>
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================================
-                 CUSTOMER CONTROL
-            ================================================== -->
-            <section class="control-card">
-
-                <div class="control-header">
-
-                    <div>
-                        <h2>🏪 Điều khiển tiệm</h2>
-
-                        <p id="shopStatusText">
-                            Tiệm đang đóng cửa
-                        </p>
-                    </div>
-
-                    <div
-                        id="clockBadge"
-                        class="clock-badge"
-                    >
-                        08:00
-                    </div>
-
-                </div>
-
-
-                <div class="control-buttons">
-
-                    <button
-                        id="openShopButton"
-                        class="main-button"
-                        onclick="openShop()"
-                    >
-                        🚪 MỞ CỬA TIỆM
-                    </button>
-
-                    <button
-                        id="serveButton"
-                        class="serve-button"
-                        onclick="serveCustomer()"
-                        disabled
-                    >
-                        🍨 BÁN KEM CHO KHÁCH
-                    </button>
-
-                    <button
-                        id="closeShopButton"
-                        class="secondary-button"
-                        onclick="closeShop()"
-                        disabled
-                    >
-                        🔒 ĐÓNG CỬA
-                    </button>
-
-                </div>
-
-            </section>
-
-
-            <!-- CURRENT CUSTOMER -->
-            <section class="current-order-card">
-
-                <div class="section-title">
-                    <h2>📝 Đơn hiện tại</h2>
-                </div>
-
-                <div id="currentOrder">
-                    Chưa có khách đang chờ.
-                </div>
-
-            </section>
-
-        </section>
-
-
-        <!-- =================================================
-             TAB 2 - KHO HÀNG
-        ================================================== -->
-        <section
-            id="tab-warehouse"
-            class="page"
-        >
-
-            <div class="page-heading">
-
-                <div>
-                    <h1>📦 Kho Kem</h1>
-
-                    <p>
-                        Nhập kem sỉ rồi đưa lên quầy.
-                    </p>
-                </div>
-
-                <div
-                    id="warehouseCapacity"
-                    class="capacity-badge"
-                >
-                    0 / 30
-                </div>
-
+            <div class="shop-window">
+              <div class="window-sign">🍨 NHÀ KEM NGỌT NGÀO 🍨</div>
+              <div class="window-plants">🪴 &nbsp;&nbsp; 🪴</div>
             </div>
 
+            <div class="shop-door"><span>🚪</span></div>
+          </div>
 
-            <div
-                id="icecreamGrid"
-                class="icecream-grid"
-            ></div>
+          <div class="sidewalk"></div>
+          <div id="customerStage" class="customer-stage" aria-live="polite"></div>
+        </div>
 
-        </section>
-
-
-        <!-- =================================================
-             TAB 3 - NÂNG CẤP
-        ================================================== -->
-        <section
-            id="tab-upgrades"
-            class="page"
-        >
-
-            <div class="page-heading">
-
-                <div>
-                    <h1>🛠️ Nâng cấp</h1>
-
-                    <p>
-                        Biến tiệm nhỏ thành tiệm kem nổi tiếng.
-                    </p>
-                </div>
-
+        <div class="order-card">
+          <div class="order-top">
+            <div>
+              <div class="eyebrow">ĐƠN HÀNG</div>
+              <div id="customerRequest" class="customer-request">
+                Chưa có khách. Mở cửa để bắt đầu.
+              </div>
             </div>
 
+            <div id="customerMoodTag" class="mood-tag">
+              🏠 Đóng cửa
+            </div>
+          </div>
 
-            <div
-                id="upgradeList"
-                class="upgrade-list"
-            ></div>
+          <div class="order-progress">
+            <span id="orderProgressBar"></span>
+          </div>
 
-        </section>
-
-
-        <!-- =================================================
-             TAB 4 - ĐÁNH GIÁ
-        ================================================== -->
-        <section
-            id="tab-reviews"
-            class="page"
-        >
-
-            <div class="social-profile">
-
-                <div class="store-avatar">
-                    🍦
-                </div>
-
-                <h1>
-                    Tiệm Kem Ngọt Ngào
-                </h1>
-
-                <div
-                    id="ratingStars"
-                    class="rating-stars"
-                >
-                    ★★★★★
-                </div>
-
-                <div
-                    id="ratingNumber"
-                    class="rating-number"
-                >
-                    5.0
-                </div>
-
-                <p id="reviewCount">
-                    0 đánh giá
-                </p>
-
+          <div class="scoop-area">
+            <div id="coneDisplay" class="cone-display">
+              <div class="cone-placeholder">
+                🍦
+                <span>Chạm HŨ KEM<br>để múc</span>
+              </div>
             </div>
 
+            <div class="scoop-controls">
+              <button id="serveBtn" class="btn btn-primary" disabled>
+                GIAO KEM 🍨
+              </button>
 
-            <div
-                id="reviewList"
-                class="review-list"
-            ></div>
+              <button id="resetScoopBtn" class="btn btn-secondary" disabled>
+                BỎ MẺ
+              </button>
+            </div>
+          </div>
+        </div>
 
-        </section>
+        <div class="section-title-row">
+          <div>
+            <div class="eyebrow">BÀN QUẦY</div>
+            <h2>Các hũ kem tươi</h2>
+          </div>
 
+          <div class="pill stock-summary">
+            Kho tối đa <span id="maxStockValue">12</span>/vị
+          </div>
+        </div>
+
+        <div id="tubGrid" class="tub-grid"></div>
+
+        <div class="hint-card">
+          💡 Mẹo: Khách sẽ nói đúng vị họ muốn. Chạm đúng hũ để múc một viên,
+          sau đó bấm <strong>GIAO KEM</strong> hoặc chạm vào khách.
+        </div>
+      </section>
+
+      <section id="warehouseTab" class="tab-panel" aria-label="Kho hàng">
+        <div class="page-hero mint-hero">
+          <div>
+            <div class="eyebrow">📦 KHO HÀNG</div>
+            <h1>Nhập kem về châm hũ</h1>
+            <p>
+              Mỗi thùng tăng 6 viên cho đúng vị. Hãy để kho luôn đủ đầy.
+            </p>
+          </div>
+
+          <div class="warehouse-total">
+            💰 <span id="warehouseMoney">300</span>
+          </div>
+        </div>
+
+        <div id="warehouseGrid" class="warehouse-grid"></div>
+      </section>
+
+      <section id="upgradeTab" class="tab-panel" aria-label="Nâng cấp">
+        <div class="page-hero yellow-hero">
+          <div>
+            <div class="eyebrow">🛠️ NÂNG CẤP</div>
+            <h1>Biến tiệm nhỏ thành tiệm hot</h1>
+            <p>
+              Mua từng nâng cấp để bán nhanh hơn, chứa nhiều kem hơn
+              và phục vụ tự động.
+            </p>
+          </div>
+
+          <div class="upgrade-coins">
+            🪙 <span id="upgradeMoney">300</span>
+          </div>
+        </div>
+
+        <div id="upgradeGrid" class="upgrade-grid"></div>
+      </section>
+
+      <section id="reviewTab" class="tab-panel" aria-label="Đánh giá">
+        <div class="page-hero pink-hero">
+          <div>
+            <div class="eyebrow">📱 ĐÁNH GIÁ</div>
+            <h1>Khách nói gì về tiệm?</h1>
+            <p>
+              Bảng review được tạo ngẫu nhiên từ khách đã ghé tiệm.
+            </p>
+          </div>
+
+          <div class="rating-box">
+            <div id="avgRating" class="avg-rating">5.0</div>
+            <div id="avgStars" class="avg-stars">★★★★★</div>
+            <div id="reviewCount" class="review-count">0 đánh giá</div>
+          </div>
+        </div>
+
+        <div class="review-filter-row">
+          <button class="filter-btn active" data-filter="all">Tất cả</button>
+          <button class="filter-btn" data-filter="5">5 ⭐</button>
+          <button class="filter-btn" data-filter="1">1 ⭐</button>
+        </div>
+
+        <div id="reviewList" class="review-list"></div>
+      </section>
     </main>
 
+    <nav class="bottom-nav" aria-label="Điều hướng">
+      <button class="nav-btn active" data-tab="shopTab">
+        <span>🍦</span>
+        <small>Tiệm Kem</small>
+      </button>
 
-    <!-- =====================================================
-         BOTTOM NAV
-    ====================================================== -->
-    <nav class="bottom-nav">
+      <button class="nav-btn" data-tab="warehouseTab">
+        <span>📦</span>
+        <small>Kho Hàng</small>
+      </button>
 
-        <button
-            class="nav-button active"
-            data-tab="shop"
-            onclick="switchTab('shop')"
-        >
-            <span>🍦</span>
-            <small>TIỆM KEM</small>
-        </button>
+      <button class="nav-btn" data-tab="upgradeTab">
+        <span>🛠️</span>
+        <small>Nâng Cấp</small>
+      </button>
 
-        <button
-            class="nav-button"
-            data-tab="warehouse"
-            onclick="switchTab('warehouse')"
-        >
-            <span>📦</span>
-            <small>KHO HÀNG</small>
-        </button>
-
-        <button
-            class="nav-button"
-            data-tab="upgrades"
-            onclick="switchTab('upgrades')"
-        >
-            <span>🛠️</span>
-            <small>NÂNG CẤP</small>
-        </button>
-
-        <button
-            class="nav-button"
-            data-tab="reviews"
-            onclick="switchTab('reviews')"
-        >
-            <span>📱</span>
-            <small>ĐÁNH GIÁ</small>
-        </button>
-
+      <button class="nav-btn" data-tab="reviewTab">
+        <span>📱</span>
+        <small>Đánh Giá</small>
+      </button>
     </nav>
+  </div>
 
+  <!-- INTRO -->
+  <div id="introModal" class="modal-backdrop visible">
+    <div class="modal-card intro-card">
+      <div class="modal-emoji">🍦</div>
 
-    <!-- =====================================================
-         INTRO MODAL
-    ====================================================== -->
-    <div
-        id="introModal"
-        class="modal show"
-    >
+      <div class="eyebrow">CHÀO MỪNG</div>
+      <h2>Tiệm Kem Ngọt Ngào</h2>
 
-        <div class="modal-card intro-card">
+      <p>
+        🍦 Chào mừng bạn đến với Tiệm Kem Ngọt Ngào!
+        Hãy nhập nhiều vị kem thơm ngon, phục vụ các vị khách vui tính
+        và xây dựng tiệm kem hot nhất phố nhé!
+      </p>
 
-            <div class="intro-icecream">
-                🍦
-            </div>
+      <button id="startBusinessBtn" class="btn btn-primary btn-block">
+        BẮT ĐẦU KINH DOANH
+      </button>
+    </div>
+  </div>
 
-            <h1>
-                Tiệm Kem<br>
-                <span>Ngọt Ngào</span>
-            </h1>
+  <!-- OPENING -->
+  <div id="openingOverlay" class="opening-overlay">
+    <div class="curtain curtain-left"></div>
+    <div class="curtain curtain-right"></div>
+    <div class="opening-message">BẮT ĐẦU NGÀY MỚI! 🍦</div>
+  </div>
 
-            <p>
-                🍦 Chào mừng bạn đến với
-                <strong>Tiệm Kem Ngọt Ngào!</strong>
-                Hãy nhập nhiều loại kem thơm ngon,
-                phục vụ các vị khách vui tính và
-                nâng cấp tiệm kem số 1 phố nhé!
-            </p>
+  <!-- DAY SUMMARY -->
+  <div id="daySummaryModal" class="modal-backdrop">
+    <div class="modal-card summary-card">
+      <div class="summary-badge">📊</div>
 
-            <button
-                class="main-button"
-                onclick="startGame()"
-            >
-                🎀 BẮT ĐẦU
-            </button>
+      <div class="eyebrow">
+        TỔNG KẾT NGÀY <span id="summaryDay">1</span>
+      </div>
 
+      <h2>Ngày kinh doanh khép lại</h2>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span>Doanh thu</span>
+          <strong id="summaryRevenue">0đ</strong>
         </div>
 
-    </div>
-
-
-    <!-- =====================================================
-         DAY TRANSITION
-    ====================================================== -->
-    <div
-        id="dayTransition"
-        class="day-transition"
-    >
-
-        <div class="curtain curtain-left"></div>
-        <div class="curtain curtain-right"></div>
-
-        <div class="transition-text">
-            <div>☀️</div>
-            <strong>NGÀY MỚI BẮT ĐẦU!</strong>
-            <small>
-                Tiệm kem mở cửa đón khách
-            </small>
+        <div class="summary-item">
+          <span>Chi phí nhập kem</span>
+          <strong id="summarySupplyCost">0đ</strong>
         </div>
 
-    </div>
-
-
-    <!-- =====================================================
-         DAY SUMMARY
-    ====================================================== -->
-    <div
-        id="summaryModal"
-        class="modal"
-    >
-
-        <div class="modal-card">
-
-            <div class="summary-icon">
-                🌙
-            </div>
-
-            <h1>
-                Tổng kết ngày
-            </h1>
-
-            <p>
-                Một ngày bán kem đã kết thúc!
-            </p>
-
-            <div class="summary-grid">
-
-                <div>
-                    <span>Doanh thu</span>
-                    <strong id="summaryRevenue">
-                        0đ
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Chi phí</span>
-                    <strong id="summaryCost">
-                        0đ
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Tiền tip</span>
-                    <strong id="summaryTips">
-                        0đ
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Khách phục vụ</span>
-                    <strong id="summaryCustomers">
-                        0
-                    </strong>
-                </div>
-
-            </div>
-
-            <div class="profit-box">
-
-                <span>LỜI / LỖ</span>
-
-                <strong id="summaryProfit">
-                    0đ
-                </strong>
-
-            </div>
-
-            <button
-                class="main-button"
-                onclick="startNextDay()"
-            >
-                ☀️ BẮT ĐẦU NGÀY MỚI
-            </button>
-
+        <div class="summary-item">
+          <span>Tiền lời / lỗ</span>
+          <strong id="summaryProfit">0đ</strong>
         </div>
 
+        <div class="summary-item">
+          <span>Phục vụ thành công</span>
+          <strong id="summarySuccess">0</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Phục vụ thất bại</span>
+          <strong id="summaryFail">0</strong>
+        </div>
+      </div>
+
+      <button id="newDayBtn" class="btn btn-primary btn-block">
+        BẮT ĐẦU NGÀY MỚI 🌷
+      </button>
     </div>
+  </div>
 
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <!-- =====================================================
-         TOAST
-    ====================================================== -->
-    <div
-        id="toastContainer"
-        class="toast-container"
-    ></div>
-
-</div>
-
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
