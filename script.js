@@ -1,3309 +1,2318 @@
-"use strict";
+(() => {
+  'use strict';
 
-/* =========================================================
-   TIỆM KEM NGỌT NGÀO
-   GAME ENGINE
-========================================================= */
+  const $ = (id) => document.getElementById(id);
 
+  const moneyFmt = new Intl.NumberFormat('vi-VN');
 
-/* =========================================================
-   ICE CREAM DATA
-========================================================= */
-
-const ICE_CREAMS = [
-
+  const flavors = [
     {
-        id: "chocolate",
-        name: "Kem Sô-cô-la",
-        icon: "🍫",
-        wholesale: 45,
-        price: 90
+      id:'choco',
+      name:'Sô-cô-la',
+      emoji:'🍫',
+      color:'#7c543f',
+      price:24,
+      packCost:80
+    },
+    {
+      id:'strawberry',
+      name:'Dâu Tây',
+      emoji:'🍓',
+      color:'#ef9daf',
+      price:22,
+      packCost:78
+    },
+    {
+      id:'vanilla',
+      name:'Vani',
+      emoji:'🍦',
+      color:'#fff0b7',
+      price:20,
+      packCost:74
+    },
+    {
+      id:'matcha',
+      name:'Matcha',
+      emoji:'🍵',
+      color:'#a9d39b',
+      price:24,
+      packCost:82
+    },
+    {
+      id:'butter',
+      name:'Bơ',
+      emoji:'🥑',
+      color:'#b7cd73',
+      price:23,
+      packCost:78
+    },
+    {
+      id:'durian',
+      name:'Sầu Riêng',
+      emoji:'🥭',
+      color:'#f2dc7e',
+      price:26,
+      packCost:86
+    },
+    {
+      id:'taro',
+      name:'Khoai Môn',
+      emoji:'🍠',
+      color:'#c8aadf',
+      price:23,
+      packCost:78
+    },
+    {
+      id:'oreo',
+      name:'Oreo',
+      emoji:'🍪',
+      color:'#8a8a91',
+      price:25,
+      packCost:84
+    },
+    {
+      id:'yogurt',
+      name:'Sữa Chua',
+      emoji:'🥛',
+      color:'#dce6f3',
+      price:21,
+      packCost:76
+    },
+    {
+      id:'rainbow',
+      name:'7 Màu Rainbow',
+      emoji:'🌈',
+      color:'#f5c4da',
+      price:28,
+      packCost:92
+    }
+  ];
+
+  /* 25 CÂU 5 SAO */
+  const positiveReviews = [
+    'Kem sô cô la ở đây ngon xỉu, chủ shop múc nhanh nhiệt tình!',
+    '10/10 điểm, kem matcha béo ngậy!',
+    'Tiệm xinh xắn, giao kem nhanh thoăn thoắt ❤️',
+    'Kem dâu thơm và mềm mịn, mình sẽ quay lại!',
+    'Vani nhẹ nhàng, ăn một viên là muốn ăn thêm!',
+    'Nhân viên thân thiện, quầy sạch sẽ, rất thích.',
+    'Kem bơ béo vừa phải, vị dễ ăn và không ngấy.',
+    'Sầu riêng thơm nức, múc đầy tay mà vẫn hết veo!',
+    'Khoai môn thơm dịu, màu xinh và ăn rất vui miệng.',
+    'Oreo giòn giòn, kem mát lạnh, quá hợp buổi chiều!',
+    'Sữa chua chua nhẹ, cực hợp trời nóng.',
+    'Rainbow 7 màu đẹp mê, chụp ảnh lên hình siêu cute 🌈',
+    'Giá hợp lý, phục vụ nhanh, mình cho tiệm trọn 5 sao!',
+    'Chủ tiệm nói chuyện dễ thương, kem cũng ngon nữa.',
+    'Đợi đúng chút thôi mà nhận được ly kem rất đáng!',
+    'Quầy kem nhỏ mà nhiều vị ghê, tha hồ chọn.',
+    'Kem mịn, topping vừa xinh, trải nghiệm rất ổn.',
+    'Mình thích nhất vị matcha, thơm mà không quá đắng.',
+    'Dâu Tây có mùi thơm tự nhiên, ăn rất đã.',
+    'Một góc phố thật dễ thương, lần sau mình dẫn bạn tới!',
+    'Kem vani ở đây có vị dịu và thơm, đúng gu mình.',
+    'Sầu riêng ngon bất ngờ, béo mà vẫn dễ ăn.',
+    'Quầy bán hàng gọn gàng, thao tác nhanh gọn.',
+    'Đúng món, đúng vị, phục vụ dễ thương, quá ổn áp!'
+  ];
+
+  /* 24 CÂU 1 SAO */
+  const negativeReviews = [
+    'Bắt khách chờ héo cả người, dẹp tiệm đi!',
+    'Chậm như rùa, cạch mặt shop này luôn!',
+    'Đợi lâu muốn xỉu mà không thấy kem đâu!',
+    'Múc kem thôi mà lâu thế, mình về trước đây!',
+    'Chờ mãi vẫn chưa có đồ, mất hết kiên nhẫn.',
+    'Định ăn kem vui vẻ mà cuối cùng phải bỏ về.',
+    'Shop phản hồi chậm quá, lần này mình không vui.',
+    'Đứng đợi ở quầy lâu kinh khủng.',
+    'Kem chưa tới mà mình đã hết kiên nhẫn rồi.',
+    'Xin lỗi nhưng tốc độ phục vụ hôm nay quá chậm.',
+    'Chờ một viên kem mà cảm giác như cả buổi chiều.',
+    'Bong bóng gọi món vui mà đợi thì không vui chút nào.',
+    'Mình thích vị kem nhưng đợi lâu quá nên thôi.',
+    'Tiệm dễ thương nhưng hôm nay phục vụ quá chậm.',
+    'Khách tới trước mà phải chờ quá lâu.',
+    'Mình đành đi về vì không thể đợi thêm nữa.',
+    'Hẹn lần sau nếu shop phục vụ nhanh hơn nhé.',
+    'Đợi lâu quá, đánh giá lần này chỉ có thể 1 sao.',
+    'Không ngờ múc một viên kem lại mất nhiều thời gian vậy.',
+    'Hôm nay trải nghiệm chưa ổn, mong tiệm cải thiện tốc độ.',
+    'Đứng từ ngoài vào tới quầy rồi mà vẫn phải đợi dài.',
+    'Mùi kem thơm nhưng tâm trạng thì không còn thơm nữa 😅',
+    'Mình bỏ cuộc giữa chừng vì chờ quá lâu.',
+    'Tiệm cần xử lý đơn nhanh hơn một chút nha.'
+  ];
+
+  /* 40+ TÊN KHÁCH */
+  const customerNames = [
+    'Hoàng Nam',
+    'Thu Trang',
+    'Bảo Anh',
+    'Ngọc Linh',
+    'Minh Đức',
+    'Mai Phương',
+    'Tuấn Kiệt',
+    'Khánh An',
+    'Gia Hân',
+    'Quang Huy',
+    'Thanh Tùng',
+    'Hà My',
+    'Đức Anh',
+    'Phương Nhi',
+    'Kim Ngân',
+    'Anh Khoa',
+    'Yến Nhi',
+    'Minh Khang',
+    'Lan Chi',
+    'Trọng Nghĩa',
+    'Nhật Minh',
+    'Thảo Vy',
+    'Hữu Phước',
+    'Mỹ Duyên',
+    'Quỳnh Anh',
+    'Đình Phong',
+    'Ngọc Hân',
+    'Tấn Phát',
+    'Hoài An',
+    'Bích Ngọc',
+    'Đăng Khoa',
+    'Thiên Kim',
+    'Mộc Miên',
+    'Khôi Nguyên',
+    'Tú Uyên',
+    'An Nhiên',
+    'Đình Quân',
+    'Thanh Vy',
+    'Khánh Duy',
+    'Uyên Nhi'
+  ];
+
+  const avatars = [
+    '🧑🏻',
+    '👩🏻',
+    '🧑🏼',
+    '👩🏼',
+    '🧑🏽',
+    '👨🏻',
+    '👩🏽',
+    '🧑🏾',
+    '👨🏽',
+    '👩🏾',
+    '👧🏻',
+    '👦🏻'
+  ];
+
+  const hairTypes = [
+    'short',
+    'long',
+    'curly',
+    'bob',
+    'cap'
+  ];
+
+  const shirts = [
+    '#f4a9b8',
+    '#9ed2c0',
+    '#f2cf7b',
+    '#a8bde5',
+    '#d5a9df',
+    '#f2b38a'
+  ];
+
+  const skinTones = [
+    '#f4c7a1',
+    '#e4ae7e',
+    '#c88d62',
+    '#f7d3b1'
+  ];
+
+  const defaultState = () => ({
+    money:300,
+    day:1,
+    isOpen:false,
+    daySeconds:120,
+
+    maxStock:12,
+
+    scoopSpeed:850,
+    freezerLevel:0,
+    staffLevel:0,
+    decorLevel:0,
+
+    inventory:Object.fromEntries(
+      flavors.map((f) => [f.id,6])
+    ),
+
+    currentCustomer:null,
+    currentOrder:null,
+    scooped:false,
+    scoopedFlavor:null,
+
+    customerTimer:null,
+    shopTimer:null,
+
+    staffBusy:false,
+
+    daily:{
+      revenue:0,
+      supplyCost:0,
+      success:0,
+      fail:0
     },
 
-    {
-        id: "strawberry",
-        name: "Kem Dâu Tây",
-        icon: "🍓",
-        wholesale: 50,
-        price: 100
-    },
+    reviews:createBaseReviews()
+  });
 
-    {
-        id: "vanilla",
-        name: "Kem Vani",
-        icon: "🍦",
-        wholesale: 35,
-        price: 75
-    },
+  let state = loadState();
 
-    {
-        id: "matcha",
-        name: "Kem Matcha",
-        icon: "🍵",
-        wholesale: 55,
-        price: 115
-    },
+  let toastTimer = null;
+  let reviewFilter = 'all';
 
-    {
-        id: "avocado",
-        name: "Kem Bơ",
-        icon: "🥑",
-        wholesale: 60,
-        price: 125
-    },
+  function createBaseReviews(){
+    const list = [];
 
-    {
-        id: "durian",
-        name: "Kem Sầu Riêng",
-        icon: "🥭",
-        wholesale: 75,
-        price: 155
-    },
-
-    {
-        id: "taro",
-        name: "Kem Khoai Môn",
-        icon: "🍠",
-        wholesale: 50,
-        price: 105
-    },
-
-    {
-        id: "oreo",
-        name: "Kem Oreo",
-        icon: "🍪",
-        wholesale: 65,
-        price: 130
-    },
-
-    {
-        id: "yogurt",
-        name: "Kem Sữa Chua",
-        icon: "🥛",
-        wholesale: 45,
-        price: 95
-    },
-
-    {
-        id: "rainbow",
-        name: "Kem 7 Màu Rainbow",
-        icon: "🌈",
-        wholesale: 90,
-        price: 180
-    },
-
-    {
-        id: "coconut",
-        name: "Kem Dừa",
-        icon: "🥥",
-        wholesale: 55,
-        price: 110
-    },
-
-    {
-        id: "coffee",
-        name: "Kem Cà Phê",
-        icon: "☕",
-        wholesale: 60,
-        price: 120
+    for(let i = 0; i < 10; i++){
+      list.push({
+        id:`base-${i}`,
+        name:customerNames[i],
+        avatar:avatars[i % avatars.length],
+        stars:5,
+        text:positiveReviews[i],
+        time:`${i+1} ngày trước`
+      });
     }
 
-];
-
-
-/* =========================================================
-   40+ CUSTOMER NAMES
-========================================================= */
-
-const CUSTOMER_NAMES = [
-
-    "Ngọc Anh",
-    "Minh Quân",
-    "Hà Vy",
-    "Hoàng Nam",
-    "Tuấn Kiệt",
-    "Bảo Anh",
-    "Khánh Linh",
-    "Đức Anh",
-    "Thùy Chi",
-    "Quốc Bảo",
-
-    "Phương Linh",
-    "Gia Huy",
-    "Thanh Trúc",
-    "Anh Khoa",
-    "Mai Anh",
-    "Nhật Minh",
-    "Kim Ngân",
-    "Thiên An",
-    "Minh Thư",
-    "Hoàng Long",
-
-    "Yến Nhi",
-    "Đăng Khoa",
-    "Tú Anh",
-    "Thanh Tâm",
-    "Quỳnh Như",
-    "Hải Đăng",
-    "Bích Ngọc",
-    "Trung Kiên",
-    "Khả Hân",
-    "Mạnh Hùng",
-
-    "Lan Chi",
-    "Gia Bảo",
-    "Thảo Vy",
-    "Đình Phong",
-    "Mỹ Duyên",
-    "Trọng Nghĩa",
-    "Hương Giang",
-    "Khôi Nguyên",
-    "Linh Đan",
-    "Duy Khánh",
-
-    "Minh Châu",
-    "Hoài Nam",
-    "Ngân Hà",
-    "Thanh Vy",
-    "Đức Minh",
-    "Tường Vi",
-    "Quang Huy",
-    "An Nhiên"
-];
-
-
-/* =========================================================
-   30+ GOOD REVIEWS
-========================================================= */
-
-const GOOD_REVIEWS = [
-
-    "Kem sô cô la ở đây ngon xỉu luôn, chủ shop bán nhiệt tình! ❤️",
-
-    "10/10 điểm, kem matcha đậm vị béo ngậy!",
-
-    "Tiệm xinh xắn, giao kem nhanh thoăn thoắt ❤️",
-
-    "Kem dâu tươi mát mát lạnh, chắc chắn sẽ quay lại!",
-
-    "Kem vani thơm nhẹ, ăn một lần là ghiền luôn.",
-
-    "Mình cực thích kem Oreo, topping giòn giòn ngon ghê!",
-
-    "Kem sầu riêng thơm béo, đúng gu của mình!",
-
-    "Không gian tiệm dễ thương quá trời luôn 🥰",
-
-    "Nhân viên phục vụ nhanh và vui vẻ.",
-
-    "Kem 7 màu nhìn xinh mà ăn cũng ngon nữa!",
-
-    "Matcha rất thơm, không bị ngọt gắt.",
-
-    "Kem khoai môn béo bùi, ăn cực đã.",
-
-    "Trời nóng mà có ly kem dâu là hết bài!",
-
-    "Shop đóng gói đẹp, phục vụ cũng dễ thương.",
-
-    "Kem sữa chua chua nhẹ, ăn rất mát.",
-
-    "Kem bơ béo béo thơm thơm, ngon bất ngờ!",
-
-    "Mình sẽ rủ bạn bè tới đây ăn tiếp.",
-
-    "Giá ổn, kem ngon, phục vụ nhanh.",
-
-    "Kem cà phê thơm đúng vị mình thích.",
-
-    "Kem dừa rất thơm, vị tự nhiên.",
-
-    "Một trong những tiệm kem mình thích nhất!",
-
-    "Chủ tiệm dễ thương, bán hàng có tâm.",
-
-    "Kem lạnh vừa đủ, không bị cứng.",
-
-    "Ăn xong vẫn muốn gọi thêm một ly nữa 😂",
-
-    "Kem chocolate đậm vị, rất hợp người mê cacao.",
-
-    "Bạn nhân viên phục vụ siêu nhanh!",
-
-    "Tiệm nhỏ nhưng rất sạch sẽ và đáng yêu.",
-
-    "Kem matcha béo thơm, ưng cái bụng!",
-
-    "Dâu tây thơm mùi trái cây thật.",
-
-    "Oreo ăn giòn giòn rất vui miệng.",
-
-    "Kem ngon, phục vụ nhanh, mình cho 5 sao!",
-
-    "Sẽ quay lại thử thêm nhiều vị khác.",
-
-    "Một ly kem làm ngày nóng trở nên dễ chịu hơn.",
-
-    "Tiệm có nhiều vị lạ, rất thú vị.",
-
-    "Kem sầu riêng thơm nức luôn nha!",
-
-    "Vị kem vừa miệng, không quá ngọt.",
-
-    "Đồ ăn ngon mà nhân viên còn nhiệt tình nữa.",
-
-    "Rất thích phong cách pastel của tiệm!",
-
-    "Bạn mình giới thiệu và đúng là ngon thật.",
-
-    "Kem tan vừa phải, ăn rất thích.",
-
-    "Mình đã tìm được tiệm kem ruột rồi!"
-
-];
-
-
-/* =========================================================
-   30+ BAD REVIEWS
-========================================================= */
-
-const BAD_REVIEWS = [
-
-    "Bắt khách chờ héo cả người, dẹp tiệm đi! 😡",
-
-    "Thái độ phục vụ chán, hết kem cũng không nói!",
-
-    "Chậm như rùa, cạch mặt shop này luôn!",
-
-    "Đợi lâu quá trời, kem chưa thấy mà muốn tan chảy rồi.",
-
-    "Shop phục vụ lâu quá, mình đi đây!",
-
-    "Nắng muốn xỉu mà đứng chờ mãi không ai bán.",
-
-    "Đợi lâu hơn cả thời gian ăn hết một cây kem!",
-
-    "Shop ơi nhanh lên chứ, mình khát nước luôn rồi!",
-
-    "Chờ tới mức hết kiên nhẫn luôn á!",
-
-    "Đứng đợi hoài mà không được phục vụ.",
-
-    "Kem ngon không biết nhưng chờ thì quá lâu.",
-
-    "Mình bỏ về vì đợi lâu quá.",
-
-    "Shop cần cải thiện tốc độ phục vụ nha.",
-
-    "Đang nóng mà phải chờ lâu thật sự rất mệt.",
-
-    "Không có ai phục vụ thì nói sớm chứ!",
-
-    "Đợi lâu quá nên mình qua tiệm khác.",
-
-    "Chậm quá trời chậm!",
-
-    "Mất kiên nhẫn luôn rồi đó shop!",
-
-    "Đứng chờ tới muốn hóa thành cây kem.",
-
-    "Phục vụ kiểu này khách bỏ đi hết mất.",
-
-    "Mình chờ lâu quá rồi!",
-
-    "Kem chưa thấy đâu mà người đã nóng chảy.",
-
-    "Shop bán hàng hơi chậm nha.",
-
-    "Không thể đứng chờ lâu như vậy được.",
-
-    "Mình bỏ về đây, lần sau tính tiếp.",
-
-    "Thật sự quá lâu để mua một cây kem.",
-
-    "Shop cần thêm người phục vụ rồi.",
-
-    "Chờ lâu làm mình tụt mood luôn.",
-
-    "Đợi mòn dép mới thấy shop!",
-
-    "Mình xin phép đi tìm tiệm khác.",
-
-    "Lâu quá nên không còn muốn ăn kem nữa.",
-
-    "Đợi tới khi kem tan trong tưởng tượng luôn.",
-
-    "Phục vụ chậm quá shop ơi!",
-
-    "Mong lần sau shop phục vụ nhanh hơn.",
-
-    "Đứng đây lâu quá chân mỏi luôn rồi."
-
-];
-
-
-/* =========================================================
-   NATURAL CUSTOMER DIALOGUES
-========================================================= */
-
-const CUSTOMER_DIALOGUES = [
-
-    {
-        ids: ["chocolate"],
-        texts: [
-            "Dạ shop bán cho em kem sô cô la với ạ!",
-            "Cho em một cây chocolate nha shop!",
-            "Shop ơi, em lấy kem chocolate thơm thơm nha!"
-        ]
-    },
-
-    {
-        ids: ["strawberry"],
-        texts: [
-            "Cho em một kem dâu tây với ạ!",
-            "Shop ơi, em muốn ăn kem dâu!",
-            "Dạ cho em một cây dâu tây nha!"
-        ]
-    },
-
-    {
-        ids: ["vanilla"],
-        texts: [
-            "Cho em một kem vani gấp với, nắng quá!",
-            "Shop bán em kem vani nha!",
-            "Em lấy một cây vani ạ!"
-        ]
-    },
-
-    {
-        ids: ["matcha"],
-        texts: [
-            "Cho em một kem matcha nha shop!",
-            "Dạ em lấy matcha béo béo!",
-            "Shop ơi cho em kem matcha với ạ!"
-        ]
-    },
-
-    {
-        ids: ["durian"],
-        texts: [
-            "Anh lấy một cây kem sầu riêng thơm béo nha em!",
-            "Cho anh kem sầu riêng nhé!",
-            "Shop có kem sầu riêng không? Cho anh một cây!"
-        ]
-    },
-
-    {
-        ids: ["oreo"],
-        texts: [
-            "Cho em một kem Oreo với ạ!",
-            "Em lấy Oreo nha shop!",
-            "Shop cho em kem Oreo giòn giòn!"
-        ]
-    },
-
-    {
-        ids: ["rainbow"],
-        texts: [
-            "Cho em kem 7 màu nha, nhìn xinh quá!",
-            "Em muốn một cây Rainbow!",
-            "Shop ơi cho em kem cầu vồng!"
-        ]
-    }
-
-];
-
-
-/* =========================================================
-   ANGRY SPEECH
-========================================================= */
-
-const ANGRY_DIALOGUES = [
-
-    "Shop làm ăn lề mề quá! 😤",
-
-    "Đợi héo cả người rồi! 😭",
-
-    "Ủa shop ngủ quên hả? 😑",
-
-    "Nắng quá mà chờ lâu quá trời!",
-
-    "Chậm như rùa luôn á!",
-
-    "Tôi đứng đây muốn tan chảy rồi!",
-
-    "Nhanh lên thì còn kịp chứ!",
-
-    "Thôi mình đi tiệm khác đây!",
-
-    "Chờ một ly kem mà lâu quá!",
-
-    "Mất kiên nhẫn thật sự luôn!",
-
-    "Shop ơi phục vụ khách đi chứ!",
-
-    "Đứng đợi tới mọc rễ luôn rồi! 🌱"
-
-];
-
-
-/* =========================================================
-   CUSTOMER EMOJIS
-========================================================= */
-
-const CUSTOMER_EMOJIS = [
-    "😊",
-    "🙂",
-    "🥰",
-    "😎",
-    "🤗",
-    "😋",
-    "😁",
-    "☺️"
-];
-
-
-/* =========================================================
-   GAME STATE
-========================================================= */
-
-const DEFAULT_STATE = {
-
-    money: 2000,
-
-    day: 1,
-
-    hour: 8,
-
-    minute: 0,
-
-    shopOpen: false,
-
-    gameStarted: false,
-
-    dayFinished: false,
-
-    customer: null,
-
-    customerSequence: 0,
-
-    revenueToday: 0,
-
-    tipsToday: 0,
-
-    costsToday: 0,
-
-    customersToday: 0,
-
-    servedToday: 0,
-
-    reviews: [],
-
-    usedReviewTexts: [],
-
-    usedNamesToday: [],
-
-    inventory: {},
-
-    upgrades: {
-
-        counter: 1,
-
-        freezer: 0,
-
-        employee: 0,
-
-        decoration: 0
-
-    }
-
-};
-
-
-/* =========================================================
-   CREATE STATE
-========================================================= */
-
-let game = createFreshState();
-
-
-function createFreshState() {
-
-    const state =
-        JSON.parse(
-            JSON.stringify(DEFAULT_STATE)
+    return list;
+  }
+
+  function saveState(){
+    const safe = {
+      ...state
+    };
+
+    delete safe.customerTimer;
+    delete safe.shopTimer;
+
+    localStorage.setItem(
+      'sweetIceCreamShop_v1',
+      JSON.stringify(safe)
+    );
+  }
+
+  function loadState(){
+    try{
+      const raw =
+        localStorage.getItem(
+          'sweetIceCreamShop_v1'
         );
 
-    ICE_CREAMS.forEach(item => {
+      if(!raw){
+        return defaultState();
+      }
 
-        state.inventory[item.id] = 2;
+      const parsed = JSON.parse(raw);
 
-    });
+      const base = defaultState();
 
-    return state;
+      const merged = {
+        ...base,
+        ...parsed,
+        daily:{
+          ...base.daily,
+          ...(parsed.daily || {})
+        }
+      };
 
-}
+      merged.inventory = {
+        ...base.inventory,
+        ...(parsed.inventory || {})
+      };
 
+      merged.currentCustomer = null;
+      merged.currentOrder = null;
+      merged.scooped = false;
+      merged.scoopedFlavor = null;
+      merged.customerTimer = null;
+      merged.shopTimer = null;
+      merged.staffBusy = false;
 
-/* =========================================================
-   SAVE / LOAD
-========================================================= */
-
-const SAVE_KEY =
-    "tiem_kem_ngot_ngao_save_v2";
-
-
-function saveGame() {
-
-    try {
-
-        localStorage.setItem(
-            SAVE_KEY,
-            JSON.stringify(game)
-        );
-
-    } catch (error) {
-
-        console.warn(
-            "Không thể lưu game:",
-            error
-        );
-
+      return merged;
+    }catch{
+      return defaultState();
     }
+  }
 
-}
+  function money(n){
+    return `${moneyFmt.format(
+      Math.max(0,Math.round(n))
+    )}đ`;
+  }
 
+  function getFlavor(id){
+    return flavors.find(
+      f => f.id === id
+    );
+  }
 
-function loadGame() {
-
-    try {
-
-        const raw =
-            localStorage.getItem(
-                SAVE_KEY
-            );
-
-        if (!raw) return;
-
-        const saved =
-            JSON.parse(raw);
-
-        game = {
-
-            ...createFreshState(),
-
-            ...saved,
-
-            upgrades: {
-
-                ...createFreshState().upgrades,
-
-                ...(saved.upgrades || {})
-
-            },
-
-            inventory: {
-
-                ...createFreshState().inventory,
-
-                ...(saved.inventory || {})
-
-            },
-
-            reviews:
-                Array.isArray(saved.reviews)
-                ? saved.reviews
-                : [],
-
-            usedReviewTexts:
-                Array.isArray(saved.usedReviewTexts)
-                ? saved.usedReviewTexts
-                : [],
-
-            usedNamesToday:
-                Array.isArray(saved.usedNamesToday)
-                ? saved.usedNamesToday
-                : []
-
-        };
-
-    } catch (error) {
-
-        console.warn(
-            "Save game bị lỗi. Tạo game mới.",
-            error
-        );
-
-        game =
-            createFreshState();
-
-    }
-
-}
-
-
-/* =========================================================
-   UTILITIES
-========================================================= */
-
-function money(value) {
-
-    return Math.round(value)
-        .toLocaleString("vi-VN");
-
-}
-
-
-function randomItem(array) {
-
-    if (!array.length) return null;
-
-    return array[
-        Math.floor(
-            Math.random() * array.length
-        )
+  function rand(arr){
+    return arr[
+      Math.floor(
+        Math.random() * arr.length
+      )
     ];
+  }
 
-}
-
-
-function clamp(
-    value,
-    min,
-    max
-) {
-
-    return Math.max(
-        min,
-        Math.min(max, value)
+  function clamp(n,a,b){
+    return Math.min(
+      b,
+      Math.max(a,n)
     );
+  }
 
-}
+  function showToast(msg){
+    const el = $('toast');
 
+    el.textContent = msg;
 
-function getIceCream(id) {
+    el.classList.add('show');
 
-    return ICE_CREAMS.find(
-        item => item.id === id
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(
+      () => el.classList.remove('show'),
+      2200
     );
-
-}
-
-
-function totalInventory() {
-
-    return Object.values(
-        game.inventory
-    ).reduce(
-        (sum, amount) =>
-            sum + Number(amount || 0),
-        0
-    );
-
-}
-
-
-function getInventoryCapacity() {
-
-    return (
-        30 +
-
-        ((game.upgrades.counter - 1) * 10) +
-
-        (game.upgrades.freezer * 20)
-    );
-
-}
-
-
-function getPriceMultiplier() {
-
-    return 1 +
-        game.upgrades.decoration * .05;
-
-}
-
-
-function getPatienceBonus() {
-
-    return game.upgrades.decoration * 10;
-
-}
-
-
-/* =========================================================
-   TAB SYSTEM
-========================================================= */
-
-function switchTab(tab) {
-
-    document
-        .querySelectorAll(".page")
-        .forEach(page => {
-
-            page.classList.remove(
-                "active"
-            );
-
-        });
-
-    const selected =
-        document.getElementById(
-            `tab-${tab}`
-        );
-
-    if (selected) {
-
-        selected.classList.add(
-            "active"
-        );
-
-    }
-
-    document
-        .querySelectorAll(".nav-button")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.tab === tab
-            );
-
-        });
-
-    if (tab === "warehouse") {
-
-        renderWarehouse();
-
-    }
-
-    if (tab === "upgrades") {
-
-        renderUpgrades();
-
-    }
-
-    if (tab === "reviews") {
-
-        renderReviews();
-
-    }
-
-}
-
-
-/* =========================================================
-   INTRO
-========================================================= */
-
-function startGame() {
-
-    game.gameStarted = true;
-
-    document
-        .getElementById("introModal")
-        .classList.remove("show");
-
-    saveGame();
-
-    showDayTransition(() => {
-
-        openShop();
-
-    });
-
-}
-
-
-/* =========================================================
-   DAY TRANSITION
-========================================================= */
-
-function showDayTransition(callback) {
-
-    const transition =
-        document.getElementById(
-            "dayTransition"
-        );
-
-    transition.classList.remove(
-        "opening"
-    );
-
-    transition.classList.add(
-        "show"
-    );
-
-    setTimeout(() => {
-
-        transition.classList.add(
-            "opening"
-        );
-
-    }, 650);
-
-    setTimeout(() => {
-
-        transition.classList.remove(
-            "show",
-            "opening"
-        );
-
-        if (callback) {
-
-            callback();
-
-        }
-
-    }, 1500);
-
-}
-
-
-/* =========================================================
-   OPEN SHOP
-========================================================= */
-
-function openShop() {
-
-    if (game.dayFinished) {
-
-        return;
-
-    }
-
-    if (game.shopOpen) {
-
-        toast("🍦 Tiệm đang mở rồi!");
-
-        return;
-
-    }
-
-    game.shopOpen = true;
-
-    updateShopButtons();
-
-    updateUI();
-
-    toast(
-        "🚪 Tiệm đã mở cửa! Khách sắp tới!"
-    );
-
-    setTimeout(() => {
-
-        if (
-            game.shopOpen &&
-            !game.customer
-        ) {
-
-            spawnCustomer();
-
-        }
-
-    }, 1200);
-
-    saveGame();
-
-}
-
-
-/* =========================================================
-   CLOSE SHOP
-========================================================= */
-
-function closeShop() {
-
-    if (!game.shopOpen) return;
-
-    game.shopOpen = false;
-
-    if (game.customer) {
-
-        toast(
-            "👋 Khách hiện tại sẽ được phục vụ trước khi đóng cửa."
-        );
-
-    } else {
-
-        toast(
-            "🔒 Tiệm đã đóng cửa."
-        );
-
-    }
-
-    updateShopButtons();
-
-    updateUI();
-
-    saveGame();
-
-}
-
-
-/* =========================================================
-   SHOP BUTTONS
-========================================================= */
-
-function updateShopButtons() {
-
-    const openButton =
-        document.getElementById(
-            "openShopButton"
-        );
-
-    const closeButton =
-        document.getElementById(
-            "closeShopButton"
-        );
-
-    const serveButton =
-        document.getElementById(
-            "serveButton"
-        );
-
-    openButton.disabled =
-        game.shopOpen ||
-        game.dayFinished;
-
-    closeButton.disabled =
-        !game.shopOpen;
-
-    serveButton.disabled =
-        !game.customer ||
-        !game.shopOpen ||
-        game.dayFinished;
-
-}
-
-
-/* =========================================================
-   WAREHOUSE
-========================================================= */
-
-function renderWarehouse() {
-
-    const grid =
-        document.getElementById(
-            "icecreamGrid"
-        );
-
-    if (!grid) return;
-
-    grid.innerHTML = "";
-
-    const capacity =
-        getInventoryCapacity();
-
-    const current =
-        totalInventory();
-
-    document.getElementById(
-        "warehouseCapacity"
-    ).textContent =
-        `${current} / ${capacity}`;
-
-    ICE_CREAMS.forEach(item => {
-
-        const stock =
-            game.inventory[item.id] || 0;
-
-        const sellPrice =
-            Math.round(
-                item.price *
-                getPriceMultiplier()
-            );
-
-        const card =
-            document.createElement(
-                "article"
-            );
-
-        card.className =
-            "icecream-card";
-
-        card.innerHTML = `
-
-            <div class="icecream-icon">
-                ${item.icon}
-            </div>
-
-            <div class="icecream-name">
-                ${item.name}
-            </div>
-
-            <div class="icecream-price">
-                Nhập:
-                ${money(item.wholesale)}đ
-                <br>
-                Bán:
-                ${money(sellPrice)}đ
-            </div>
-
-            <div class="stock-count">
-                Trong kho:
-                <strong>${stock}</strong>
-            </div>
-
-            <button
-                class="buy-button"
-                onclick="buyIceCream('${item.id}')"
+  }
+
+  function updateTopStats(){
+    $('moneyValue').textContent =
+      moneyFmt.format(
+        Math.round(state.money)
+      );
+
+    $('dayValue').textContent =
+      state.day;
+
+    $('warehouseMoney').textContent =
+      moneyFmt.format(
+        Math.round(state.money)
+      );
+
+    $('upgradeMoney').textContent =
+      moneyFmt.format(
+        Math.round(state.money)
+      );
+
+    $('maxStockValue').textContent =
+      state.maxStock;
+
+    $('openCloseBtn').textContent =
+      state.isOpen
+        ? 'ĐÓNG CỬA'
+        : 'MỞ CỬA TIỆM';
+
+    $('shopStatusText').textContent =
+      state.isOpen
+        ? 'Tiệm đang mở cửa — phục vụ khách thật nhanh nhé!'
+        : 'Tiệm đang đóng cửa. Hãy mở cửa để đón khách!';
+  }
+
+  /* =========================
+     TUB GRID
+  ========================= */
+
+  function renderTubs(){
+    const grid = $('tubGrid');
+
+    grid.innerHTML =
+      flavors.map(f => {
+        const qty =
+          state.inventory[f.id] || 0;
+
+        return `
+          <button
+            class="tub ${qty === 0 ? 'tub-empty' : ''}"
+            data-flavor="${f.id}"
+            style="--lid:${f.color}"
+          >
+            <div
+              class="tub-lid"
+              style="background:${f.color}"
             >
-                📦 NHẬP 1 THÙNG
-            </button>
+              ${f.emoji}
+            </div>
 
+            <div
+              class="scoop-dot"
+              style="background:${f.color}"
+            ></div>
+
+            <div class="tub-info">
+              <div class="tub-name">
+                Kem ${f.name}
+              </div>
+
+              <div class="tub-stock">
+                ${qty}/${state.maxStock}
+              </div>
+            </div>
+          </button>
         `;
+      }).join('');
 
-        grid.appendChild(card);
-
-    });
-
-}
-
-
-/* =========================================================
-   BUY ICE CREAM
-========================================================= */
-
-function buyIceCream(id) {
-
-    const item =
-        getIceCream(id);
-
-    if (!item) return;
-
-    if (
-        totalInventory() >=
-        getInventoryCapacity()
-    ) {
-
-        toast(
-            "📦 Kho đầy rồi! Hãy nâng cấp kho."
+    grid
+      .querySelectorAll('.tub')
+      .forEach(btn => {
+        btn.addEventListener(
+          'click',
+          () => scoopFlavor(
+            btn.dataset.flavor
+          )
         );
+      });
+  }
 
-        return;
+  /* =========================
+     WAREHOUSE
+  ========================= */
 
-    }
+  function renderWarehouse(){
+    $('warehouseGrid').innerHTML =
+      flavors.map(f => {
+        const qty =
+          state.inventory[f.id] || 0;
 
-    if (game.money < item.wholesale) {
+        const next =
+          Math.min(
+            state.maxStock,
+            qty + 6
+          );
 
-        toast(
-            "💰 Không đủ tiền nhập kem!"
+        const disabled =
+          qty >= state.maxStock
+            ? 'disabled'
+            : '';
+
+        return `
+          <div class="warehouse-card">
+            <div
+              class="warehouse-visual"
+              style="background:${f.color}44"
+            >
+              ${f.emoji}
+            </div>
+
+            <h3>${f.name}</h3>
+
+            <p>
+              Thùng sỉ +6 viên ·
+              Đang có ${qty}/${state.maxStock}
+            </p>
+
+            <div class="pack-price">
+              <span>${money(f.packCost)}</span>
+
+              <button
+                class="btn btn-secondary buy-btn"
+                ${disabled}
+                data-pack="${f.id}"
+              >
+                NHẬP THÙNG
+              </button>
+            </div>
+
+            <div class="upgrade-note">
+              Sau nhập:
+              ${next}/${state.maxStock}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    $('warehouseGrid')
+      .querySelectorAll('[data-pack]')
+      .forEach(btn => {
+        btn.addEventListener(
+          'click',
+          () => buyPack(
+            btn.dataset.pack
+          )
         );
+      });
+  }
 
-        return;
+  /* =========================
+     UPGRADES
+  ========================= */
 
-    }
+  function upgradeData(){
+    return [
+      {
+        id:'speed',
+        icon:'🥄',
+        title:'Muỗng múc nhanh',
+        desc:'Giảm thời gian thao tác múc kem. Càng nâng càng nhanh.',
+        level:Math.round(
+          (1200 - state.scoopSpeed) / 120
+        ),
+        max:8,
+        cost:
+          90 +
+          Math.round(
+            (1200 - state.scoopSpeed) / 120
+          ) * 45
+      },
 
-    game.money -=
-        item.wholesale;
+      {
+        id:'freezer',
+        icon:'🧊',
+        title:'Tủ đông xịn',
+        desc:'Tăng sức chứa mỗi vị thêm 4 viên.',
+        level:state.freezerLevel,
+        max:5,
+        cost:
+          120 +
+          state.freezerLevel * 90
+      },
 
-    game.costsToday +=
-        item.wholesale;
+      {
+        id:'staff',
+        icon:'🧑‍🍳',
+        title:'Thuê nhân viên',
+        desc:'Nhân viên tự phục vụ khách khi tiệm đang mở.',
+        level:state.staffLevel,
+        max:3,
+        cost:
+          220 +
+          state.staffLevel * 170
+      },
 
-    game.inventory[id] =
-        (game.inventory[id] || 0) + 1;
+      {
+        id:'decor',
+        icon:'🌷',
+        title:'Trang trí tiệm',
+        desc:'Tăng kiên nhẫn khách và giúp tiệm trông vui mắt hơn.',
+        level:state.decorLevel,
+        max:5,
+        cost:
+          100 +
+          state.decorLevel * 80
+      }
+    ];
+  }
 
-    renderWarehouse();
+  function renderUpgrades(){
+    $('upgradeGrid').innerHTML =
+      upgradeData().map(u => {
+        const full =
+          u.level >= u.max;
 
-    updateUI();
-
-    saveGame();
-
-    toast(
-        `${item.icon} Đã nhập ${item.name}!`
-    );
-
-}
-
-
-/* =========================================================
-   UPGRADES
-========================================================= */
-
-const UPGRADES = [
-
-    {
-        id: "counter",
-
-        icon: "🏪",
-
-        title: "Nâng cấp quầy kem",
-
-        description:
-            "Tăng sức chứa kho thêm 10 đơn vị mỗi cấp.",
-
-        max: 5,
-
-        baseCost: 600
-    },
-
-    {
-        id: "freezer",
-
-        icon: "🧊",
-
-        title: "Tủ đông bảo quản",
-
-        description:
-            "Mỗi cấp tăng thêm 20 chỗ chứa kem.",
-
-        max: 5,
-
-        baseCost: 850
-    },
-
-    {
-        id: "employee",
-
-        icon: "🧑‍🍳",
-
-        title: "Thuê nhân viên",
-
-        description:
-            "Nhân viên tự động phục vụ khách. Cấp cao giúp phục vụ nhanh hơn.",
-
-        max: 4,
-
-        baseCost: 1300
-    },
-
-    {
-        id: "decoration",
-
-        icon: "🌷",
-
-        title: "Trang trí tiệm",
-
-        description:
-            "Khách kiên nhẫn hơn và giá bán tăng 5% mỗi cấp.",
-
-        max: 5,
-
-        baseCost: 950
-    }
-
-];
-
-
-function getUpgradeCost(upgrade) {
-
-    const level =
-        game.upgrades[
-            upgrade.id
-        ];
-
-    return Math.round(
-        upgrade.baseCost *
-        Math.pow(1.65, level)
-    );
-
-}
-
-
-function renderUpgrades() {
-
-    const list =
-        document.getElementById(
-            "upgradeList"
-        );
-
-    if (!list) return;
-
-    list.innerHTML = "";
-
-    UPGRADES.forEach(upgrade => {
-
-        const level =
-            game.upgrades[
-                upgrade.id
-            ];
-
-        const maxed =
-            level >= upgrade.max;
-
-        const cost =
-            getUpgradeCost(
-                upgrade
-            );
-
-        const card =
-            document.createElement(
-                "article"
-            );
-
-        card.className =
-            "upgrade-card";
-
-        card.innerHTML = `
-
+        return `
+          <div class="upgrade-card">
             <div class="upgrade-icon">
-                ${upgrade.icon}
+              ${u.icon}
             </div>
 
             <div>
+              <span class="lvl">
+                CẤP ${u.level}/${u.max}
+              </span>
 
-                <div class="upgrade-title">
-                    ${upgrade.title}
-                </div>
+              <h3>${u.title}</h3>
 
-                <div class="upgrade-description">
-                    ${upgrade.description}
-                </div>
-
-                <div class="upgrade-footer">
-
-                    <span class="upgrade-level">
-                        Cấp ${level}/${upgrade.max}
-                    </span>
-
-                    <button
-                        class="upgrade-button"
-                        ${maxed ? "disabled" : ""}
-                        onclick="buyUpgrade('${upgrade.id}')"
-                    >
-                        ${
-                            maxed
-                            ? "TỐI ĐA"
-                            : `💰 ${money(cost)}đ`
-                        }
-                    </button>
-
-                </div>
-
+              <p>${u.desc}</p>
             </div>
+
+            <div class="wide upgrade-buy">
+              <span class="upgrade-note">
+                ${
+                  full
+                    ? 'Đã đạt tối đa'
+                    : `Giá ${money(u.cost)}`
+                }
+              </span>
+
+              <button
+                class="btn btn-secondary buy-btn"
+                data-upgrade="${u.id}"
+                ${full ? 'disabled' : ''}
+              >
+                NÂNG CẤP
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    $('upgradeGrid')
+      .querySelectorAll('[data-upgrade]')
+      .forEach(btn => {
+        btn.addEventListener(
+          'click',
+          () => buyUpgrade(
+            btn.dataset.upgrade
+          )
+        );
+      });
+  }
+
+  /* =========================
+     REVIEWS
+  ========================= */
+
+  function renderReviews(){
+    const source =
+      state.reviews || [];
+
+    const filtered =
+      reviewFilter === 'all'
+        ? source
+        : source.filter(
+            r =>
+              String(r.stars)
+              === reviewFilter
+          );
+
+    const avg =
+      source.length
+        ? source.reduce(
+            (s,r) => s + r.stars,
+            0
+          ) / source.length
+        : 5;
+
+    $('avgRating').textContent =
+      avg.toFixed(1);
+
+    $('avgStars').textContent =
+      avg >= 4.5
+        ? '★★★★★'
+        : avg >= 3
+          ? '★★★★☆'
+          : '★☆☆☆☆';
+
+    $('reviewCount').textContent =
+      `${source.length} đánh giá`;
+
+    $('reviewList').innerHTML =
+      filtered.length
+        ? filtered.map(r => `
+            <article class="review-card">
+              <div class="review-top">
+                <div class="review-user">
+                  <div class="avatar">
+                    ${r.avatar}
+                  </div>
+
+                  <div>
+                    <div class="review-name">
+                      ${escapeHtml(r.name)}
+                    </div>
+
+                    <div class="review-time">
+                      ${escapeHtml(r.time)}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="
+                    stars
+                    ${r.stars === 5
+                      ? 'star-good'
+                      : 'star-bad'}
+                  "
+                >
+                  ${
+                    '★'.repeat(r.stars)
+                  }${
+                    '☆'.repeat(
+                      5-r.stars
+                    )
+                  }
+                </div>
+              </div>
+
+              <div class="review-text">
+                ${escapeHtml(r.text)}
+              </div>
+            </article>
+          `).join('')
+        : `
+          <div class="hint-card">
+            Chưa có đánh giá phù hợp.
+          </div>
         `;
 
-        list.appendChild(card);
+    document
+      .querySelectorAll('.filter-btn')
+      .forEach(btn => {
+        btn.classList.toggle(
+          'active',
+          btn.dataset.filter
+            === reviewFilter
+        );
+      });
+  }
 
+  function escapeHtml(str){
+    return String(str).replace(
+      /[&<>'"]/g,
+      ch => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        "'":'&#39;',
+        '"':'&quot;'
+      }[ch])
+    );
+  }
+
+  /* =========================
+     TABS
+  ========================= */
+
+  function switchTab(tabId){
+    document
+      .querySelectorAll('.tab-panel')
+      .forEach(p =>
+        p.classList.remove('active')
+      );
+
+    $(tabId)
+      .classList.add('active');
+
+    document
+      .querySelectorAll('.nav-btn')
+      .forEach(b =>
+        b.classList.toggle(
+          'active',
+          b.dataset.tab === tabId
+        )
+      );
+
+    window.scrollTo({
+      top:0,
+      behavior:'smooth'
     });
+  }
 
-}
+  /* =========================
+     CONE
+  ========================= */
 
+  function resetCone(){
+    state.scooped = false;
+    state.scoopedFlavor = null;
 
-/* =========================================================
-   BUY UPGRADE
-========================================================= */
+    $('serveBtn').disabled = true;
+    $('resetScoopBtn').disabled = true;
 
-function buyUpgrade(id) {
+    $('coneDisplay').innerHTML = `
+      <div class="cone-placeholder">
+        🍦
+        <span>
+          Chạm HŨ KEM<br>
+          để múc
+        </span>
+      </div>
+    `;
+  }
 
-    const upgrade =
-        UPGRADES.find(
-            item => item.id === id
-        );
+  function drawCone(flavor){
+    $('coneDisplay').innerHTML = `
+      <div class="cone"></div>
 
-    if (!upgrade) return;
+      <div
+        class="scoop"
+        style="
+          background:${flavor.color};
+          box-shadow:none
+        "
+      ></div>
+    `;
+  }
 
-    const level =
-        game.upgrades[id];
+  /* =========================
+     CUSTOMER
+  ========================= */
 
-    if (level >= upgrade.max) {
+  function currentPatienceMax(){
+    return 30 + state.decorLevel * 3;
+  }
 
-        toast(
-            "⭐ Nâng cấp đã đạt tối đa!"
-        );
-
-        return;
-
+  function createCustomer(){
+    if(
+      !state.isOpen ||
+      state.currentCustomer
+    ){
+      return;
     }
 
-    const cost =
-        getUpgradeCost(upgrade);
+    const flavor = rand(flavors);
 
-    if (game.money < cost) {
+    const gender =
+      Math.random() > .5
+        ? 'female'
+        : 'male';
 
-        toast(
-            "💰 Chưa đủ tiền nâng cấp!"
-        );
+    const profile = {
+      id:
+        Date.now() +
+        Math.random(),
 
-        return;
+      name:
+        rand(customerNames),
 
-    }
+      avatar:
+        rand(avatars),
 
-    game.money -= cost;
+      gender,
 
-    game.costsToday += cost;
+      hair:
+        rand(hairTypes),
 
-    game.upgrades[id]++;
+      shirt:
+        rand(shirts),
 
-    renderUpgrades();
+      skin:
+        rand(skinTones),
 
-    renderWarehouse();
+      flavorId:
+        flavor.id,
 
-    updateUI();
+      patience:
+        currentPatienceMax(),
 
-    saveGame();
+      maxPatience:
+        currentPatienceMax(),
 
-    toast(
-        `${upgrade.icon} Đã nâng cấp ${upgrade.title}!`
-    );
-
-}
-
-
-/* =========================================================
-   FIND UNUSED NAME
-========================================================= */
-
-function getUniqueCustomerName() {
-
-    let available =
-        CUSTOMER_NAMES.filter(
-            name =>
-                !game.usedNamesToday.includes(
-                    name
-                )
-        );
-
-    if (!available.length) {
-
-        game.usedNamesToday = [];
-
-        available =
-            [...CUSTOMER_NAMES];
-
-    }
-
-    const name =
-        randomItem(available);
-
-    game.usedNamesToday.push(
-        name
-    );
-
-    return name;
-
-}
-
-
-/* =========================================================
-   FIND UNIQUE REVIEW TEXT
-========================================================= */
-
-function getUniqueReviewText(
-    pool
-) {
-
-    let available =
-        pool.filter(
-            text =>
-                !game.usedReviewTexts.includes(
-                    text
-                )
-        );
-
-    if (!available.length) {
-
-        /*
-           Không reset toàn bộ lịch sử ngay.
-           Chỉ cho phép dùng lại sau khi
-           toàn bộ câu trong pool đã được sử dụng.
-        */
-
-        game.usedReviewTexts =
-            game.usedReviewTexts.filter(
-                text =>
-                    !pool.includes(text)
-            );
-
-        available =
-            pool.filter(
-                text =>
-                    !game.usedReviewTexts.includes(
-                        text
-                    )
-            );
-
-    }
-
-    const text =
-        randomItem(available);
-
-    game.usedReviewTexts.push(
-        text
-    );
-
-    /*
-       Giữ lịch sử vừa đủ để save không phình.
-    */
-
-    if (
-        game.usedReviewTexts.length > 120
-    ) {
-
-        game.usedReviewTexts =
-            game.usedReviewTexts.slice(
-                -100
-            );
-
-    }
-
-    return text;
-
-}
-
-
-/* =========================================================
-   CUSTOMER ORDER
-========================================================= */
-
-function createCustomerOrder() {
-
-    const available =
-        ICE_CREAMS.filter(
-            item =>
-                (game.inventory[item.id] || 0)
-                > 0
-        );
-
-    if (!available.length) {
-
-        return null;
-
-    }
-
-    /*
-       Một số khách gọi 2 món.
-    */
-
-    const first =
-        randomItem(available);
-
-    let second = null;
-
-    if (
-        available.length > 1 &&
-        Math.random() < .35
-    ) {
-
-        const possible =
-            available.filter(
-                item =>
-                    item.id !== first.id
-            );
-
-        second =
-            randomItem(possible);
-
-    }
-
-    const items = [
-
-        {
-            id: first.id,
-            quantity: 1
-        }
-
-    ];
-
-    if (second) {
-
-        items.push({
-
-            id: second.id,
-            quantity: 1
-
-        });
-
-    }
-
-    return items;
-
-}
-
-
-/* =========================================================
-   NATURAL DIALOGUE
-========================================================= */
-
-function makeCustomerDialogue(
-    order
-) {
-
-    /*
-       Tìm mẫu hội thoại nếu có.
-    */
-
-    const first =
-        order[0];
-
-    const predefined =
-        CUSTOMER_DIALOGUES.filter(
-            group =>
-                group.ids.includes(
-                    first.id
-                )
-        );
-
-    if (
-        predefined.length &&
-        Math.random() < .75
-    ) {
-
-        return randomItem(
-            randomItem(predefined).texts
-        );
-
-    }
-
-    const item1 =
-        getIceCream(
-            order[0].id
-        );
-
-    if (
-        order.length > 1
-    ) {
-
-        const item2 =
-            getIceCream(
-                order[1].id
-            );
-
-        const combo = [
-
-            `Cho chị 1 ${item1.name.replace("Kem ", "")} với 1 ${item2.name.replace("Kem ", "")} nhen!`,
-
-            `Shop ơi cho em ${item1.name} và ${item2.name} nha!`,
-
-            `Dạ cho em hai vị ${item1.name.replace("Kem ", "")} với ${item2.name.replace("Kem ", "")} ạ!`
-
-        ];
-
-        return randomItem(combo);
-
-    }
-
-    const generic = [
-
-        `Dạ shop bán cho em ${item1.name.toLowerCase()} với ạ!`,
-
-        `Cho mình một ${item1.name.toLowerCase()} nha shop!`,
-
-        `Shop ơi cho em ${item1.name.toLowerCase()} với!`,
-
-        `Em lấy một ${item1.name.toLowerCase()} nha!`
-
-    ];
-
-    return randomItem(generic);
-
-}
-
-
-/* =========================================================
-   CUSTOMER SPAWN
-========================================================= */
-
-function spawnCustomer() {
-
-    if (!game.shopOpen) return;
-
-    if (game.dayFinished) return;
-
-    if (game.customer) return;
-
-    if (game.hour >= 20) return;
-
-    const order =
-        createCustomerOrder();
-
-    if (!order) {
-
-        toast(
-            "📦 Hết kem rồi! Vào KHO HÀNG nhập thêm."
-        );
-
-        return;
-
-    }
-
-    const patience =
-        55 +
-        getPatienceBonus();
-
-    const customer = {
-
-        id:
-            ++game.customerSequence,
-
-        name:
-            getUniqueCustomerName(),
-
-        avatar:
-            randomItem(
-                CUSTOMER_EMOJIS
-            ),
-
-        order,
-
-        dialogue:
-            makeCustomerDialogue(
-                order
-            ),
-
-        patience,
-
-        maxPatience:
-            patience,
-
-        state: "entering",
-
-        gender:
-            Math.random() < .5
-            ? "male"
-            : "female"
-
+      phase:'entering'
     };
 
-    game.customer =
-        customer;
+    state.currentCustomer =
+      profile;
 
-    game.customersToday++;
+    state.currentOrder =
+      flavor.id;
+
+    resetCone();
 
     renderCustomer();
 
-    updateCurrentOrder();
+    updateOrderUI();
 
-    updateShopButtons();
+    startCustomerTimer();
 
-    updateUI();
+    setTimeout(() => {
+      if(
+        state.currentCustomer?.id
+        === profile.id
+      ){
+        profile.phase = 'ready';
 
-}
+        scheduleStaffService();
+      }
+    },900);
+  }
 
-
-/* =========================================================
-   CHARACTER SVG
-========================================================= */
-
-function characterSVG(
-    gender
-) {
-
-    const isFemale =
-        gender === "female";
-
+  function buildCustomerSvg(
+    c,
+    angry = false
+  ){
     const hair =
-        isFemale
+      c.hair === 'cap'
         ? `
-            <path
-                class="hair"
-                d="
-                M26 39
-                C17 15 34 4 51 8
-                C70 5 86 20 78 45
-                L77 72
-                C72 79 65 82 60 78
-                L62 54
-                C72 34 64 20 51 20
-                C36 20 31 30 31 48
-                L27 70
-                C20 62 20 48 26 39
-                Z"
-                fill="#704b43"
-            />
-        `
-        :
-        `
-            <path
-                class="hair"
-                d="
-                M27 38
-                C27 16 40 8 53 8
-                C69 8 80 19 78 38
-                L68 31
-                L63 20
-                L55 29
-                L47 19
-                L38 31
-                L27 38
-                Z"
-                fill="#57433f"
-            />
-        `;
+          <path
+            d="
+              M27 35
+              Q52 10 77 35
+              L74 46
+              Q51 31 30 46Z
+            "
+            fill="#e1b8d2"
+          />
 
-    const shirt =
-        isFemale
-        ? "#eaa3a9"
-        : "#8eb8d1";
+          <path
+            d="M26 34 Q52 10 78 34"
+            fill="none"
+            stroke="#9d7591"
+            stroke-width="4"
+            stroke-linecap="round"
+          />
+        `
+        : c.hair === 'long'
+          ? `
+            <path
+              d="
+                M24 47
+                Q20 15 52 15
+                Q84 15 80 47
+                L73 79
+                L63 68
+                L58 78
+                L45 68
+                L37 80Z
+              "
+              fill="#6e4a3c"
+            />
+          `
+          : c.hair === 'curly'
+            ? `
+              <g fill="#6d4b3b">
+                <circle cx="31" cy="31" r="10"/>
+                <circle cx="40" cy="21" r="11"/>
+                <circle cx="53" cy="18" r="12"/>
+                <circle cx="66" cy="23" r="11"/>
+                <circle cx="75" cy="34" r="10"/>
+                <circle cx="33" cy="43" r="9"/>
+                <circle cx="73" cy="44" r="9"/>
+              </g>
+            `
+            : c.hair === 'bob'
+              ? `
+                <path
+                  d="
+                    M23 48
+                    Q23 17 52 14
+                    Q80 18 82 48
+                    L75 63
+                    Q67 29 52 30
+                    Q37 30 30 63Z
+                  "
+                  fill="#704b3c"
+                />
+              `
+              : `
+                <path
+                  d="
+                    M27 44
+                    Q28 16 52 14
+                    Q77 16 78 44
+                    L70 35
+                    Q60 27 52 27
+                    Q43 27 34 35Z
+                  "
+                  fill="#684639"
+                />
+              `;
+
+    const shirt = `
+      <path
+        d="
+          M30 88
+          Q52 77 74 88
+          L84 132
+          L20 132Z
+        "
+        fill="${c.shirt}"
+      />
+    `;
+
+    const eyes = `
+      <g class="eye-group">
+        <path
+          d="M39 51 q3 -3 6 0"
+          stroke="#4b403d"
+          stroke-width="3"
+          fill="none"
+          stroke-linecap="round"
+        />
+
+        <path
+          d="M60 51 q3 -3 6 0"
+          stroke="#4b403d"
+          stroke-width="3"
+          fill="none"
+          stroke-linecap="round"
+        />
+      </g>
+    `;
+
+    const cheeks = `
+      <circle
+        cx="37"
+        cy="60"
+        r="5"
+        fill="#ee9b9b"
+        opacity=".7"
+      />
+
+      <circle
+        cx="69"
+        cy="60"
+        r="5"
+        fill="#ee9b9b"
+        opacity=".7"
+      />
+    `;
+
+    const skin =
+      angry
+        ? '#ef9c96'
+        : c.skin;
+
+    const mouth =
+      angry
+        ? `
+          <path
+            d="M45 68 Q52 62 59 68"
+            stroke="#7c3434"
+            stroke-width="2.4"
+            fill="none"
+            stroke-linecap="round"
+          />
+        `
+        : `
+          <path
+            d="M45 66 Q52 71 59 66"
+            stroke="#704a42"
+            stroke-width="2.4"
+            fill="none"
+            stroke-linecap="round"
+          />
+        `;
 
     return `
+      <svg
+        class="customer-svg"
+        viewBox="0 0 104 140"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        ${shirt}
 
-        <svg
-            viewBox="0 0 100 125"
-            xmlns="http://www.w3.org/2000/svg"
-        >
+        <rect
+          x="46"
+          y="72"
+          width="12"
+          height="18"
+          rx="5"
+          fill="${skin}"
+        />
 
-            <!-- HAIR BACK -->
-            ${hair}
+        <ellipse
+          cx="52"
+          cy="50"
+          rx="27"
+          ry="29"
+          fill="${skin}"
+        />
 
-            <!-- NECK -->
-            <path
-                d="
-                M43 64
-                L43 76
-                L57 76
-                L57 64
-                Z"
-                fill="#efb894"
-            />
+        ${hair}
+        ${eyes}
+        ${cheeks}
+        ${mouth}
 
-            <!-- BODY -->
-            <path
-                d="
-                M31 78
-                C35 72 42 70 50 70
-                C58 70 66 72 70 78
-                L77 119
-                L23 119
-                Z"
-                fill="${shirt}"
-                stroke="#b98283"
-                stroke-width="2"
-            />
+        <path
+          d="M22 94 Q52 79 82 94"
+          stroke="rgba(75,64,61,.12)"
+          stroke-width="4"
+          fill="none"
+        />
 
-            <!-- SHIRT DETAIL -->
-            <path
-                d="
-                M44 74
-                L50 82
-                L56 74"
-                fill="none"
-                stroke="#ffffff"
-                stroke-width="2"
-            />
+        <rect
+          x="33"
+          y="126"
+          width="18"
+          height="11"
+          rx="5"
+          fill="#706f7a"
+        />
 
-            <!-- ARM LEFT -->
-            <path
-                d="
-                M31 82
-                C22 91 20 101 25 106"
-                fill="none"
-                stroke="${shirt}"
-                stroke-width="10"
-                stroke-linecap="round"
-            />
-
-            <!-- ARM RIGHT -->
-            <path
-                d="
-                M69 82
-                C78 91 80 101 75 106"
-                fill="none"
-                stroke="${shirt}"
-                stroke-width="10"
-                stroke-linecap="round"
-            />
-
-            <!-- FACE -->
-            <ellipse
-                class="skin"
-                cx="50"
-                cy="45"
-                rx="25"
-                ry="27"
-                fill="#efb894"
-            />
-
-            <!-- HAIR FRONT -->
-            ${isFemale ? `
-                <path
-                    class="hair"
-                    d="
-                    M26 39
-                    C27 16 42 8 54 10
-                    C70 11 79 22 77 39
-                    C69 28 62 25 53 26
-                    C43 27 35 34 26 39
-                    Z"
-                    fill="#704b43"
-                />
-            ` : `
-                <path
-                    class="hair"
-                    d="
-                    M27 37
-                    C29 18 41 10 53 11
-                    C66 11 76 19 77 34
-                    L65 27
-                    L58 20
-                    L51 27
-                    L44 20
-                    L35 31
-                    Z"
-                    fill="#57433f"
-                />
-            `}
-
-            <!-- EAR -->
-            <circle
-                cx="25"
-                cy="48"
-                r="5"
-                fill="#efb894"
-            />
-
-            <circle
-                cx="75"
-                cy="48"
-                r="5"
-                fill="#efb894"
-            />
-
-            <!-- BLUSH -->
-            <ellipse
-                cx="35"
-                cy="53"
-                rx="5"
-                ry="3"
-                fill="#e99692"
-                opacity=".65"
-            />
-
-            <ellipse
-                cx="65"
-                cy="53"
-                rx="5"
-                ry="3"
-                fill="#e99692"
-                opacity=".65"
-            />
-
-            <!-- EYES -->
-            <ellipse
-                class="eye"
-                cx="41"
-                cy="45"
-                rx="2.7"
-                ry="4"
-                fill="#463b38"
-            />
-
-            <ellipse
-                class="eye"
-                cx="59"
-                cy="45"
-                rx="2.7"
-                ry="4"
-                fill="#463b38"
-            />
-
-            <!-- EYEBROWS -->
-            <path
-                d="M36 38 Q41 35 46 38"
-                fill="none"
-                stroke="#5c423d"
-                stroke-width="2"
-                stroke-linecap="round"
-            />
-
-            <path
-                d="M54 38 Q59 35 64 38"
-                fill="none"
-                stroke="#5c423d"
-                stroke-width="2"
-                stroke-linecap="round"
-            />
-
-            <!-- NOSE -->
-            <path
-                d="
-                M49 45
-                L47 51
-                L51 52"
-                fill="none"
-                stroke="#bf806c"
-                stroke-width="1.5"
-            />
-
-            <!-- MOUTH -->
-            <path
-                class="mouth"
-                d="M43 58 Q50 63 57 58"
-                fill="none"
-                stroke="#8d514f"
-                stroke-width="2"
-                stroke-linecap="round"
-            />
-
-            <!-- ANGRY MARK -->
-            <path
-                class="angry-mark"
-                d="
-                M78 23
-                L86 15
-                M84 24
-                L89 27"
-                fill="none"
-                stroke="#e34f4f"
-                stroke-width="3"
-                stroke-linecap="round"
-            />
-
-        </svg>
-
+        <rect
+          x="55"
+          y="126"
+          width="18"
+          height="11"
+          rx="5"
+          fill="#706f7a"
+        />
+      </svg>
     `;
+  }
 
-}
+  function requestText(c){
+    const f =
+      getFlavor(c.flavorId);
 
+    const variants =
+      c.gender === 'female'
+        ? [
+            `Dạ shop múc cho em 1 kem ${f.name.toLowerCase()} với ạ!`,
+            `Cho chị 1 ly kem ${f.name.toLowerCase()} nhen shop!`,
+            `Shop ơi em lấy 1 kem ${f.name.toLowerCase()} nha!`
+          ]
+        : [
+            `Anh lấy 1 kem ${f.name.toLowerCase()} mát lạnh nhé!`,
+            `Shop cho anh 1 kem ${f.name.toLowerCase()} với!`,
+            `Cho mình 1 viên ${f.name.toLowerCase()} nha shop!`
+          ];
 
-/* =========================================================
-   RENDER CUSTOMER
-========================================================= */
+    return variants[
+      (
+        c.name.charCodeAt(0)
+        + state.day
+      ) % variants.length
+    ];
+  }
 
-function renderCustomer() {
+  function renderCustomer(
+    angry = false
+  ){
+    const stage =
+      $('customerStage');
 
-    const area =
-        document.getElementById(
-            "customerArea"
-        );
-
-    area.innerHTML = "";
-
-    if (!game.customer) {
-
-        updateCurrentOrder();
-
-        return;
-
+    if(!state.currentCustomer){
+      stage.innerHTML = '';
+      return;
     }
 
-    const customer =
-        game.customer;
+    const c =
+      state.currentCustomer;
 
-    const orderText =
-        customer.order
-            .map(orderItem => {
+    const pct =
+      clamp(
+        (
+          c.patience /
+          c.maxPatience
+        ) * 100,
+        0,
+        100
+      );
 
-                const item =
-                    getIceCream(
-                        orderItem.id
-                    );
+    const ringClass =
+      pct > 60
+        ? ''
+        : pct > 30
+          ? 'warn'
+          : 'danger';
 
-                return `${item.icon} ${item.name}`;
+    const text =
+      angry
+        ? rand(
+            negativeReviews.slice(
+              0,
+              7
+            )
+          )
+        : requestText(c);
 
-            })
-            .join(" + ");
-
-    const customerEl =
-        document.createElement(
-            "div"
-        );
-
-    customerEl.className =
-        `customer ${customer.state === "angry" ? "angry" : ""}`;
-
-    customerEl.innerHTML = `
-
-        <div class="speech-bubble">
-            ${customer.avatar}
-            ${customer.dialogue}
-        </div>
-
+    stage.innerHTML = `
+      <div
+        class="
+          customer-card
+          ready
+          ${angry ? 'leaving' : ''}
+        "
+        data-customer="1"
+      >
         <div class="patience-wrap">
-
-            <div class="patience-label">
-                ❤️ Kiên nhẫn
-            </div>
-
-            <div class="patience-track">
-
-                <div
-                    id="customerPatienceBar"
-                    class="patience-bar"
-                ></div>
-
-            </div>
-
+          <div
+            class="
+              patience-ring
+              ${ringClass}
+            "
+            style="--p:${pct}"
+          >
+            <span>
+              ${Math.ceil(c.patience)}
+            </span>
+          </div>
         </div>
 
-        <div class="character ${
-            customer.state === "entering"
-            ? "walking"
-            : ""
-        }">
-
-            ${characterSVG(
-                customer.gender
-            )}
-
+        <div class="customer-bubble">
+          ${escapeHtml(text)}
         </div>
 
+        ${buildCustomerSvg(
+          c,
+          angry
+        )}
+
+        <div class="customer-name-tag">
+          ${escapeHtml(c.name)}
+        </div>
+      </div>
     `;
 
-    area.appendChild(
-        customerEl
-    );
+    stage
+      .querySelector(
+        '.customer-card'
+      )
+      ?.addEventListener(
+        'click',
+        deliverCustomer
+      );
+  }
 
-    requestAnimationFrame(() => {
+  function updateCustomerVisual(){
+    const c =
+      state.currentCustomer;
 
-        customer.state =
-            "waiting";
+    if(!c) return;
 
-        customerEl.classList.remove(
-            "entering"
-        );
+    const card =
+      $('.customer-card');
 
-        customerEl.classList.add(
-            "waiting"
-        );
+    const ring =
+      $('.patience-ring');
 
-        const character =
-            customerEl.querySelector(
-                ".character"
-            );
+    const bubble =
+      $('.customer-bubble');
 
-        if (character) {
-
-            character.classList.remove(
-                "walking"
-            );
-
-        }
-
-    });
-
-    updatePatience();
-
-}
-
-
-/* =========================================================
-   CURRENT ORDER
-========================================================= */
-
-function updateCurrentOrder() {
-
-    const container =
-        document.getElementById(
-            "currentOrder"
-        );
-
-    if (!container) return;
-
-    if (!game.customer) {
-
-        container.innerHTML =
-            "Chưa có khách đang chờ.";
-
-        return;
-
+    if(
+      !card ||
+      !ring ||
+      !bubble
+    ){
+      return;
     }
 
-    const customer =
-        game.customer;
+    const pct =
+      clamp(
+        (
+          c.patience /
+          c.maxPatience
+        ) * 100,
+        0,
+        100
+      );
 
-    const orderText =
-        customer.order
-            .map(orderItem => {
+    ring.classList.toggle(
+      'warn',
+      pct <= 60 &&
+      pct > 30
+    );
 
-                const item =
-                    getIceCream(
-                        orderItem.id
-                    );
+    ring.classList.toggle(
+      'danger',
+      pct <= 30
+    );
 
-                return `
-                    ${item.icon}
-                    <strong>
-                        ${item.name}
-                    </strong>
-                `;
+    ring.style.setProperty(
+      '--p',
+      pct
+    );
 
-            })
-            .join("<br>");
+    const number =
+      ring.querySelector('span');
 
-    container.innerHTML = `
-
-        <strong>
-            👤 ${customer.name}
-        </strong>
-
-        <br>
-
-        ${orderText}
-
-        <br>
-
-        <span style="color:#9a8980;">
-            Hãy phục vụ trước khi thanh
-            kiên nhẫn về 0!
-        </span>
-
-    `;
-
-}
-
-
-/* =========================================================
-   PATIENCE UPDATE
-========================================================= */
-
-function updatePatience() {
-
-    if (!game.customer) return;
-
-    const bar =
-        document.getElementById(
-            "customerPatienceBar"
+    if(number){
+      number.textContent =
+        Math.ceil(
+          c.patience
         );
+    }
 
-    if (!bar) return;
+    bubble.textContent =
+      requestText(c);
+  }
 
-    const percentage =
-        clamp(
-            (
-                game.customer.patience /
-                game.customer.maxPatience
-            ) * 100,
+  /* =========================
+     ORDER UI
+  ========================= */
+
+  function updateOrderUI(){
+    const request =
+      $('customerRequest');
+
+    const mood =
+      $('customerMoodTag');
+
+    if(!state.currentCustomer){
+      request.textContent =
+        state.isOpen
+          ? 'Đang chờ khách tiếp theo...'
+          : 'Chưa có khách. Mở cửa để bắt đầu.';
+
+      mood.textContent =
+        state.isOpen
+          ? '🧍 Đang chờ'
+          : '🏠 Đóng cửa';
+
+      mood.className =
+        'mood-tag';
+
+      $('orderProgressBar')
+        .style.width = '0%';
+
+      return;
+    }
+
+    const f =
+      getFlavor(
+        state.currentOrder
+      );
+
+    request.textContent =
+      `${state.currentCustomer.name}: 1 viên kem ${f.name}`;
+
+    const pct =
+      clamp(
+        (
+          state.currentCustomer.patience /
+          state.currentCustomer.maxPatience
+        ) * 100,
+        0,
+        100
+      );
+
+    $('orderProgressBar')
+      .style.width =
+      `${pct}%`;
+
+    mood.textContent =
+      pct > 60
+        ? '😊 Khách vui'
+        : pct > 30
+          ? '😬 Hơi sốt ruột'
+          : '😡 Sắp nổi giận';
+
+    mood.className =
+      'mood-tag ' +
+      (
+        pct > 60
+          ? 'good'
+          : pct > 30
+            ? 'warn'
+            : 'bad'
+      );
+  }
+
+  /* =========================
+     CUSTOMER TIMER
+  ========================= */
+
+  function startCustomerTimer(){
+    clearInterval(
+      state.customerTimer
+    );
+
+    state.customerTimer =
+      setInterval(() => {
+        if(
+          !state.isOpen ||
+          !state.currentCustomer
+        ){
+          return;
+        }
+
+        const c =
+          state.currentCustomer;
+
+        c.patience =
+          Math.max(
             0,
-            100
-        );
+            c.patience - 1
+          );
 
-    bar.style.width =
-        `${percentage}%`;
+        updateCustomerVisual();
+        updateOrderUI();
 
-    if (percentage <= 25) {
-
-        bar.style.background =
-            "#d97872";
-
-    } else if (percentage <= 50) {
-
-        bar.style.background =
-            "#e3b25e";
-
-    } else {
-
-        bar.style.background =
-            "#8fc99a";
-
-    }
-
-}
-
-
-/* =========================================================
-   SERVE CUSTOMER
-========================================================= */
-
-function serveCustomer() {
-
-    if (!game.customer) {
-
-        toast(
-            "👀 Chưa có khách nào đang chờ."
-        );
-
-        return;
-
-    }
-
-    if (!game.shopOpen) {
-
-        toast(
-            "🔒 Hãy mở cửa tiệm trước!"
-        );
-
-        return;
-
-    }
-
-    const customer =
-        game.customer;
-
-    /*
-       Kiểm tra đủ tất cả món.
-    */
-
-    const canServe =
-        customer.order.every(
-            orderItem =>
-                (
-                    game.inventory[
-                        orderItem.id
-                    ] || 0
-                ) >=
-                orderItem.quantity
-        );
-
-    if (!canServe) {
-
-        toast(
-            "📦 Không đủ một trong các vị kem khách gọi!"
-        );
-
-        return;
-
-    }
-
-    let revenue = 0;
-
-    customer.order.forEach(
-        orderItem => {
-
-            const item =
-                getIceCream(
-                    orderItem.id
-                );
-
-            game.inventory[
-                orderItem.id
-            ] -= orderItem.quantity;
-
-            revenue +=
-                item.price *
-                orderItem.quantity;
-
+        if(
+          c.patience <= 0
+        ){
+          customerTimeout();
         }
-    );
+      },1000);
+  }
 
-    revenue =
-        Math.round(
-            revenue *
-            getPriceMultiplier()
-        );
+  /* =========================
+     CUSTOMER FAIL
+  ========================= */
 
-    const patiencePercent =
-        customer.patience /
-        customer.maxPatience;
-
-    let tipRate = 0;
-
-    if (patiencePercent >= .75) {
-
-        tipRate = .20;
-
-    } else if (
-        patiencePercent >= .50
-    ) {
-
-        tipRate = .10;
-
-    } else if (
-        patiencePercent >= .25
-    ) {
-
-        tipRate = .03;
-
+  function customerTimeout(){
+    if(
+      !state.currentCustomer
+    ){
+      return;
     }
 
-    const tip =
-        Math.round(
-            revenue * tipRate
-        );
+    clearInterval(
+      state.customerTimer
+    );
 
-    const total =
-        revenue + tip;
+    const c =
+      state.currentCustomer;
 
-    game.money += total;
+    state.daily.fail += 1;
 
-    game.revenueToday += revenue;
+    pushReview(
+      1,
+      rand(negativeReviews)
+    );
 
-    game.tipsToday += tip;
+    renderCustomer(true);
 
-    game.servedToday++;
-
-    addReview(
-        5,
-        customer.name,
-        customer.avatar,
-        getUniqueReviewText(
-            GOOD_REVIEWS
+    showToast(
+      `${c.name}: “${
+        rand(
+          negativeReviews.slice(
+            0,
+            5
+          )
         )
+      }” 😡`
     );
 
-    const customerEl =
-        document.querySelector(
-            ".customer"
+    state.currentCustomer = null;
+    state.currentOrder = null;
+
+    resetCone();
+    updateOrderUI();
+
+    saveState();
+
+    setTimeout(() => {
+      $('customerStage')
+        .innerHTML = '';
+
+      if(state.isOpen){
+        setTimeout(
+          createCustomer,
+          700
         );
+      }
+    },800);
+  }
 
-    if (customerEl) {
+  /* =========================
+     SCOOP
+  ========================= */
 
-        customerEl.classList.add(
-            "leaving"
-        );
-
+  function scoopFlavor(id){
+    if(
+      !state.isOpen ||
+      !state.currentCustomer
+    ){
+      showToast(
+        'Mở cửa và đón khách trước nhé!'
+      );
+      return;
     }
 
-    game.customer = null;
+    if(state.scooped){
+      showToast(
+        'Mẻ này đã có kem rồi. Giao cho khách nhé!'
+      );
+      return;
+    }
 
-    updateCurrentOrder();
+    const requested =
+      state.currentOrder;
 
-    updateShopButtons();
+    if(id !== requested){
+      const btn =
+        document.querySelector(
+          `.tub[data-flavor="${id}"]`
+        );
 
-    renderReviews();
+      btn?.classList.add(
+        'mini-shake'
+      );
 
+      setTimeout(
+        () => btn?.classList.remove(
+          'mini-shake'
+        ),
+        350
+      );
+
+      showToast(
+        `Khách gọi kem ${
+          getFlavor(requested).name
+        }, đừng múc nhầm vị nhé!`
+      );
+
+      return;
+    }
+
+    if(
+      (state.inventory[id] || 0)
+      <= 0
+    ){
+      showToast(
+        'Hũ này hết kem rồi, vào Kho Hàng nhập thêm nhé!'
+      );
+      return;
+    }
+
+    const scoopBtn =
+      document.querySelector(
+        `.tub[data-flavor="${id}"]`
+      );
+
+    scoopBtn?.classList.add(
+      'mini-shake'
+    );
+
+    setTimeout(
+      () =>
+        scoopBtn?.classList.remove(
+          'mini-shake'
+        ),
+      320
+    );
+
+    setTimeout(() => {
+      if(
+        !state.currentCustomer ||
+        state.currentOrder !== id ||
+        state.scooped
+      ){
+        return;
+      }
+
+      state.inventory[id] -= 1;
+
+      state.scooped = true;
+      state.scoopedFlavor = id;
+
+      drawCone(
+        getFlavor(id)
+      );
+
+      $('serveBtn').disabled =
+        false;
+
+      $('resetScoopBtn').disabled =
+        false;
+
+      renderTubs();
+      renderWarehouse();
+
+      saveState();
+
+      showToast(
+        `Đã múc 1 viên ${
+          getFlavor(id).name
+        }! 🍦`
+      );
+    },state.scoopSpeed);
+  }
+
+  function resetScoop(){
+    if(!state.scooped){
+      return;
+    }
+
+    const id =
+      state.scoopedFlavor;
+
+    state.inventory[id] =
+      (state.inventory[id] || 0) + 1;
+
+    resetCone();
+
+    renderTubs();
     renderWarehouse();
 
-    updateUI();
+    saveState();
 
-    saveGame();
-
-    toast(
-        `🍨 Phục vụ thành công +${money(total)}đ`
-        +
-        (
-            tip > 0
-            ? ` · 🎁 Tip ${money(tip)}đ`
-            : ""
-        )
+    showToast(
+      'Đã bỏ mẻ và trả lại viên kem vào hũ.'
     );
+  }
 
-    /*
-       Cho khách mới sau một khoảng nghỉ.
-    */
+  /* =========================
+     DELIVER
+  ========================= */
 
-    setTimeout(() => {
-
-        if (
-            game.shopOpen &&
-            !game.customer &&
-            !game.dayFinished
-        ) {
-
-            spawnCustomer();
-
-        }
-
-    }, 1600);
-
-}
-
-
-/* =========================================================
-   ANGRY CUSTOMER
-========================================================= */
-
-function angryCustomerLeaves() {
-
-    if (!game.customer) return;
-
-    const customer =
-        game.customer;
-
-    const customerEl =
-        document.querySelector(
-            ".customer"
-        );
-
-    if (customerEl) {
-
-        customerEl.classList.add(
-            "angry"
-        );
-
-        customerEl.classList.add(
-            "leaving"
-        );
-
-        const bubble =
-            customerEl.querySelector(
-                ".speech-bubble"
-            );
-
-        if (bubble) {
-
-            bubble.textContent =
-                randomItem(
-                    ANGRY_DIALOGUES
-                );
-
-        }
-
+  function deliverCustomer(){
+    if(
+      !state.currentCustomer
+    ){
+      return;
     }
 
-    const angryText =
-        getUniqueReviewText(
-            BAD_REVIEWS
+    if(!state.scooped){
+      showToast(
+        'Chưa múc đúng vị kem cho khách!'
+      );
+      return;
+    }
+
+    const c =
+      state.currentCustomer;
+
+    const f =
+      getFlavor(
+        state.scoopedFlavor
+      );
+
+    clearInterval(
+      state.customerTimer
+    );
+
+    const speedBonus =
+      1 +
+      state.staffLevel * 0.04;
+
+    const patienceBonus =
+      c.patience /
+      c.maxPatience;
+
+    const payout =
+      Math.round(
+        f.price *
+        (
+          1 +
+          state.decorLevel * 0.03 +
+          patienceBonus * 0.08
+        ) *
+        speedBonus
+      );
+
+    state.money += payout;
+
+    state.daily.revenue +=
+      payout;
+
+    state.daily.success += 1;
+
+    pushReview(
+      5,
+      rand(positiveReviews)
+    );
+
+    renderCustomer(true);
+
+    const card =
+      $('.customer-card');
+
+    card?.classList.remove(
+      'ready'
+    );
+
+    showToast(
+      `Giao thành công! +${money(payout)} 💰`
+    );
+
+    state.currentCustomer = null;
+    state.currentOrder = null;
+
+    resetCone();
+    updateOrderUI();
+
+    saveState();
+
+    setTimeout(() => {
+      $('customerStage').innerHTML = '';
+
+      if(state.isOpen){
+        setTimeout(
+          createCustomer,
+          550
+        );
+      }
+    },800);
+  }
+
+  /* =========================
+     STAFF
+  ========================= */
+
+  function scheduleStaffService(){
+    if(
+      state.staffLevel <= 0 ||
+      !state.isOpen ||
+      state.staffBusy ||
+      !state.currentCustomer ||
+      state.currentCustomer.phase !== 'ready'
+    ){
+      return;
+    }
+
+    state.staffBusy = true;
+
+    setTimeout(() => {
+      state.staffBusy = false;
+
+      if(
+        state.currentCustomer &&
+        !state.scooped &&
+        state.isOpen
+      ){
+        scoopFlavor(
+          state.currentOrder
         );
 
-    addReview(
-        1,
-        customer.name,
-        "😡",
-        angryText
+        setTimeout(
+          () => {
+            if(
+              state.currentCustomer &&
+              state.scooped
+            ){
+              deliverCustomer();
+            }
+          },
+          state.scoopSpeed + 450
+        );
+      }
+    },850);
+  }
+
+  /* =========================
+     WAREHOUSE BUY
+  ========================= */
+
+  function buyPack(id){
+    const f =
+      getFlavor(id);
+
+    const qty =
+      state.inventory[id] || 0;
+
+    if(
+      qty >= state.maxStock
+    ){
+      showToast(
+        'Hũ này đã đầy!'
+      );
+      return;
+    }
+
+    if(
+      state.money < f.packCost
+    ){
+      showToast(
+        'Chưa đủ tiền nhập thùng này.'
+      );
+      return;
+    }
+
+    state.money -=
+      f.packCost;
+
+    state.daily.supplyCost +=
+      f.packCost;
+
+    state.inventory[id] =
+      Math.min(
+        state.maxStock,
+        qty + 6
+      );
+
+    renderAll();
+    saveState();
+
+    showToast(
+      `Đã nhập 1 thùng kem ${f.name}. +${
+        Math.min(
+          6,
+          state.maxStock - qty
+        )
+      } viên 📦`
+    );
+  }
+
+  /* =========================
+     UPGRADE BUY
+  ========================= */
+
+  function buyUpgrade(id){
+    const u =
+      upgradeData().find(
+        x => x.id === id
+      );
+
+    if(!u){
+      return;
+    }
+
+    if(u.level >= u.max){
+      showToast(
+        'Nâng cấp này đã đạt tối đa.'
+      );
+      return;
+    }
+
+    if(state.money < u.cost){
+      showToast(
+        'Chưa đủ tiền cho nâng cấp này.'
+      );
+      return;
+    }
+
+    state.money -= u.cost;
+
+    if(id === 'speed'){
+      state.scoopSpeed =
+        Math.max(
+          280,
+          state.scoopSpeed - 120
+        );
+    }
+
+    if(id === 'freezer'){
+      state.freezerLevel += 1;
+      state.maxStock += 4;
+
+      flavors.forEach(f => {
+        state.inventory[f.id] =
+          Math.min(
+            state.maxStock,
+            (state.inventory[f.id] || 0) + 4
+          );
+      });
+    }
+
+    if(id === 'staff'){
+      state.staffLevel += 1;
+    }
+
+    if(id === 'decor'){
+      state.decorLevel += 1;
+    }
+
+    renderAll();
+    saveState();
+
+    showToast(
+      `Đã nâng cấp ${u.title}! ✨`
     );
 
-    toast(
-        `😡 ${customer.name}: ${angryText}`
-    );
+    if(state.currentCustomer){
+      scheduleStaffService();
+    }
+  }
 
-    game.customer = null;
+  /* =========================
+     REVIEW GENERATOR
+  ========================= */
 
-    updateCurrentOrder();
+  function pushReview(
+    stars,
+    text
+  ){
+    const usedTexts =
+      new Set(
+        (state.reviews || [])
+          .map(r => r.text)
+      );
 
-    updateShopButtons();
+    const pool =
+      stars === 5
+        ? positiveReviews
+        : negativeReviews;
+
+    let available =
+      pool.filter(
+        t => !usedTexts.has(t)
+      );
+
+    if(!available.length){
+      available = pool;
+    }
+
+    const reviewer = {
+      id:
+        `r-${Date.now()}-${Math.random()}`,
+
+      name:
+        rand(customerNames),
+
+      avatar:
+        rand(avatars),
+
+      stars,
+
+      text:
+        rand(available),
+
+      time:
+        'vừa xong'
+    };
+
+    state.reviews =
+      [reviewer,...(state.reviews || [])]
+        .slice(0,80);
 
     renderReviews();
+  }
 
-    saveGame();
+  /* =========================
+     SHOP OPEN/CLOSE
+  ========================= */
 
-    setTimeout(() => {
-
-        if (
-            game.shopOpen &&
-            !game.customer &&
-            !game.dayFinished
-        ) {
-
-            spawnCustomer();
-
-        }
-
-    }, 1800);
-
-}
-
-
-/* =========================================================
-   ADD REVIEW
-========================================================= */
-
-function addReview(
-    stars,
-    name,
-    avatar,
-    text
-) {
-
-    game.reviews.unshift({
-
-        stars,
-
-        name,
-
-        avatar,
-
-        text,
-
-        time:
-            `Ngày ${game.day} · ${formatTime()}`
-
-    });
-
-    /*
-       Không để save phình quá lớn.
-    */
-
-    if (
-        game.reviews.length > 100
-    ) {
-
-        game.reviews =
-            game.reviews.slice(
-                0,
-                100
-            );
-
+  function toggleShop(){
+    if(state.isOpen){
+      closeShop(false);
+      return;
     }
 
-}
+    openShop();
+  }
 
-
-/* =========================================================
-   RATING
-========================================================= */
-
-function getAverageRating() {
-
-    if (!game.reviews.length) {
-
-        return 5;
-
+  function openShop(){
+    if(
+      $('introModal')
+        .classList
+        .contains('visible')
+    ){
+      return;
     }
 
-    const total =
-        game.reviews.reduce(
-            (sum, review) =>
-                sum + review.stars,
-            0
-        );
-
-    return total /
-        game.reviews.length;
-
-}
-
-
-/* =========================================================
-   RENDER REVIEWS
-========================================================= */
-
-function renderReviews() {
-
-    const list =
-        document.getElementById(
-            "reviewList"
-        );
-
-    if (!list) return;
-
-    const average =
-        getAverageRating();
-
-    document.getElementById(
-        "ratingNumber"
-    ).textContent =
-        average.toFixed(1);
-
-    document.getElementById(
-        "reviewCount"
-    ).textContent =
-        `${game.reviews.length} đánh giá`;
-
-    const rounded =
-        Math.round(average);
-
-    document.getElementById(
-        "ratingStars"
-    ).textContent =
-        "★".repeat(
-            rounded
-        ) +
-        "☆".repeat(
-            5 - rounded
-        );
-
-    list.innerHTML = "";
-
-    if (!game.reviews.length) {
-
-        list.innerHTML = `
-
-            <div class="review">
-
-                <div
-                    style="
-                        text-align:center;
-                        color:#998980;
-                        font-size:12px;
-                    "
-                >
-                    💬 Chưa có đánh giá.
-                    <br>
-                    Hãy phục vụ khách để
-                    nhận đánh giá đầu tiên!
-                </div>
-
-            </div>
-
-        `;
-
-        return;
-
+    if(
+      state.daySeconds <= 0
+    ){
+      state.daySeconds = 120;
     }
 
-    game.reviews.forEach(
-        review => {
+    state.isOpen = true;
 
-            const element =
-                document.createElement(
-                    "article"
-                );
+    state.daily = {
+      revenue:0,
+      supplyCost:0,
+      success:0,
+      fail:0
+    };
 
-            element.className =
-                "review";
+    const overlay =
+      $('openingOverlay');
 
-            element.innerHTML = `
-
-                <div class="review-header">
-
-                    <div class="review-avatar">
-                        ${review.avatar}
-                    </div>
-
-                    <div class="review-user">
-
-                        <div class="review-name">
-                            ${escapeHTML(
-                                review.name
-                            )}
-                        </div>
-
-                        <div class="review-time">
-                            ${escapeHTML(
-                                review.time
-                            )}
-                        </div>
-
-                    </div>
-
-                    <div class="review-stars">
-
-                        ${
-                            "★".repeat(
-                                review.stars
-                            )
-                        }${
-                            "☆".repeat(
-                                5 - review.stars
-                            )
-                        }
-
-                    </div>
-
-                </div>
-
-                <div class="review-text">
-
-                    ${escapeHTML(
-                        review.text
-                    )}
-
-                </div>
-
-            `;
-
-            list.appendChild(
-                element
-            );
-
-        }
+    overlay.classList.add(
+      'active'
     );
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-/* =========================================================
-   TIME
-========================================================= */
-
-function formatTime() {
-
-    const h =
-        String(game.hour)
-            .padStart(2, "0");
-
-    const m =
-        String(game.minute)
-            .padStart(2, "0");
-
-    return `${h}:${m}`;
-
-}
-
-
-/* =========================================================
-   GAME TIME
-========================================================= */
-
-let lastRealSecond =
-    Date.now();
-
-let customerSpawnCounter =
-    0;
-
-
-function updateGameClock() {
-
-    if (!game.gameStarted) return;
-
-    if (game.dayFinished) return;
-
-    const now =
-        Date.now();
-
-    if (
-        now - lastRealSecond <
-        1000
-    ) {
-
-        return;
-
-    }
-
-    lastRealSecond =
-        now;
-
-    /*
-       1 giây thật = 1 phút trong game.
-    */
-
-    game.minute++;
-
-    if (game.minute >= 60) {
-
-        game.minute = 0;
-
-        game.hour++;
-
-    }
-
-    if (
-        game.hour >= 20
-    ) {
-
-        finishDay();
-
-        return;
-
-    }
-
-    updateUI();
-
-}
-
-
-/* =========================================================
-   CUSTOMER TIMER
-========================================================= */
-
-function updateCustomerLogic() {
-
-    if (!game.gameStarted) return;
-
-    if (game.dayFinished) return;
-
-    if (!game.shopOpen) return;
-
-    /*
-       Nhân viên tự động phục vụ.
-    */
-
-    if (
-        game.customer &&
-        game.upgrades.employee > 0
-    ) {
-
-        const employeeSpeed =
-            0.035 *
-            game.upgrades.employee;
-
-        if (
-            Math.random() <
-            employeeSpeed
-        ) {
-
-            serveCustomer();
-
-            return;
-
-        }
-
-    }
-
-    /*
-       Khách mất kiên nhẫn.
-    */
-
-    if (game.customer) {
-
-        /*
-           Decoration càng cao,
-           tốc độ tụt kiên nhẫn càng thấp.
-        */
-
-        const decrease =
-            .55 -
-            (
-                game.upgrades.decoration *
-                .06
-            );
-
-        game.customer.patience =
-            Math.max(
-                0,
-                game.customer.patience -
-                Math.max(
-                    .15,
-                    decrease
-                )
-            );
-
-        updatePatience();
-
-        if (
-            game.customer.patience <= 0
-        ) {
-
-            angryCustomerLeaves();
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   SPAWN LOGIC
-========================================================= */
-
-function updateCustomerSpawner() {
-
-    if (!game.shopOpen) return;
-
-    if (game.dayFinished) return;
-
-    if (game.customer) return;
-
-    if (game.hour >= 20) return;
-
-    customerSpawnCounter++;
-
-    /*
-       Khách mặc định khoảng 5-7 giây.
-       Trang trí giúp giảm thời gian.
-    */
-
-    const target =
-        Math.max(
-            3,
-            7 -
-            game.upgrades.decoration
-        );
-
-    if (
-        customerSpawnCounter >=
-        target
-    ) {
-
-        customerSpawnCounter = 0;
-
-        if (
-            Math.random() < .82
-        ) {
-
-            spawnCustomer();
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   DAY END
-========================================================= */
-
-function finishDay() {
-
-    if (game.dayFinished) return;
-
-    game.dayFinished = true;
-
-    game.shopOpen = false;
-
-    /*
-       Chi phí vận hành.
-    */
-
-    const operatingCost =
-        100 +
-        (
-            game.upgrades.employee *
-            60
-        );
-
-    game.costsToday +=
-        operatingCost;
-
-    const profit =
-        game.revenueToday +
-        game.tipsToday -
-        game.costsToday;
-
-    document.getElementById(
-        "summaryRevenue"
-    ).textContent =
-        `${money(
-            game.revenueToday
-        )}đ`;
-
-    document.getElementById(
-        "summaryCost"
-    ).textContent =
-        `${money(
-            game.costsToday
-        )}đ`;
-
-    document.getElementById(
-        "summaryTips"
-    ).textContent =
-        `${money(
-            game.tipsToday
-        )}đ`;
-
-    document.getElementById(
-        "summaryCustomers"
-    ).textContent =
-        game.servedToday;
-
-    const profitElement =
-        document.getElementById(
-            "summaryProfit"
-        );
-
-    profitElement.textContent =
-        `${profit >= 0 ? "+" : ""}${money(profit)}đ`;
-
-    profitElement.style.color =
-        profit >= 0
-        ? "#5d8b64"
-        : "#bd625a";
-
-    document
-        .getElementById(
-            "summaryModal"
-        )
-        .classList.add("show");
-
-    updateShopButtons();
-
-    updateUI();
-
-    saveGame();
-
-}
-
-
-/* =========================================================
-   NEXT DAY
-========================================================= */
-
-function startNextDay() {
-
-    document
-        .getElementById(
-            "summaryModal"
-        )
-        .classList.remove("show");
-
-    game.day++;
-
-    game.hour = 8;
-
-    game.minute = 0;
-
-    game.shopOpen = false;
-
-    game.dayFinished = false;
-
-    game.customer = null;
-
-    game.revenueToday = 0;
-
-    game.tipsToday = 0;
-
-    game.costsToday = 0;
-
-    game.customersToday = 0;
-
-    game.servedToday = 0;
-
-    game.usedNamesToday = [];
-
-    customerSpawnCounter = 0;
-
-    updateCustomerDOM();
-
-    updateUI();
-
-    updateShopButtons();
-
-    saveGame();
-
-    showDayTransition(() => {
-
-        openShop();
-
-    });
-
-}
-
-
-/* =========================================================
-   UPDATE CUSTOMER DOM
-========================================================= */
-
-function updateCustomerDOM() {
-
-    const area =
-        document.getElementById(
-            "customerArea"
-        );
-
-    if (!game.customer) {
-
-        area.innerHTML = "";
-
-        return;
-
-    }
-
-    renderCustomer();
-
-}
-
-
-/* =========================================================
-   UI UPDATE
-========================================================= */
-
-function updateUI() {
-
-    const moneyElement =
-        document.getElementById(
-            "money"
-        );
-
-    if (moneyElement) {
-
-        moneyElement.textContent =
-            money(game.money);
-
-    }
-
-    const time =
-        formatTime();
-
-    const dayText =
-        document.getElementById(
-            "dayTimeText"
-        );
-
-    if (dayText) {
-
-        dayText.textContent =
-            `Ngày ${game.day} · ${time}`;
-
-    }
-
-    const clock =
-        document.getElementById(
-            "gameClock"
-        );
-
-    if (clock) {
-
-        clock.textContent =
-            time;
-
-    }
-
-    const badge =
-        document.getElementById(
-            "clockBadge"
-        );
-
-    if (badge) {
-
-        badge.textContent =
-            time;
-
-    }
-
-    const revenue =
-        document.getElementById(
-            "todayRevenue"
-        );
-
-    if (revenue) {
-
-        revenue.textContent =
-            `${money(
-                game.revenueToday +
-                game.tipsToday
-            )}đ`;
-
-    }
-
-    const customers =
-        document.getElementById(
-            "todayCustomers"
-        );
-
-    if (customers) {
-
-        customers.textContent =
-            game.customersToday;
-
-    }
-
-    const average =
-        document.getElementById(
-            "averageRating"
-        );
-
-    if (average) {
-
-        average.textContent =
-            getAverageRating()
-                .toFixed(1);
-
-    }
-
-    const status =
-        document.getElementById(
-            "shopStatusText"
-        );
-
-    if (status) {
-
-        if (game.dayFinished) {
-
-            status.textContent =
-                "Ngày đã kết thúc";
-
-        } else if (game.shopOpen) {
-
-            status.textContent =
-                "🟢 Tiệm đang mở cửa";
-
-        } else {
-
-            status.textContent =
-                "🔴 Tiệm đang đóng cửa";
-
-        }
-
-    }
-
-    updateShopButtons();
-
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-function toast(message) {
-
-    const container =
-        document.getElementById(
-            "toastContainer"
-        );
-
-    const element =
-        document.createElement(
-            "div"
-        );
-
-    element.className =
-        "toast";
-
-    element.textContent =
-        message;
-
-    container.appendChild(
-        element
-    );
-
-    setTimeout(() => {
-
-        element.style.opacity =
-            "0";
-
-        setTimeout(() => {
-
-            element.remove();
-
-        }, 250);
-
-    }, 2300);
-
-}
-
-
-/* =========================================================
-   MAIN LOOP
-========================================================= */
-
-function gameLoop() {
-
-    updateGameClock();
-
-    updateCustomerLogic();
-
-    updateCustomerSpawner();
 
     requestAnimationFrame(
-        gameLoop
+      () =>
+        requestAnimationFrame(
+          () =>
+            overlay.classList.add(
+              'play'
+            )
+        )
     );
 
-}
+    updateTopStats();
+    updateOrderUI();
+    saveState();
 
+    setTimeout(
+      () => createCustomer(),
+      900
+    );
 
-/* =========================================================
-   AUTO SAVE
-========================================================= */
+    setTimeout(
+      () => {
+        overlay.classList.remove(
+          'play'
+        );
 
-setInterval(
-    saveGame,
-    5000
-);
+        overlay.classList.remove(
+          'active'
+        );
+      },
+      1500
+    );
 
+    if(!state.shopTimer){
+      startDayClock();
+    }
+  }
 
-/* =========================================================
-   INITIALIZATION
-========================================================= */
+  function startDayClock(){
+    clearInterval(
+      state.shopTimer
+    );
 
-function init() {
+    state.shopTimer =
+      setInterval(() => {
+        if(!state.isOpen){
+          return;
+        }
 
-    loadGame();
+        state.daySeconds =
+          Math.max(
+            0,
+            state.daySeconds - 1
+          );
 
-    /*
-       Nếu save cũ đã bắt đầu,
-       không cần hiện Intro nữa.
-    */
+        updateDayClockUI();
 
-    if (game.gameStarted) {
+        if(
+          state.daySeconds <= 0
+        ){
+          closeShop(true);
+        }
+      },1000);
+  }
 
-        document
-            .getElementById(
-                "introModal"
-            )
-            .classList.remove(
-                "show"
-            );
+  function updateDayClockUI(){
+    const sec =
+      Math.max(
+        0,
+        state.daySeconds
+      );
 
-    } else {
+    const mm =
+      String(
+        Math.floor(sec / 60)
+      ).padStart(2,'0');
 
-        document
-            .getElementById(
-                "introModal"
-            )
-            .classList.add(
-                "show"
-            );
+    const ss =
+      String(
+        sec % 60
+      ).padStart(2,'0');
 
+    $('dayTimer').textContent =
+      `${mm}:${ss}`;
+
+    const ring =
+      $('.day-clock-ring');
+
+    ring.classList.toggle(
+      'warning',
+      sec <= 45 &&
+      sec > 20
+    );
+
+    ring.classList.toggle(
+      'danger',
+      sec <= 20
+    );
+  }
+
+  /* =========================
+     CLOSE + SUMMARY
+  ========================= */
+
+  function closeShop(auto){
+    if(!state.isOpen){
+      return;
     }
 
+    state.isOpen = false;
+
+    clearInterval(
+      state.customerTimer
+    );
+
+    clearInterval(
+      state.shopTimer
+    );
+
+    state.shopTimer = null;
+    state.customerTimer = null;
+    state.staffBusy = false;
+
+    state.currentCustomer = null;
+    state.currentOrder = null;
+
+    resetCone();
+
+    $('customerStage').innerHTML = '';
+
+    state.daySeconds = 120;
+
+    updateDayClockUI();
+    updateOrderUI();
+    updateTopStats();
+
+    renderSummary();
+
+    $('daySummaryModal')
+      .classList
+      .add('visible');
+
+    saveState();
+
+    if(auto){
+      showToast(
+        'Hết giờ kinh doanh! Đây là tổng kết hôm nay.'
+      );
+    }
+  }
+
+  function renderSummary(){
+    $('summaryDay').textContent =
+      state.day;
+
+    $('summaryRevenue').textContent =
+      money(
+        state.daily.revenue
+      );
+
+    $('summarySupplyCost').textContent =
+      money(
+        state.daily.supplyCost
+      );
+
+    $('summaryProfit').textContent =
+      money(
+        state.daily.revenue -
+        state.daily.supplyCost
+      );
+
+    $('summarySuccess').textContent =
+      state.daily.success;
+
+    $('summaryFail').textContent =
+      state.daily.fail;
+
+    $('summaryProfit').style.color =
+      (
+        state.daily.revenue -
+        state.daily.supplyCost
+      ) >= 0
+        ? 'var(--green)'
+        : 'var(--red)';
+  }
+
+  /* =========================
+     NEW DAY
+  ========================= */
+
+  function newDay(){
+    state.day += 1;
+
+    state.daySeconds = 120;
+
+    state.daily = {
+      revenue:0,
+      supplyCost:0,
+      success:0,
+      fail:0
+    };
+
+    $('daySummaryModal')
+      .classList
+      .remove('visible');
+
+    state.isOpen = false;
+
+    updateTopStats();
+    updateDayClockUI();
+    updateOrderUI();
+
+    showToast(
+      `Ngày ${state.day} đã sẵn sàng. Mở cửa thôi! 🌼`
+    );
+
+    saveState();
+  }
+
+  /* =========================
+     RENDER ALL
+  ========================= */
+
+  function renderAll(){
+    updateTopStats();
+    renderTubs();
     renderWarehouse();
-
     renderUpgrades();
-
     renderReviews();
+    updateDayClockUI();
+    updateOrderUI();
+  }
 
-    updateUI();
+  /* =========================
+     EVENT LISTENERS
+  ========================= */
 
-    updateCustomerDOM();
+  document
+    .querySelectorAll('.nav-btn')
+    .forEach(btn => {
+      btn.addEventListener(
+        'click',
+        () =>
+          switchTab(
+            btn.dataset.tab
+          )
+      );
+    });
 
-    gameLoop();
+  document
+    .querySelectorAll('.filter-btn')
+    .forEach(btn => {
+      btn.addEventListener(
+        'click',
+        () => {
+          reviewFilter =
+            btn.dataset.filter;
 
-}
+          renderReviews();
+        }
+      );
+    });
 
+  $('openCloseBtn')
+    .addEventListener(
+      'click',
+      toggleShop
+    );
 
-/* =========================================================
-   START ENGINE
-========================================================= */
+  $('startBusinessBtn')
+    .addEventListener(
+      'click',
+      () => {
+        $('introModal')
+          .classList
+          .remove('visible');
 
-init();
+        showToast(
+          'Tiệm đã sẵn sàng. Bấm “MỞ CỬA TIỆM” nhé! 🍦'
+        );
+      }
+    );
+
+  $('serveBtn')
+    .addEventListener(
+      'click',
+      deliverCustomer
+    );
+
+  $('resetScoopBtn')
+    .addEventListener(
+      'click',
+      resetScoop
+    );
+
+  $('newDayBtn')
+    .addEventListener(
+      'click',
+      newDay
+    );
+
+  /* =========================
+     SAVE
+  ========================= */
+
+  window.addEventListener(
+    'beforeunload',
+    saveState
+  );
+
+  document.addEventListener(
+    'visibilitychange',
+    () => {
+      if(document.hidden){
+        saveState();
+      }
+    }
+  );
+
+  /* =========================
+     STARTUP
+  ========================= */
+
+  state.shopTimer = null;
+
+  updateTopStats();
+  renderAll();
+
+  /*
+    Không cho game tự mở lại
+    sau khi refresh.
+  */
+  if(state.isOpen){
+    state.isOpen = false;
+    state.daySeconds = 120;
+
+    updateTopStats();
+    updateDayClockUI();
+  }
+})();
