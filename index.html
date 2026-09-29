@@ -2,41 +2,72 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#ffe4eb">
-<title>Tiệm Bán Kem Ngọt Ngào</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,
+               maximum-scale=1,user-scalable=no,
+               viewport-fit=cover">
+
+<meta name="theme-color" content="#ffe3eb">
+
+<title>Tiệm Kem Ngọt Ngào</title>
 
 <style>
+/* =========================================================
+   TIỆM KEM NGỌT NGÀO
+   ONE FILE — HTML + CSS + JAVASCRIPT
+========================================================= */
+
 :root{
-  --pink:#ffdce5;
-  --pink2:#fff0f3;
+  --pink:#f8b8c9;
+  --pink-light:#ffe7ee;
+  --pink-soft:#fff3f6;
+
   --cream:#fffaf0;
-  --butter:#ffe7a8;
-  --mint:#cfeee3;
-  --mint2:#e9f8f2;
-  --brown:#70534d;
-  --brown2:#98756c;
-  --red:#e87575;
-  --green:#72ad91;
-  --white:#fffdf9;
-  --shadow:0 7px 0 rgba(112,83,77,.08);
+  --milk:#fffdf9;
+
+  --butter:#ffe4a6;
+  --butter-dark:#e8c778;
+
+  --mint:#bfe5d6;
+  --mint-dark:#83bca6;
+
+  --wood:#a66d4e;
+  --wood-dark:#754936;
+  --wood-light:#d79c72;
+
+  --brown:#654a42;
+  --brown-soft:#94766d;
+
+  --red:#dc7777;
+  --green:#74b493;
+
+  --shadow:0 6px 0 rgba(101,74,66,.10);
+  --shadow-soft:0 3px 12px rgba(101,74,66,.08);
+
   --radius:22px;
 }
+
+/* ---------- RESET ---------- */
 
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
   margin:0;
+  padding:0;
   width:100%;
   min-height:100%;
-  background:#f8edf0;
+  background:#f4e9e4;
   color:var(--brown);
   font-family:
-    -apple-system,BlinkMacSystemFont,"Segoe UI",
-    "Noto Sans",sans-serif;
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans",
+    sans-serif;
 }
 
 body{
@@ -52,41 +83,1058 @@ button{
 }
 
 button:active{
-  transform:translateY(2px) scale(.98);
+  transform:translateY(2px) scale(.985);
 }
+
+button:disabled{
+  cursor:default;
+}
+
+/* ---------- APP ---------- */
 
 #game{
   width:100%;
   max-width:560px;
   min-height:100svh;
   margin:auto;
-  background:
-    linear-gradient(#fff8f7 0 70%,#f4eee5 70%);
   position:relative;
   overflow:hidden;
+  background:
+    linear-gradient(
+      180deg,
+      #fff6f5 0,
+      #fffaf7 43%,
+      #f5eadf 43%,
+      #f1e2d4 100%
+    );
 }
+
+/* ---------- PAGE ---------- */
 
 .screen{
   min-height:100svh;
   padding:
-    max(14px,env(safe-area-inset-top))
-    12px
+    max(10px,env(safe-area-inset-top))
+    11px
     calc(82px + env(safe-area-inset-bottom))
-    12px;
+    11px;
 }
 
-/* ---------- MODAL ---------- */
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar{
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.brand{
+  font-size:16px;
+  font-weight:1000;
+}
+
+.stats{
+  display:flex;
+  gap:6px;
+}
+
+.stat{
+  background:#fff;
+  padding:6px 9px;
+  border-radius:13px;
+  box-shadow:var(--shadow-soft);
+  font-size:11px;
+  font-weight:900;
+}
+
+/* =========================================================
+   SHOP FRONT
+========================================================= */
+
+.shop-front{
+  position:relative;
+  margin-top:5px;
+  border-radius:28px 28px 18px 18px;
+  overflow:hidden;
+  background:#fff;
+  box-shadow:var(--shadow);
+}
+
+/* ---------- pastel awning ---------- */
+
+.awning{
+  height:55px;
+  display:flex;
+  overflow:hidden;
+  position:relative;
+  border-bottom:4px solid #e5c0b9;
+  background:#fff;
+}
+
+.awning-piece{
+  width:16.666%;
+  flex:1;
+  height:68px;
+  margin-top:-13px;
+  border-radius:0 0 22px 22px;
+  border-bottom:4px solid rgba(155,90,90,.12);
+}
+
+.awning-piece:nth-child(odd){
+  background:#fff;
+}
+
+.awning-piece:nth-child(even){
+  background:#f6b8c9;
+}
+
+/* ---------- shop wall ---------- */
+
+.shop-wall{
+  position:relative;
+  min-height:153px;
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf5,
+      #fff4e9
+    );
+  padding:16px 10px 0;
+}
+
+/* ---------- wooden sign ---------- */
+
+.wood-sign{
+  width:min(310px,82%);
+  margin:0 auto;
+  position:relative;
+  background:
+    linear-gradient(
+      180deg,
+      var(--wood-light),
+      var(--wood)
+    );
+  border:5px solid #8b593f;
+  border-radius:14px;
+  padding:10px 14px;
+  text-align:center;
+  color:#fff4d9;
+  font-family:Georgia,serif;
+  font-size:20px;
+  font-weight:1000;
+  letter-spacing:.2px;
+  box-shadow:
+    0 5px 0 #704632,
+    inset 0 1px 0 rgba(255,255,255,.3);
+  transform:rotate(-.5deg);
+}
+
+.wood-sign::before,
+.wood-sign::after{
+  content:"";
+  position:absolute;
+  top:-10px;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#6e4635;
+  border:2px solid #513428;
+}
+
+.wood-sign::before{
+  left:18px;
+}
+
+.wood-sign::after{
+  right:18px;
+}
+
+/* ---------- counter ---------- */
+
+.counter{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:58px;
+  background:
+    linear-gradient(
+      180deg,
+      #d89c72,
+      #b97855
+    );
+  border-top:4px solid #9c6046;
+  box-shadow:
+    inset 0 3px rgba(255,255,255,.18);
+}
+
+/* ---------- jars ---------- */
+
+.counter-items{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:39px;
+  height:82px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:7px;
+}
+
+.jar{
+  width:41px;
+  height:55px;
+  border:3px solid #a5a09a;
+  border-radius:9px 9px 12px 12px;
+  background:
+    linear-gradient(
+      90deg,
+      #ccc,
+      #fff,
+      #bbb
+    );
+  position:relative;
+  box-shadow:0 3px 0 rgba(80,60,50,.12);
+}
+
+.jar::before{
+  content:"";
+  position:absolute;
+  left:3px;
+  right:3px;
+  top:-8px;
+  height:9px;
+  border-radius:5px 5px 2px 2px;
+  background:#aaa;
+  border:2px solid #999;
+}
+
+.jar::after{
+  content:"";
+  position:absolute;
+  left:6px;
+  right:6px;
+  bottom:6px;
+  height:26px;
+  border-radius:6px;
+  background:var(--flavor);
+  opacity:.92;
+}
+
+.jar-label{
+  position:absolute;
+  z-index:2;
+  left:50%;
+  bottom:10px;
+  transform:translateX(-50%);
+  font-size:15px;
+}
+
+/* ---------- plant ---------- */
+
+.plant{
+  position:absolute;
+  right:10px;
+  bottom:48px;
+  font-size:30px;
+  transform:rotate(3deg);
+}
+
+/* ---------- sleeping cat ---------- */
+
+.sleeping-cat{
+  position:absolute;
+  left:9px;
+  bottom:39px;
+  width:76px;
+  height:58px;
+  z-index:3;
+}
+
+.cat-bed{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:25px;
+  border-radius:50%;
+  background:#c9e8dc;
+  border:3px solid #a4d0c0;
+}
+
+.cat-body{
+  position:absolute;
+  width:49px;
+  height:34px;
+  left:15px;
+  bottom:13px;
+  background:#e7ad88;
+  border-radius:50% 48% 45% 45%;
+}
+
+.cat-head{
+  position:absolute;
+  width:38px;
+  height:34px;
+  left:10px;
+  top:5px;
+  background:#efbb94;
+  border-radius:48% 48% 45% 45%;
+  border:2px solid #c98b69;
+}
+
+.cat-ear{
+  position:absolute;
+  width:14px;
+  height:14px;
+  background:#efbb94;
+  transform:rotate(45deg);
+  top:-5px;
+  border:2px solid #c98b69;
+}
+
+.cat-ear.left{
+  left:2px;
+}
+
+.cat-ear.right{
+  right:2px;
+}
+
+.cat-eye{
+  position:absolute;
+  width:7px;
+  height:2px;
+  border-radius:50%;
+  background:#684c45;
+  top:17px;
+}
+
+.cat-eye.left{
+  left:9px;
+}
+
+.cat-eye.right{
+  right:9px;
+}
+
+.cat-nose{
+  position:absolute;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#a86868;
+  left:17px;
+  top:23px;
+}
+
+.zzz{
+  position:absolute;
+  right:2px;
+  top:-10px;
+  font-weight:1000;
+  font-size:13px;
+  color:#8f7a8e;
+  animation:zzz 2.2s ease-in-out infinite;
+}
+
+@keyframes zzz{
+  0%,100%{
+    transform:translateY(3px);
+    opacity:.45;
+  }
+  50%{
+    transform:translateY(-5px);
+    opacity:1;
+  }
+}
+
+/* =========================================================
+   TIME / STORE CONTROL
+========================================================= */
+
+.store-control{
+  margin-top:9px;
+  background:#fff;
+  border-radius:21px;
+  padding:10px;
+  box-shadow:var(--shadow-soft);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.time-box{
+  min-width:67px;
+  padding:8px 7px;
+  background:#fff3d7;
+  border-radius:13px;
+  text-align:center;
+  font-size:15px;
+  font-weight:1000;
+}
+
+.open-btn{
+  flex:1;
+  padding:11px;
+  border-radius:14px;
+  background:var(--butter);
+  border:2px solid #e7ce8e;
+  box-shadow:0 3px 0 #d9bf79;
+  font-size:12px;
+  font-weight:1000;
+}
+
+.open-btn.opened{
+  background:var(--mint);
+  border-color:#9dcdb9;
+  box-shadow:0 3px 0 #86bca7;
+}
+
+/* =========================================================
+   CUSTOMER
+========================================================= */
+
+.customer-card{
+  margin-top:9px;
+  background:#fff;
+  border-radius:23px;
+  padding:10px;
+  box-shadow:var(--shadow-soft);
+}
+
+.customer-row{
+  display:flex;
+  gap:9px;
+  align-items:center;
+}
+
+.avatar{
+  width:73px;
+  height:73px;
+  flex:none;
+  border-radius:50%;
+  overflow:hidden;
+  background:#f7ebe4;
+}
+
+.customer-info{
+  flex:1;
+  min-width:0;
+}
+
+.customer-name{
+  font-size:14px;
+  font-weight:1000;
+}
+
+.order-bubble{
+  margin-top:4px;
+  background:#fff0c8;
+  padding:7px 9px;
+  border-radius:13px;
+  font-size:11px;
+  line-height:1.35;
+}
+
+.customer-bottom{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+}
+
+.ring{
+  --p:100;
+  width:42px;
+  height:42px;
+  flex:none;
+  border-radius:50%;
+  background:
+    conic-gradient(
+      var(--green) calc(var(--p) * 1%),
+      #eadbd7 0
+    );
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+
+.ring::after{
+  content:"";
+  width:31px;
+  height:31px;
+  border-radius:50%;
+  background:#fff;
+  position:absolute;
+}
+
+.ring span{
+  position:relative;
+  z-index:1;
+  font-size:9px;
+  font-weight:1000;
+}
+
+.wait-line{
+  flex:1;
+  height:8px;
+  background:#eadbd7;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.wait-line-fill{
+  height:100%;
+  background:var(--green);
+  width:100%;
+  transition:width .25s linear;
+}
+
+/* =========================================================
+   WORKSPACE
+========================================================= */
+
+.workspace{
+  margin-top:9px;
+  background:#fff;
+  border-radius:24px;
+  padding:10px;
+  box-shadow:var(--shadow);
+}
+
+.workspace-header{
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.workspace-title{
+  font-size:16px;
+  font-weight:1000;
+}
+
+.step{
+  background:var(--mint);
+  border-radius:10px;
+  padding:6px 8px;
+  font-size:10px;
+  font-weight:1000;
+}
+
+/*
+  QUAN TRỌNG:
+  KHU VỰC PREVIEW LUÔN CÓ CHIỀU CAO CỐ ĐỊNH.
+  Nội dung bên trong dùng absolute.
+  Vì vậy đổi vị/topping sẽ KHÔNG làm layout nhảy.
+*/
+
+.ice-preview{
+  position:relative;
+  height:184px;
+  margin-top:6px;
+  border-radius:19px;
+  border:3px solid #e3d8cd;
+  overflow:hidden;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      #fffdf9 0,
+      #f5ede4 75%
+    );
+}
+
+/* bàn */
+
+.ice-preview::after{
+  content:"";
+  position:absolute;
+  left:8%;
+  right:8%;
+  bottom:13px;
+  height:17px;
+  border-radius:50%;
+  background:#e5d4c5;
+  opacity:.55;
+}
+
+/* ---------- fixed ice composition ---------- */
+
+.ice-object{
+  position:absolute;
+  left:50%;
+  bottom:22px;
+  width:100px;
+  height:137px;
+  transform:translateX(-50%);
+}
+
+.ice-cup{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:67px;
+  height:69px;
+  border-radius:8px 8px 23px 23px;
+  border:4px solid #8bbcaf;
+  background:
+    linear-gradient(
+      90deg,
+      #c8e9df,
+      #f7fffc,
+      #afdacc
+    );
+  z-index:2;
+}
+
+.ice-cup::before{
+  content:"";
+  position:absolute;
+  left:-7px;
+  right:-7px;
+  top:-8px;
+  height:12px;
+  border-radius:50%;
+  background:#eafff8;
+  border:3px solid #8bbcaf;
+}
+
+.ice-cone{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:61px;
+  height:82px;
+  clip-path:polygon(
+    8% 0,
+    92% 0,
+    58% 100%,
+    42% 100%
+  );
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #e5a85e 0 6px,
+      #d79249 6px 9px
+    );
+  border:3px solid #bc7940;
+  z-index:2;
+}
+
+/* ---------- scoop stack ---------- */
+
+.scoop-stack{
+  position:absolute;
+  left:50%;
+  bottom:62px;
+  width:70px;
+  height:85px;
+  transform:translateX(-50%);
+  z-index:4;
+}
+
+.scoop{
+  position:absolute;
+  left:50%;
+  width:45px;
+  height:45px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  border:3px solid rgba(80,60,50,.12);
+  box-shadow:inset -4px -4px rgba(80,60,50,.07);
+  animation:scoopIn .28s ease both;
+}
+
+.scoop.one{
+  bottom:0;
+}
+
+.scoop.two{
+  bottom:27px;
+}
+
+.scoop.three{
+  bottom:54px;
+}
+
+@keyframes scoopIn{
+  from{
+    transform:translateX(-50%) scale(.7);
+    opacity:0;
+  }
+  to{
+    transform:translateX(-50%) scale(1);
+    opacity:1;
+  }
+}
+
+.scoop.chocolate{background:#704535}
+.scoop.strawberry{background:#ef9daf}
+.scoop.vanilla{background:#fff0b4}
+.scoop.matcha{background:#a9d48f}
+.scoop.durian{background:#dadd88}
+.scoop.butter{background:#ffd66f}
+
+/* ---------- topping ---------- */
+
+.topping-display{
+  position:absolute;
+  z-index:7;
+  left:50%;
+  bottom:118px;
+  transform:translateX(-50%);
+  height:30px;
+  min-width:50px;
+  text-align:center;
+  font-size:24px;
+  line-height:30px;
+  pointer-events:none;
+  animation:toppingIn .25s ease both;
+}
+
+@keyframes toppingIn{
+  from{
+    transform:translateX(-50%) translateY(-8px);
+    opacity:0;
+  }
+  to{
+    transform:translateX(-50%);
+    opacity:1;
+  }
+}
+
+.preview-hint{
+  position:absolute;
+  z-index:8;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:85%;
+  text-align:center;
+  color:#aa9188;
+  font-size:12px;
+  line-height:1.4;
+}
+
+/* =========================================================
+   OPTION PANELS
+========================================================= */
+
+.section-title{
+  margin:10px 2px 6px;
+  font-size:11px;
+  font-weight:1000;
+}
+
+.options{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+
+.option{
+  min-height:58px;
+  padding:6px 4px;
+  border:2px solid #eadfd9;
+  border-radius:14px;
+  background:#fffaf6;
+  font-size:10px;
+  font-weight:900;
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    transform .18s ease;
+}
+
+.option.selected{
+  background:var(--mint);
+  border-color:#8dc4b0;
+}
+
+.option-icon{
+  display:block;
+  height:27px;
+  font-size:23px;
+  line-height:25px;
+}
+
+.action-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:8px;
+}
+
+.action{
+  padding:11px;
+  border-radius:14px;
+  font-size:11px;
+  font-weight:1000;
+  background:#eee4df;
+}
+
+.action.deliver{
+  background:var(--mint);
+  border:2px solid #9dcdb9;
+}
+
+.action:disabled{
+  opacity:.38;
+}
+
+/* =========================================================
+   OTHER PANELS
+========================================================= */
+
+.panel{
+  margin-top:9px;
+  background:#fff;
+  border-radius:23px;
+  padding:13px;
+  box-shadow:var(--shadow);
+}
+
+.panel h2{
+  margin:0;
+  font-size:20px;
+}
+
+.desc{
+  margin:5px 0 11px;
+  font-size:11px;
+  line-height:1.4;
+  color:var(--brown-soft);
+}
+
+.stock-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+
+.stock-card{
+  border:2px solid #eee1db;
+  background:#fffaf6;
+  border-radius:16px;
+  padding:9px;
+}
+
+.stock-name{
+  font-weight:1000;
+  font-size:12px;
+}
+
+.stock-count{
+  float:right;
+  background:var(--mint);
+  border-radius:9px;
+  padding:4px 6px;
+  font-size:9px;
+  font-weight:1000;
+}
+
+.buy{
+  width:100%;
+  margin-top:7px;
+  padding:8px;
+  border-radius:11px;
+  background:var(--butter);
+  font-size:10px;
+  font-weight:1000;
+}
+
+/* upgrades */
+
+.upgrade{
+  border:2px solid #eee1db;
+  border-radius:17px;
+  padding:10px;
+  margin-top:7px;
+}
+
+.upgrade-row{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.upgrade-icon{
+  font-size:29px;
+}
+
+.upgrade-info{
+  flex:1;
+}
+
+.upgrade-name{
+  font-size:12px;
+  font-weight:1000;
+}
+
+.upgrade-desc{
+  font-size:9px;
+  color:#9b8780;
+  margin-top:2px;
+}
+
+.upgrade-btn{
+  padding:8px;
+  border-radius:11px;
+  background:var(--pink);
+  font-size:9px;
+  font-weight:1000;
+}
+
+/* =========================================================
+   REVIEWS
+========================================================= */
+
+.rating-box{
+  text-align:center;
+  background:var(--pink-soft);
+  border-radius:20px;
+  padding:16px;
+}
+
+.rating-label{
+  font-size:11px;
+  font-weight:900;
+}
+
+.rating-number{
+  margin-top:1px;
+  font-size:43px;
+  line-height:1;
+  font-weight:1000;
+}
+
+.rating-stars{
+  margin-top:5px;
+  font-size:20px;
+  letter-spacing:2px;
+  color:#f3bf42;
+}
+
+.rating-count{
+  margin-top:4px;
+  font-size:10px;
+  color:#9a8580;
+}
+
+.review{
+  display:flex;
+  gap:9px;
+  padding:11px 0;
+  border-bottom:1px dashed #e4d8d2;
+}
+
+.review-avatar{
+  width:44px;
+  height:44px;
+  flex:none;
+  border-radius:50%;
+  overflow:hidden;
+  background:#f5e8e2;
+}
+
+.review-content{
+  flex:1;
+  min-width:0;
+}
+
+.review-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+}
+
+.review-name{
+  font-size:12px;
+  font-weight:1000;
+}
+
+.review-stars{
+  font-size:12px;
+  color:#f2bb3c;
+  white-space:nowrap;
+}
+
+.review-text{
+  margin-top:3px;
+  font-size:11px;
+  line-height:1.45;
+}
+
+.review-time{
+  margin-top:3px;
+  font-size:9px;
+  color:#a9938d;
+}
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.bottom-nav{
+  position:fixed;
+  z-index:500;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(560px,100%);
+  padding:
+    6px 7px
+    calc(6px + env(safe-area-inset-bottom));
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+  background:rgba(255,253,249,.97);
+  border-top:2px solid #e9dcd7;
+}
+
+.nav-btn{
+  padding:6px 2px;
+  border-radius:14px;
+  background:transparent;
+  color:#a18b85;
+  font-size:9px;
+  font-weight:1000;
+  transition:.2s ease;
+}
+
+.nav-btn span{
+  display:block;
+  font-size:20px;
+  line-height:21px;
+}
+
+.nav-btn.active{
+  background:var(--pink-light);
+  color:#6e4d55;
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
 
 .modal{
   position:fixed;
-  inset:0;
   z-index:1000;
+  inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:20px;
-  background:rgba(112,83,77,.32);
-  transition:.3s ease;
+  background:rgba(90,65,60,.32);
+  transition:opacity .3s ease;
 }
 
 .modal.hidden{
@@ -96,143 +1144,103 @@ button:active{
 
 .modal-card{
   width:min(420px,100%);
-  background:var(--white);
-  border:4px solid #fff;
-  border-radius:32px;
-  padding:28px 20px 22px;
+  background:#fffdf9;
+  border-radius:30px;
+  padding:25px 18px 20px;
   text-align:center;
-  box-shadow:0 15px 0 rgba(112,83,77,.1);
-  animation:pop .45s ease;
+  box-shadow:0 15px 0 rgba(101,74,66,.12);
+  animation:modalIn .35s ease;
 }
 
-@keyframes pop{
-  from{transform:scale(.88);opacity:0}
-  to{transform:scale(1);opacity:1}
+@keyframes modalIn{
+  from{
+    opacity:0;
+    transform:translateY(15px) scale(.96);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
 }
 
-.logo-ice{
-  font-size:66px;
-  margin-bottom:5px;
+.logo{
+  font-size:65px;
 }
 
-.modal-card h1{
-  margin:0;
-  font-size:27px;
-  line-height:1.15;
-}
-
-.modal-card p{
-  margin:10px 0 20px;
-  color:var(--brown2);
-  line-height:1.5;
-}
-
-.primary-btn{
-  width:100%;
-  background:var(--pink);
-  border:3px solid #f5bdcb;
-  border-radius:18px;
-  padding:14px 16px;
-  font-weight:900;
-  color:#744e58;
-  box-shadow:0 5px 0 #eeb2c1;
-}
-
-.primary-btn.mint{
-  background:var(--mint);
-  border-color:#afdcca;
-  box-shadow:0 5px 0 #9acdb9;
-}
-
-/* ---------- TOP BAR ---------- */
-
-.topbar{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:12px;
-}
-
-.brand{
+.modal-title{
+  margin:4px 0;
+  font-size:26px;
+  line-height:1.12;
   font-weight:1000;
-  font-size:16px;
 }
 
-.stats{
-  display:flex;
-  gap:6px;
-}
-
-.stat{
-  background:var(--white);
-  border-radius:14px;
-  padding:7px 9px;
+.modal-desc{
   font-size:12px;
-  font-weight:800;
-  box-shadow:var(--shadow);
-  white-space:nowrap;
+  line-height:1.5;
+  color:#947c75;
+  margin:9px 0 18px;
 }
 
-/* ---------- STORE HEADER ---------- */
-
-.store-card{
-  background:var(--pink2);
-  border-radius:26px;
-  padding:14px;
-  box-shadow:var(--shadow);
-  border:2px solid #f6d4db;
-  margin-bottom:12px;
-}
-
-.store-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.store-title{
-  font-weight:1000;
-  font-size:21px;
-}
-
-.time{
-  background:#fff;
-  padding:8px 12px;
-  border-radius:14px;
-  font-weight:1000;
-}
-
-.open-btn{
-  margin-top:12px;
+.primary{
   width:100%;
   padding:13px;
-  border-radius:17px;
-  background:var(--butter);
-  border:2px solid #efd48e;
+  border-radius:16px;
+  background:var(--pink);
+  border:2px solid #e9aabd;
+  box-shadow:0 4px 0 #dc9daf;
   font-weight:1000;
 }
 
-.open-btn:disabled{
-  opacity:.5;
+/* summary */
+
+.summary{
+  width:min(420px,100%);
+  background:#fffdf9;
+  border-radius:27px;
+  padding:18px;
+  box-shadow:0 15px 0 rgba(101,74,66,.12);
 }
 
-/* ---------- CURTAIN ---------- */
+.summary h2{
+  text-align:center;
+  margin:0 0 10px;
+}
+
+.summary-line{
+  display:flex;
+  justify-content:space-between;
+  padding:9px 0;
+  border-bottom:1px dashed #e2d6d0;
+  font-size:12px;
+}
+
+.summary-total{
+  margin-top:10px;
+  background:var(--mint);
+  border-radius:14px;
+  padding:11px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:1000;
+}
+
+/* =========================================================
+   CURTAIN
+========================================================= */
 
 .curtain{
   position:fixed;
   inset:0;
-  z-index:800;
-  pointer-events:none;
+  z-index:900;
   display:none;
+  pointer-events:none;
 }
 
 .curtain.active{
   display:block;
 }
 
-.curtain-left,
-.curtain-right{
+.curtain-side{
   position:absolute;
   top:0;
   bottom:0;
@@ -240,10 +1248,10 @@ button:active{
   background:
     repeating-linear-gradient(
       90deg,
-      #efb7c3 0 18px,
-      #e8a8b7 18px 32px
+      #f3afc1 0 17px,
+      #ffdfe7 17px 34px
     );
-  transition:1.5s ease;
+  transition:1.5s cubic-bezier(.22,.75,.2,1);
 }
 
 .curtain-left{
@@ -262,523 +1270,41 @@ button:active{
   transform:translateX(105%);
 }
 
-.curtain-text{
+.curtain-message{
   position:absolute;
+  z-index:2;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  z-index:2;
   background:#fffdf9;
-  padding:14px 20px;
-  border-radius:18px;
+  padding:12px 17px;
+  border-radius:15px;
   font-weight:1000;
   white-space:nowrap;
   box-shadow:var(--shadow);
 }
 
-/* ---------- CUSTOMER ---------- */
-
-.customer-card{
-  background:var(--white);
-  border-radius:26px;
-  padding:13px;
-  box-shadow:var(--shadow);
-  margin-bottom:12px;
-}
-
-.customer-top{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.customer-svg{
-  width:82px;
-  height:82px;
-  flex:none;
-  border-radius:50%;
-  background:var(--mint2);
-}
-
-.customer-info{
-  min-width:0;
-  flex:1;
-}
-
-.customer-name{
-  font-weight:1000;
-}
-
-.order-bubble{
-  background:#fff2c8;
-  border-radius:15px;
-  padding:8px 10px;
-  margin-top:5px;
-  font-size:13px;
-  line-height:1.35;
-}
-
-.wait-wrap{
-  margin-top:9px;
-  display:flex;
-  align-items:center;
-  gap:9px;
-}
-
-.ring{
-  --progress:100;
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  background:
-    conic-gradient(
-      var(--green) calc(var(--progress) * 1%),
-      #eadbd8 0
-    );
-  display:grid;
-  place-items:center;
-  position:relative;
-  flex:none;
-}
-
-.ring::after{
-  content:"";
-  width:31px;
-  height:31px;
-  border-radius:50%;
-  background:#fff;
-  position:absolute;
-}
-
-.ring span{
-  position:relative;
-  z-index:1;
-  font-size:10px;
-  font-weight:1000;
-}
-
-.wait-bar{
-  flex:1;
-  height:9px;
-  background:#eadbd8;
-  border-radius:20px;
-  overflow:hidden;
-}
-
-.wait-fill{
-  height:100%;
-  width:100%;
-  background:var(--green);
-  transition:width .25s linear;
-}
-
-/* ---------- WORKSPACE ---------- */
-
-.workspace{
-  background:#fff;
-  border-radius:28px;
-  padding:13px;
-  box-shadow:var(--shadow);
-  border:2px solid #f0e4df;
-}
-
-.workspace-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-}
-
-.workspace-title{
-  font-size:18px;
-  font-weight:1000;
-}
-
-.step-pill{
-  background:var(--mint);
-  padding:6px 9px;
-  border-radius:12px;
-  font-size:11px;
-  font-weight:900;
-}
-
-.ice-board{
-  min-height:205px;
-  border-radius:22px;
-  background:
-    linear-gradient(
-      145deg,
-      #f5eee7,
-      #fffdf9 45%,
-      #eee8df
-    );
-  border:3px solid #e5dcd3;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  padding:12px;
-}
-
-.cone{
-  font-size:72px;
-  line-height:1;
-}
-
-.cup{
-  font-size:65px;
-}
-
-.scoops{
-  display:flex;
-  gap:3px;
-  justify-content:center;
-  min-height:34px;
-}
-
-.scoop{
-  width:39px;
-  height:39px;
-  border-radius:50%;
-  border:3px solid rgba(80,60,50,.12);
-  margin-top:-8px;
-}
-
-.scoop.chocolate{background:#704333}
-.scoop.strawberry{background:#ef9cae}
-.scoop.vanilla{background:#fff1bb}
-.scoop.matcha{background:#a9d28d}
-.scoop.durian{background:#d9dc82}
-.scoop.butter{background:#ffd873}
-
-.topping{
-  font-size:28px;
-  margin-top:4px;
-}
-
-.placeholder{
-  color:#ad9993;
-  text-align:center;
-  font-size:13px;
-  line-height:1.4;
-}
-
-.section-label{
-  margin:13px 0 7px;
-  font-size:13px;
-  font-weight:1000;
-}
-
-.option-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-}
-
-.option{
-  background:#faf5f1;
-  border:2px solid #eaded8;
-  border-radius:15px;
-  min-height:65px;
-  padding:6px;
-  font-size:11px;
-  font-weight:900;
-}
-
-.option.selected{
-  background:var(--mint);
-  border-color:#8fc9b2;
-}
-
-.jar{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:2px;
-}
-
-.jar-icon{
-  width:38px;
-  height:34px;
-  border-radius:8px 8px 10px 10px;
-  border:3px solid #b8b3ad;
-  background:linear-gradient(90deg,#ddd,#fff,#ccc);
-  position:relative;
-}
-
-.jar-icon::before{
-  content:"";
-  position:absolute;
-  left:3px;
-  right:3px;
-  top:-7px;
-  height:8px;
-  background:#a8a39d;
-  border-radius:5px;
-}
-
-.action-row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:12px;
-}
-
-.action-btn{
-  padding:13px 8px;
-  border-radius:16px;
-  font-weight:1000;
-  background:#eee4df;
-}
-
-.action-btn.deliver{
-  background:var(--mint);
-  border:2px solid #9dcdb9;
-}
-
-.action-btn:disabled{
-  opacity:.4;
-}
-
-/* ---------- STOCK ---------- */
-
-.panel{
-  background:#fff;
-  border-radius:25px;
-  padding:14px;
-  box-shadow:var(--shadow);
-  margin-bottom:12px;
-}
-
-.panel h2{
-  margin:0 0 5px;
-  font-size:21px;
-}
-
-.panel-desc{
-  color:#9a8580;
-  font-size:13px;
-  line-height:1.4;
-  margin-bottom:12px;
-}
-
-.stock-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
-.stock-card{
-  background:#fffaf6;
-  border:2px solid #eee1da;
-  border-radius:18px;
-  padding:11px;
-}
-
-.stock-card-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.stock-count{
-  font-weight:1000;
-  background:var(--mint2);
-  padding:5px 8px;
-  border-radius:10px;
-  font-size:12px;
-}
-
-.buy-btn{
-  width:100%;
-  margin-top:8px;
-  padding:9px;
-  border-radius:12px;
-  background:var(--butter);
-  font-size:12px;
-  font-weight:900;
-}
-
-/* ---------- UPGRADES ---------- */
-
-.upgrade{
-  background:#fffaf6;
-  border:2px solid #eee1da;
-  border-radius:19px;
-  padding:12px;
-  margin-top:9px;
-}
-
-.upgrade-row{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.upgrade-icon{
-  font-size:34px;
-  width:45px;
-  text-align:center;
-}
-
-.upgrade-info{
-  flex:1;
-}
-
-.upgrade-name{
-  font-weight:1000;
-}
-
-.upgrade-desc{
-  font-size:12px;
-  color:#9b8780;
-  margin-top:2px;
-}
-
-.upgrade-btn{
-  background:var(--pink);
-  border-radius:12px;
-  padding:8px 10px;
-  font-size:11px;
-  font-weight:1000;
-}
-
-/* ---------- REVIEWS ---------- */
-
-.rating-big{
-  text-align:center;
-  background:var(--pink2);
-  border-radius:22px;
-  padding:17px;
-  margin-bottom:10px;
-}
-
-.rating-number{
-  font-size:39px;
-  font-weight:1000;
-}
-
-.stars{
-  letter-spacing:2px;
-}
-
-.review{
-  padding:12px 0;
-  border-bottom:1px dashed #e5d8d2;
-}
-
-.review:last-child{
-  border-bottom:0;
-}
-
-.review-name{
-  font-weight:1000;
-}
-
-.review-text{
-  font-size:13px;
-  line-height:1.45;
-  margin-top:4px;
-}
-
-.review-date{
-  font-size:10px;
-  color:#aa9690;
-  margin-top:4px;
-}
-
-/* ---------- BOTTOM NAV ---------- */
-
-.bottom-nav{
-  position:fixed;
-  z-index:500;
-  left:50%;
-  bottom:0;
-  transform:translateX(-50%);
-  width:min(560px,100%);
-  padding:
-    7px
-    8px
-    calc(7px + env(safe-area-inset-bottom));
-  background:rgba(255,253,249,.96);
-  border-top:2px solid #eaded9;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:5px;
-}
-
-.nav-btn{
-  background:transparent;
-  border-radius:15px;
-  padding:8px 3px 7px;
-  font-size:10px;
-  font-weight:900;
-  color:#9c8580;
-}
-
-.nav-btn span{
-  display:block;
-  font-size:21px;
-  margin-bottom:2px;
-}
-
-.nav-btn.active{
-  background:var(--pink);
-  color:#704f57;
-}
-
-/* ---------- SUMMARY ---------- */
-
-.summary-card{
-  width:min(430px,100%);
-  background:#fffdf9;
-  border-radius:28px;
-  padding:20px;
-  box-shadow:0 15px 0 rgba(112,83,77,.1);
-}
-
-.summary-card h2{
-  margin:0 0 14px;
-  text-align:center;
-}
-
-.summary-line{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 0;
-  border-bottom:1px dashed #e2d5cf;
-}
-
-.summary-total{
-  margin-top:12px;
-  background:var(--mint2);
-  border-radius:17px;
-  padding:13px;
-  display:flex;
-  justify-content:space-between;
-  font-weight:1000;
-}
-
-/* ---------- TOAST ---------- */
+/* =========================================================
+   TOAST
+========================================================= */
 
 .toast{
   position:fixed;
-  z-index:1200;
+  z-index:1500;
   left:50%;
   bottom:90px;
-  transform:translate(-50%,20px);
-  background:#70534d;
-  color:white;
-  border-radius:15px;
-  padding:10px 15px;
-  font-size:12px;
-  font-weight:800;
+  max-width:90%;
+  transform:translate(-50%,15px);
   opacity:0;
   pointer-events:none;
-  transition:.25s;
-  max-width:90%;
+  padding:9px 14px;
+  border-radius:14px;
+  background:#684c45;
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
   text-align:center;
+  transition:.25s ease;
 }
 
 .toast.show{
@@ -786,31 +1312,57 @@ button:active{
   transform:translate(-50%,0);
 }
 
-/* ---------- CLOSED ---------- */
+/* =========================================================
+   CLOSED
+========================================================= */
 
 .closed{
-  text-align:center;
+  margin-top:9px;
   background:#fff;
-  border-radius:25px;
-  padding:25px 15px;
+  border-radius:22px;
+  padding:20px;
+  text-align:center;
   box-shadow:var(--shadow);
 }
 
 .closed-icon{
-  font-size:60px;
+  font-size:48px;
 }
 
-/* ---------- DESKTOP ---------- */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:350px){
+
+  .counter-items{
+    gap:3px;
+  }
+
+  .jar{
+    width:35px;
+    height:51px;
+  }
+
+  .sleeping-cat{
+    transform:scale(.9);
+    transform-origin:left bottom;
+  }
+
+  .wood-sign{
+    font-size:17px;
+  }
+
+}
 
 @media(min-width:700px){
-  #game{
-    box-shadow:0 0 0 1px #eadedb,0 15px 50px rgba(80,60,50,.12);
-  }
-}
 
-/* Prevent accidental horizontal overflow */
-img,svg{
-  max-width:100%;
+  #game{
+    box-shadow:
+      0 0 0 1px #eaded7,
+      0 20px 60px rgba(80,60,50,.14);
+  }
+
 }
 </style>
 </head>
@@ -819,412 +1371,603 @@ img,svg{
 
 <div id="game">
 
-  <!-- WELCOME -->
-  <div id="welcomeModal" class="modal">
-    <div class="modal-card">
-      <div class="logo-ice">🍦</div>
-      <h1>TIỆM BÁN KEM<br>NGỌT NGÀO</h1>
-      <p>
-        Mở tiệm, múc những viên kem thật xinh,
-        phục vụ khách hàng và xây dựng tiệm kem
-        đáng yêu nhất của khu phố!
-      </p>
-      <button id="startBtn" class="primary-btn">
-        BẮT ĐẦU KINH DOANH
-      </button>
-    </div>
-  </div>
+<!-- ======================================================
+     WELCOME
+====================================================== -->
 
-  <!-- CURTAIN -->
-  <div id="curtain" class="curtain">
-    <div class="curtain-left"></div>
-    <div class="curtain-right"></div>
-    <div class="curtain-text">NGÀY MỚI BẮT ĐẦU! 🍦</div>
-  </div>
+<div id="welcomeModal" class="modal">
 
-  <!-- SUMMARY -->
-  <div id="summaryModal" class="modal hidden">
-    <div class="summary-card">
-      <h2>🌙 TỔNG KẾT NGÀY</h2>
+  <div class="modal-card">
 
-      <div class="summary-line">
-        <span>🍦 Kem đã bán</span>
-        <strong id="sumSold">0</strong>
-      </div>
+    <div class="logo">🍦</div>
 
-      <div class="summary-line">
-        <span>💰 Doanh thu</span>
-        <strong id="sumRevenue">0đ</strong>
-      </div>
-
-      <div class="summary-line">
-        <span>📦 Chi phí nhập hàng</span>
-        <strong id="sumCost">0đ</strong>
-      </div>
-
-      <div class="summary-line">
-        <span>⭐ Đánh giá mới</span>
-        <strong id="sumReviews">0</strong>
-      </div>
-
-      <div class="summary-total">
-        <span>LỢI NHUẬN</span>
-        <strong id="sumProfit">0đ</strong>
-      </div>
-
-      <button id="newDayBtn"
-              class="primary-btn mint"
-              style="margin-top:15px">
-        BẮT ĐẦU NGÀY MỚI 🌤️
-      </button>
-    </div>
-  </div>
-
-  <!-- MAIN SCREEN -->
-  <main class="screen">
-
-    <div class="topbar">
-      <div class="brand">🍦 Tiệm Ngọt Ngào</div>
-
-      <div class="stats">
-        <div class="stat">💰 <span id="money">50000</span></div>
-        <div class="stat">⭐ <span id="rating">5.0</span></div>
-      </div>
+    <div class="modal-title">
+      TIỆM KEM<br>
+      NGỌT NGÀO
     </div>
 
-    <!-- STORE -->
-    <section class="store-card">
-      <div class="store-head">
-        <div>
-          <div class="store-title">Tiệm Kem</div>
-          <div style="font-size:11px;color:#a18780">
-            Mở cửa 09:00 — 21:00
-          </div>
-        </div>
+    <div class="modal-desc">
+      Một tiệm kem nhỏ xinh đang chờ bạn.
+      Mở cửa, múc những viên kem thật đẹp
+      và phục vụ những vị khách đáng yêu nhé!
+    </div>
 
-        <div id="clock" class="time">09:00</div>
-      </div>
-
-      <button id="openBtn" class="open-btn">
-        🔓 MỞ CỬA TIỆM
-      </button>
-    </section>
-
-    <!-- TAB SHOP -->
-    <section id="shopTab">
-
-      <div id="customerArea"></div>
-
-      <div class="workspace">
-
-        <div class="workspace-head">
-          <div class="workspace-title">🧁 Bàn Làm Kem</div>
-          <div id="stepPill" class="step-pill">BƯỚC 1 / 3</div>
-        </div>
-
-        <div class="ice-board" id="iceBoard">
-          <div id="iceVisual">
-            <div class="placeholder">
-              Chọn vỏ ốc quế hoặc ly kem<br>
-              để bắt đầu nhé!
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 1 -->
-        <div id="step1">
-          <div class="section-label">
-            BƯỚC 1 — CHỌN DỤNG CỤ
-          </div>
-
-          <div class="option-grid">
-
-            <button class="option"
-                    data-container="cone">
-              <div style="font-size:30px">🍦</div>
-              Ốc quế
-            </button>
-
-            <button class="option"
-                    data-container="cup">
-              <div style="font-size:30px">🍨</div>
-              Ly kem
-            </button>
-
-          </div>
-        </div>
-
-        <!-- STEP 2 -->
-        <div id="step2" style="display:none">
-
-          <div class="section-label">
-            BƯỚC 2 — MÚC KEM
-          </div>
-
-          <div class="option-grid">
-
-            <button class="option flavor"
-                    data-flavor="chocolate">
-              <div class="jar">
-                <div class="jar-icon"></div>
-                🍫 Sô-cô-la
-              </div>
-            </button>
-
-            <button class="option flavor"
-                    data-flavor="strawberry">
-              <div class="jar">
-                <div class="jar-icon"></div>
-                🍓 Dâu
-              </div>
-            </button>
-
-            <button class="option flavor"
-                    data-flavor="vanilla">
-              <div class="jar">
-                <div class="jar-icon"></div>
-                🍨 Vani
-              </div>
-            </button>
-
-            <button class="option flavor"
-                    data-flavor="matcha">
-              <div class="jar">
-                <div class="jar-icon"></div>
-                🍵 Matcha
-              </div>
-            </button>
-
-            <button class="option flavor"
-                    data-flavor="durian">
-              <div class="jar">
-                <div class="jar-icon"></div>
-                🥭 Sầu riêng
-              </div>
-            </button>
-
-            <button class="option flavor"
-                    data-flavor="butter">
-              <div class="jar">
-                <div class="jar-icon"></div>
-                🧈 Bơ
-              </div>
-            </button>
-
-          </div>
-        </div>
-
-        <!-- STEP 3 -->
-        <div id="step3" style="display:none">
-
-          <div class="section-label">
-            BƯỚC 3 — TOPPING
-          </div>
-
-          <div class="option-grid">
-
-            <button class="option toppingBtn"
-                    data-topping="🌈">
-              🌈 Cốm màu
-            </button>
-
-            <button class="option toppingBtn"
-                    data-topping="🍫">
-              🍫 Sốt chocolate
-            </button>
-
-            <button class="option toppingBtn"
-                    data-topping="🍓">
-              🍓 Sốt dâu
-            </button>
-
-            <button class="option toppingBtn"
-                    data-topping="🍪">
-              🍪 Bánh vụn
-            </button>
-
-            <button class="option toppingBtn"
-                    data-topping="🍒">
-              🍒 Cherry
-            </button>
-
-            <button class="option toppingBtn"
-                    data-topping="🥥">
-              🥥 Dừa
-            </button>
-
-          </div>
-        </div>
-
-        <div class="action-row">
-          <button id="resetBtn" class="action-btn">
-            ↩️ LÀM LẠI
-          </button>
-
-          <button id="deliverBtn"
-                  class="action-btn deliver"
-                  disabled>
-            🍦 GIAO KEM
-          </button>
-        </div>
-
-      </div>
-
-      <div id="closedBox"
-           class="closed"
-           style="display:none;margin-top:12px">
-        <div class="closed-icon">🌙</div>
-        <h3>Tiệm đã đóng cửa</h3>
-        <p>
-          Hẹn gặp lại vào ngày mai nhé!<br>
-          Cùng nghỉ ngơi thôi 💤
-        </p>
-      </div>
-
-    </section>
-
-    <!-- STOCK TAB -->
-    <section id="stockTab" style="display:none">
-
-      <div class="panel">
-        <h2>📦 Kho Hàng</h2>
-        <div class="panel-desc">
-          Nhập thùng kem về kho rồi châm đầy các hũ inox.
-          Mỗi lần nhập sẽ tốn tiền nhưng giúp bạn phục vụ
-          được nhiều khách hơn.
-        </div>
-
-        <div id="stockGrid" class="stock-grid"></div>
-      </div>
-
-    </section>
-
-    <!-- UPGRADE TAB -->
-    <section id="upgradeTab" style="display:none">
-
-      <div class="panel">
-        <h2>🛠️ Nâng Cấp Tiệm</h2>
-        <div class="panel-desc">
-          Đầu tư dần để tiệm hoạt động hiệu quả hơn.
-        </div>
-
-        <div id="upgradeList"></div>
-      </div>
-
-    </section>
-
-    <!-- REVIEW TAB -->
-    <section id="reviewTab" style="display:none">
-
-      <div class="panel">
-
-        <div class="rating-big">
-          <div style="font-size:13px;font-weight:900">
-            ĐÁNH GIÁ TIỆM
-          </div>
-
-          <div id="bigRating"
-               class="rating-number">
-            5.0
-          </div>
-
-          <div id="bigStars" class="stars">
-            ⭐⭐⭐⭐⭐
-          </div>
-
-          <div style="font-size:11px;color:#9d8881;margin-top:4px">
-            <span id="reviewCount">0</span> lượt đánh giá
-          </div>
-        </div>
-
-        <div id="reviewsList"></div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- NAV -->
-  <nav class="bottom-nav">
-
-    <button class="nav-btn active" data-tab="shop">
-      <span>🍦</span>
-      Tiệm Kem
+    <button id="startBtn" class="primary">
+      BẮT ĐẦU KINH DOANH 🍦
     </button>
 
-    <button class="nav-btn" data-tab="stock">
-      <span>📦</span>
-      Kho Hàng
-    </button>
-
-    <button class="nav-btn" data-tab="upgrade">
-      <span>🛠️</span>
-      Nâng Cấp
-    </button>
-
-    <button class="nav-btn" data-tab="review">
-      <span>📱</span>
-      Đánh Giá
-    </button>
-
-  </nav>
+  </div>
 
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- ======================================================
+     CURTAIN
+====================================================== -->
+
+<div id="curtain" class="curtain">
+
+  <div class="curtain-side curtain-left"></div>
+  <div class="curtain-side curtain-right"></div>
+
+  <div class="curtain-message">
+    NGÀY MỚI BẮT ĐẦU! 🍦
+  </div>
+
+</div>
+
+<!-- ======================================================
+     SUMMARY
+====================================================== -->
+
+<div id="summaryModal" class="modal hidden">
+
+  <div class="summary">
+
+    <h2>🌙 TỔNG KẾT NGÀY</h2>
+
+    <div class="summary-line">
+      <span>🍦 Kem đã bán</span>
+      <strong id="sumSold">0</strong>
+    </div>
+
+    <div class="summary-line">
+      <span>💰 Doanh thu</span>
+      <strong id="sumRevenue">0đ</strong>
+    </div>
+
+    <div class="summary-line">
+      <span>📦 Chi phí</span>
+      <strong id="sumCost">0đ</strong>
+    </div>
+
+    <div class="summary-line">
+      <span>⭐ Review mới</span>
+      <strong id="sumReviews">0</strong>
+    </div>
+
+    <div class="summary-total">
+      <span>LỢI NHUẬN</span>
+      <strong id="sumProfit">0đ</strong>
+    </div>
+
+    <button id="newDayBtn"
+            class="primary"
+            style="margin-top:13px">
+      BẮT ĐẦU NGÀY MỚI 🌤️
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ======================================================
+     MAIN
+====================================================== -->
+
+<main class="screen">
+
+  <div class="topbar">
+
+    <div class="brand">
+      🍦 Tiệm Ngọt Ngào
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        💰 <span id="money">50.000</span>
+      </div>
+
+      <div class="stat">
+        ⭐ <span id="rating">5.0</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SHOP FRONT -->
+
+  <section class="shop-front">
+
+    <div class="awning">
+      <div class="awning-piece"></div>
+      <div class="awning-piece"></div>
+      <div class="awning-piece"></div>
+      <div class="awning-piece"></div>
+      <div class="awning-piece"></div>
+      <div class="awning-piece"></div>
+    </div>
+
+    <div class="shop-wall">
+
+      <div class="wood-sign">
+        Tiệm Kem Ngọt Ngào
+      </div>
+
+      <div class="counter-items">
+
+        <div class="jar"
+             style="--flavor:#704535">
+          <span class="jar-label">🍫</span>
+        </div>
+
+        <div class="jar"
+             style="--flavor:#ef9daf">
+          <span class="jar-label">🍓</span>
+        </div>
+
+        <div class="jar"
+             style="--flavor:#fff0b4">
+          <span class="jar-label">🍨</span>
+        </div>
+
+        <div class="jar"
+             style="--flavor:#a9d48f">
+          <span class="jar-label">🍵</span>
+        </div>
+
+        <div class="jar"
+             style="--flavor:#dadd88">
+          <span class="jar-label">🥭</span>
+        </div>
+
+      </div>
+
+      <div class="plant">
+        🪴
+      </div>
+
+      <div class="sleeping-cat">
+
+        <div class="cat-bed"></div>
+
+        <div class="cat-body"></div>
+
+        <div class="cat-head">
+
+          <div class="cat-ear left"></div>
+          <div class="cat-ear right"></div>
+
+          <div class="cat-eye left"></div>
+          <div class="cat-eye right"></div>
+
+          <div class="cat-nose"></div>
+
+        </div>
+
+        <div class="zzz">Z z z...</div>
+
+      </div>
+
+      <div class="counter"></div>
+
+    </div>
+
+  </section>
+
+  <!-- STORE CONTROL -->
+
+  <section class="store-control">
+
+    <div id="clock" class="time-box">
+      09:00
+    </div>
+
+    <button id="openBtn"
+            class="open-btn">
+      🔓 MỞ CỬA TIỆM
+    </button>
+
+  </section>
+
+  <!-- ====================================================
+       SHOP TAB
+  ==================================================== -->
+
+  <section id="shopTab">
+
+    <div id="customerArea"></div>
+
+    <div class="workspace">
+
+      <div class="workspace-header">
+
+        <div class="workspace-title">
+          🧁 Bàn Làm Kem
+        </div>
+
+        <div id="stepLabel"
+             class="step">
+          BƯỚC 1 / 3
+        </div>
+
+      </div>
+
+      <!-- FIXED PREVIEW -->
+
+      <div id="icePreview"
+           class="ice-preview">
+
+        <div id="previewObject"
+             class="ice-object">
+
+          <div id="previewContainer"></div>
+
+          <div id="previewScoops"
+               class="scoop-stack"></div>
+
+          <div id="previewTopping"
+               class="topping-display"></div>
+
+        </div>
+
+        <div id="previewHint"
+             class="preview-hint">
+
+          Chọn ốc quế hoặc ly kem<br>
+          để bắt đầu nhé 🍦
+
+        </div>
+
+      </div>
+
+      <!-- STEP 1 -->
+
+      <div id="step1">
+
+        <div class="section-title">
+          BƯỚC 1 · CHỌN VỎ
+        </div>
+
+        <div class="options">
+
+          <button class="option containerBtn"
+                  data-container="cone">
+
+            <span class="option-icon">🍦</span>
+            Ốc quế
+
+          </button>
+
+          <button class="option containerBtn"
+                  data-container="cup">
+
+            <span class="option-icon">🍨</span>
+            Ly kem
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- STEP 2 -->
+
+      <div id="step2"
+           style="display:none">
+
+        <div class="section-title">
+          BƯỚC 2 · MÚC KEM
+        </div>
+
+        <div class="options">
+
+          <button class="option flavorBtn"
+                  data-flavor="chocolate">
+            <span class="option-icon">🍫</span>
+            Sô-cô-la
+          </button>
+
+          <button class="option flavorBtn"
+                  data-flavor="strawberry">
+            <span class="option-icon">🍓</span>
+            Dâu
+          </button>
+
+          <button class="option flavorBtn"
+                  data-flavor="vanilla">
+            <span class="option-icon">🍨</span>
+            Vani
+          </button>
+
+          <button class="option flavorBtn"
+                  data-flavor="matcha">
+            <span class="option-icon">🍵</span>
+            Matcha
+          </button>
+
+          <button class="option flavorBtn"
+                  data-flavor="durian">
+            <span class="option-icon">🥭</span>
+            Sầu riêng
+          </button>
+
+          <button class="option flavorBtn"
+                  data-flavor="butter">
+            <span class="option-icon">🧈</span>
+            Bơ
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- STEP 3 -->
+
+      <div id="step3"
+           style="display:none">
+
+        <div class="section-title">
+          BƯỚC 3 · TOPPING
+        </div>
+
+        <div class="options">
+
+          <button class="option toppingBtn"
+                  data-topping="🌈">
+            <span class="option-icon">🌈</span>
+            Cốm màu
+          </button>
+
+          <button class="option toppingBtn"
+                  data-topping="🍫">
+            <span class="option-icon">🍫</span>
+            Sốt chocolate
+          </button>
+
+          <button class="option toppingBtn"
+                  data-topping="🍓">
+            <span class="option-icon">🍓</span>
+            Sốt dâu
+          </button>
+
+          <button class="option toppingBtn"
+                  data-topping="🍪">
+            <span class="option-icon">🍪</span>
+            Bánh vụn
+          </button>
+
+          <button class="option toppingBtn"
+                  data-topping="🍒">
+            <span class="option-icon">🍒</span>
+            Cherry
+          </button>
+
+          <button class="option toppingBtn"
+                  data-topping="🥥">
+            <span class="option-icon">🥥</span>
+            Dừa
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="action-row">
+
+        <button id="resetBtn"
+                class="action">
+          ↩️ LÀM LẠI
+        </button>
+
+        <button id="deliverBtn"
+                class="action deliver"
+                disabled>
+          🍦 GIAO KEM
+        </button>
+
+      </div>
+
+    </div>
+
+    <div id="closedBox"
+         class="closed"
+         style="display:none">
+
+      <div class="closed-icon">
+        🌙
+      </div>
+
+      <strong>
+        Tiệm đã đóng cửa
+      </strong>
+
+      <div style="
+        margin-top:5px;
+        font-size:11px;
+        color:#9c8780;
+      ">
+        Hẹn gặp lại vào ngày mai nhé 💤
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ====================================================
+       STOCK
+  ==================================================== -->
+
+  <section id="stockTab"
+           style="display:none">
+
+    <div class="panel">
+
+      <h2>📦 Kho Hàng</h2>
+
+      <div class="desc">
+        Nhập thêm các thùng kem để luôn có đủ nguyên liệu
+        phục vụ khách.
+      </div>
+
+      <div id="stockGrid"
+           class="stock-grid"></div>
+
+    </div>
+
+  </section>
+
+  <!-- ====================================================
+       UPGRADES
+  ==================================================== -->
+
+  <section id="upgradeTab"
+           style="display:none">
+
+    <div class="panel">
+
+      <h2>🛠️ Nâng Cấp</h2>
+
+      <div class="desc">
+        Đầu tư vào tiệm để tăng tốc độ và khả năng phục vụ.
+      </div>
+
+      <div id="upgradeList"></div>
+
+    </div>
+
+  </section>
+
+  <!-- ====================================================
+       REVIEWS
+  ==================================================== -->
+
+  <section id="reviewTab"
+           style="display:none">
+
+    <div class="panel">
+
+      <div class="rating-box">
+
+        <div class="rating-label">
+          ĐIỂM ĐÁNH GIÁ TRUNG BÌNH
+        </div>
+
+        <div id="bigRating"
+             class="rating-number">
+          5.0
+        </div>
+
+        <div id="bigStars"
+             class="rating-stars">
+          ⭐⭐⭐⭐⭐
+        </div>
+
+        <div class="rating-count">
+          <span id="reviewCount">0</span>
+          lượt đánh giá
+        </div>
+
+      </div>
+
+      <div id="reviewsList"></div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<!-- ======================================================
+     NAV
+====================================================== -->
+
+<nav class="bottom-nav">
+
+  <button class="nav-btn active"
+          data-tab="shop">
+    <span>🍦</span>
+    Tiệm Kem
+  </button>
+
+  <button class="nav-btn"
+          data-tab="stock">
+    <span>📦</span>
+    Kho Hàng
+  </button>
+
+  <button class="nav-btn"
+          data-tab="upgrade">
+    <span>🛠️</span>
+    Nâng Cấp
+  </button>
+
+  <button class="nav-btn"
+          data-tab="review">
+    <span>📱</span>
+    Đánh Giá
+  </button>
+
+</nav>
+
+<div id="toast"
+     class="toast"></div>
 
 <script>
 "use strict";
 
 /* =========================================================
-   TIỆM BÁN KEM NGỌT NGÀO
-   Toàn bộ game nằm trong file index.html
+   GAME DATA
 ========================================================= */
 
-const $ = id => document.getElementById(id);
-
-/* ---------- DATA ---------- */
-
-const flavors = {
+const FLAVORS = {
   chocolate:{
     name:"Sô-cô-la",
-    css:"chocolate",
+    color:"#704535",
     price:18000
   },
+
   strawberry:{
     name:"Dâu",
-    css:"strawberry",
+    color:"#ef9daf",
     price:17000
   },
+
   vanilla:{
     name:"Vani",
-    css:"vanilla",
+    color:"#fff0b4",
     price:16000
   },
+
   matcha:{
     name:"Matcha",
-    css:"matcha",
+    color:"#a9d48f",
     price:19000
   },
+
   durian:{
     name:"Sầu riêng",
-    css:"durian",
+    color:"#dadd88",
     price:22000
   },
+
   butter:{
     name:"Bơ",
-    css:"butter",
+    color:"#ffd66f",
     price:18000
   }
 };
 
-const containers = {
-  cone:"Ốc quế",
-  cup:"Ly kem"
-};
-
-const toppings = {
+const TOPPINGS = {
   "🌈":"Cốm màu",
   "🍫":"Sốt chocolate",
   "🍓":"Sốt dâu",
@@ -1233,19 +1976,19 @@ const toppings = {
   "🥥":"Dừa"
 };
 
-const customers = [
-  "Bé Mây","Nấm Nhỏ","Bông Bông","Miu Miu",
-  "Kem Dâu","Cún Con","Mochi","Bé Na",
-  "Mây Hồng","Thỏ Trắng","Mèo Mun","Bắp",
-  "Sữa","Cherry","Sunny","Mít",
-  "Bé Gấu","Pudding","Đậu Đậu","Cà Rốt",
-  "Tí Hon","Mầm Non","Luna","Mimi",
-  "Bé Bơ","Kẹo","Dâu Tây","Bánh Bao",
-  "Cốm","Mật Ong","Mochi Nhỏ","Bông Tuyết",
-  "Bé Xíu","Panda","Miu Kem","Susu"
+const CUSTOMER_NAMES = [
+  "Luna","Mochi","Miu Miu","Bông Bông",
+  "Bé Mây","Nấm Nhỏ","Sunny","Pudding",
+  "Cherry","Mít","Bé Gấu","Susu",
+  "Mimi","Panda","Bánh Bao","Cốm",
+  "Mật Ong","Bông Tuyết","Tí Hon","Mầm Non",
+  "Bé Bơ","Kẹo","Dâu Tây","Bắp",
+  "Sữa","Thỏ Trắng","Mèo Mun","Đậu Đậu",
+  "Cà Rốt","Mochi Nhỏ","Kem Dâu","Bé Na",
+  "Mây Hồng","Cún Con","Luna Nhỏ","Bé Xíu"
 ];
 
-const happyReviews = [
+const HAPPY_REVIEWS = [
   "Kem ngon quá trời, chắc chắn sẽ quay lại!",
   "Quầy kem xinh xắn, phục vụ rất dễ thương.",
   "Sô-cô-la thơm và vừa miệng.",
@@ -1278,35 +2021,33 @@ const happyReviews = [
   "Kem ngon, phục vụ dễ thương."
 ];
 
-const angryReviews = [
+const ANGRY_REVIEWS = [
   "Chờ héo cả người, chán quá!",
   "Đợi lâu quá nên mình bỏ về.",
   "Mình đứng chờ mãi không được phục vụ.",
   "Hôm nay đông mà không thấy ai làm kem.",
-  "Chờ lâu quá, lần sau chắc mình ghé lúc khác.",
+  "Chờ lâu quá, lần sau mình ghé lúc khác.",
   "Mình hết kiên nhẫn mất rồi.",
   "Đợi hơi lâu nên trải nghiệm chưa vui."
 ];
 
-const customerColors = [
-  "#ffd2dc","#cceee2","#ffe5a8",
-  "#e5d6f4","#d7e9ff","#ffd9bd"
-];
-
-/* ---------- STATE ---------- */
+/* =========================================================
+   STATE
+========================================================= */
 
 const DEFAULT_STATE = {
   money:50000,
+
   hour:9,
   minute:0,
-  open:false,
+
   day:1,
+  open:false,
+  started:false,
 
   sold:0,
   revenue:0,
   cost:0,
-
-  reviews:[],
 
   stock:{
     chocolate:5,
@@ -1323,11 +2064,55 @@ const DEFAULT_STATE = {
     worker:0
   },
 
-  customer:null,
-  gameStarted:false
+  reviews:[],
+  customer:null
 };
 
-let state = loadState();
+function cloneDefault(){
+  return JSON.parse(
+    JSON.stringify(DEFAULT_STATE)
+  );
+}
+
+function load(){
+
+  try{
+
+    const raw =
+      localStorage.getItem(
+        "tiemKemNgotNgao_v3"
+      );
+
+    if(!raw){
+      return cloneDefault();
+    }
+
+    const data = JSON.parse(raw);
+
+    return {
+      ...cloneDefault(),
+      ...data,
+
+      stock:{
+        ...DEFAULT_STATE.stock,
+        ...(data.stock || {})
+      },
+
+      upgrades:{
+        ...DEFAULT_STATE.upgrades,
+        ...(data.upgrades || {})
+      }
+    };
+
+  }catch(e){
+
+    return cloneDefault();
+
+  }
+
+}
+
+let state = load();
 
 let order = {
   container:null,
@@ -1335,336 +2120,285 @@ let order = {
   topping:null
 };
 
-let timer = null;
+let clockTimer = null;
 let customerTimer = null;
-let currentCustomerToken = 0;
+let workerTimer = null;
 
-/* ---------- SAVE ---------- */
+/* =========================================================
+   HELPERS
+========================================================= */
 
-function loadState(){
-  try{
-    const saved = localStorage.getItem("iceCreamGameState");
+const $ = id =>
+  document.getElementById(id);
 
-    if(!saved){
-      return structuredClone(DEFAULT_STATE);
-    }
-
-    const parsed = JSON.parse(saved);
-
-    return {
-      ...structuredClone(DEFAULT_STATE),
-      ...parsed,
-      stock:{
-        ...DEFAULT_STATE.stock,
-        ...(parsed.stock || {})
-      },
-      upgrades:{
-        ...DEFAULT_STATE.upgrades,
-        ...(parsed.upgrades || {})
-      }
-    };
-
-  }catch(e){
-    return structuredClone(DEFAULT_STATE);
-  }
+function money(n){
+  return Math.round(n)
+    .toLocaleString("vi-VN") + "đ";
 }
 
-function saveState(){
+function random(arr){
+  return arr[
+    Math.floor(Math.random()*arr.length)
+  ];
+}
+
+function clamp(n,a,b){
+  return Math.max(a,Math.min(b,n));
+}
+
+function save(){
   localStorage.setItem(
-    "iceCreamGameState",
+    "tiemKemNgotNgao_v3",
     JSON.stringify(state)
   );
 }
 
-/* ---------- HELPERS ---------- */
+function toast(text){
 
-function money(n){
-  return Math.round(n).toLocaleString("vi-VN") + "đ";
-}
-
-function random(arr){
-  return arr[Math.floor(Math.random()*arr.length)];
-}
-
-function clamp(n,min,max){
-  return Math.max(min,Math.min(max,n));
-}
-
-function toast(message){
   const el = $("toast");
 
-  el.textContent = message;
+  el.textContent = text;
+
   el.classList.add("show");
 
-  clearTimeout(toast.timer);
+  clearTimeout(el._timer);
 
-  toast.timer = setTimeout(()=>{
-    el.classList.remove("show");
-  },2200);
+  el._timer =
+    setTimeout(()=>{
+      el.classList.remove("show");
+    },2200);
 }
 
-function stars(n){
-  return "⭐".repeat(n) + "☆".repeat(5-n);
+function safe(text){
+
+  return String(text)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-/* ---------- UI ---------- */
+/* =========================================================
+   WELCOME
+========================================================= */
 
-function updateStats(){
-  $("money").textContent = state.money.toLocaleString("vi-VN");
+$("startBtn").onclick = ()=>{
 
-  const rating =
-    state.reviews.length
-      ? state.reviews.reduce((a,b)=>a+b.rating,0) /
-        state.reviews.length
-      : 5;
+  state.started = true;
 
-  $("rating").textContent = rating.toFixed(1);
-  $("bigRating").textContent = rating.toFixed(1);
+  save();
 
-  $("reviewCount").textContent =
-    state.reviews.length;
-}
+  $("welcomeModal")
+    .classList.add("hidden");
 
-function updateClock(){
-  $("clock").textContent =
-    String(state.hour).padStart(2,"0") +
-    ":" +
-    String(state.minute).padStart(2,"0");
-}
+  toast(
+    "Chào mừng chủ tiệm! Hãy mở cửa nhé 🍦"
+  );
 
-function updateStep(){
-  let step = 1;
+};
 
-  if(order.container){
-    step = 2;
-  }
+/* =========================================================
+   STORE OPEN
+========================================================= */
 
-  if(order.flavor){
-    step = 3;
-  }
-
-  if(order.topping){
-    step = 3;
-  }
-
-  $("stepPill").textContent =
-    "BƯỚC " + step + " / 3";
-}
-
-function renderIce(){
-  const visual = $("iceVisual");
-
-  if(!order.container){
-    visual.innerHTML = `
-      <div class="placeholder">
-        Chọn vỏ ốc quế hoặc ly kem<br>
-        để bắt đầu nhé!
-      </div>
-    `;
-    return;
-  }
-
-  const base =
-    order.container === "cone"
-      ? `<div class="cone">🍦</div>`
-      : `<div class="cup">🍨</div>`;
-
-  let scoops = "";
-
-  if(order.flavor){
-    const f = flavors[order.flavor];
-
-    scoops = `
-      <div class="scoops">
-        <div class="scoop ${f.css}"></div>
-      </div>
-    `;
-  }
-
-  let topping =
-    order.topping
-      ? `<div class="topping">${order.topping}</div>`
-      : "";
-
-  visual.innerHTML =
-    base +
-    scoops +
-    topping;
-}
-
-function renderSteps(){
-  $("step1").style.display =
-    order.container ? "none" : "block";
-
-  $("step2").style.display =
-    order.container && !order.flavor
-      ? "block"
-      : "none";
-
-  $("step3").style.display =
-    order.container && order.flavor
-      ? "block"
-      : "none";
-
-  $("deliverBtn").disabled =
-    !(order.container &&
-      order.flavor &&
-      order.topping);
-
-  updateStep();
-  renderIce();
-}
-
-/* ---------- WELCOME ---------- */
-
-$("startBtn").addEventListener("click",()=>{
-  state.gameStarted = true;
-  saveState();
-
-  $("welcomeModal").classList.add("hidden");
-
-  if(!state.open){
-    toast("Hãy mở cửa tiệm để đón khách nhé! 🍦");
-  }
-
-  updateStats();
-});
-
-/* ---------- OPEN STORE ---------- */
-
-$("openBtn").addEventListener("click",openStore);
+$("openBtn").onclick = openStore;
 
 function openStore(){
 
   if(state.open){
+
     toast("Tiệm đang mở rồi! 🍦");
+
     return;
   }
 
   if(state.hour >= 21){
-    toast("Đã đến giờ đóng cửa. Hãy bắt đầu ngày mới!");
+
+    toast(
+      "Hôm nay đã hết giờ. Hãy bắt đầu ngày mới!"
+    );
+
     return;
   }
 
   state.open = true;
 
+  $("openBtn").classList.add("opened");
+
   $("openBtn").textContent =
-    "🔒 TIỆM ĐANG MỞ CỬA";
+    "🔒 TIỆM ĐANG MỞ";
 
-  $("openBtn").disabled = true;
-
-  const curtain = $("curtain");
+  const curtain =
+    $("curtain");
 
   curtain.classList.add("active");
 
-  setTimeout(()=>{
+  requestAnimationFrame(()=>{
     curtain.classList.add("open");
-  },80);
+  });
 
   setTimeout(()=>{
-    curtain.classList.remove("active","open");
-  },1700);
+    curtain.classList.remove(
+      "active",
+      "open"
+    );
+  },1650);
 
   startClock();
 
   spawnCustomer();
 
-  saveState();
+  save();
 
-  toast("NGÀY MỚI BẮT ĐẦU! 🍦");
+  toast(
+    "NGÀY MỚI BẮT ĐẦU! 🍦"
+  );
+
 }
 
-/* ---------- CLOCK ---------- */
+/* =========================================================
+   GAME CLOCK
+========================================================= */
 
 function startClock(){
 
-  clearInterval(timer);
+  clearInterval(clockTimer);
 
-  timer = setInterval(()=>{
-    if(!state.open) return;
+  clockTimer =
+    setInterval(()=>{
 
-    /*
-      1 phút trong game = 1 giây thực tế.
-      09:00 -> 21:00 = 12 phút chơi.
-    */
+      if(!state.open){
+        return;
+      }
 
-    state.minute++;
+      /*
+        1 giây thực tế = 1 phút trong game.
+        09:00 -> 21:00 = 12 phút.
+      */
 
-    if(state.minute >= 60){
-      state.minute = 0;
-      state.hour++;
-    }
+      state.minute++;
 
-    updateClock();
+      if(state.minute >= 60){
 
-    if(state.hour >= 21){
-      state.hour = 21;
-      state.minute = 0;
+        state.minute = 0;
+        state.hour++;
+
+      }
+
       updateClock();
-      closeStore();
-    }
 
-    saveState();
+      if(state.hour >= 21){
 
-  },1000);
+        state.hour = 21;
+        state.minute = 0;
+
+        closeStore();
+
+      }
+
+      save();
+
+    },1000);
+
 }
 
-/* ---------- CLOSE STORE ---------- */
+function updateClock(){
+
+  $("clock").textContent =
+    String(state.hour)
+      .padStart(2,"0") +
+    ":" +
+    String(state.minute)
+      .padStart(2,"0");
+
+}
+
+/* =========================================================
+   CLOSE STORE
+========================================================= */
 
 function closeStore(){
 
-  if(!state.open) return;
+  if(!state.open){
+    return;
+  }
 
   state.open = false;
 
-  clearInterval(timer);
+  clearInterval(clockTimer);
   clearInterval(customerTimer);
 
   state.customer = null;
-  currentCustomerToken++;
+
+  $("openBtn").classList.remove(
+    "opened"
+  );
+
+  $("openBtn").textContent =
+    "🌙 ĐÃ ĐÓNG CỬA";
 
   $("openBtn").disabled = false;
-  $("openBtn").textContent =
-    "🌙 TIỆM ĐÃ ĐÓNG";
 
-  $("closedBox").style.display = "block";
+  $("closedBox").style.display =
+    "block";
 
   renderCustomer();
 
   showSummary();
 
-  saveState();
+  save();
+
 }
 
 function showSummary(){
 
-  $("sumSold").textContent = state.sold;
-  $("sumRevenue").textContent = money(state.revenue);
-  $("sumCost").textContent = money(state.cost);
+  $("sumSold").textContent =
+    state.sold;
 
-  const todayReviews =
-    state.reviews.filter(r=>r.day === state.day).length;
+  $("sumRevenue").textContent =
+    money(state.revenue);
 
-  $("sumReviews").textContent = todayReviews;
+  $("sumCost").textContent =
+    money(state.cost);
+
+  const reviews =
+    state.reviews.filter(
+      x=>x.day===state.day
+    ).length;
+
+  $("sumReviews").textContent =
+    reviews;
 
   $("sumProfit").textContent =
-    money(state.revenue - state.cost);
+    money(
+      state.revenue -
+      state.cost
+    );
 
-  $("summaryModal").classList.remove("hidden");
+  $("summaryModal")
+    .classList.remove("hidden");
+
 }
 
-/* ---------- NEW DAY ---------- */
+/* =========================================================
+   NEW DAY
+========================================================= */
 
-$("newDayBtn").addEventListener("click",()=>{
+$("newDayBtn").onclick = ()=>{
 
   state.day++;
+
   state.hour = 9;
   state.minute = 0;
+
   state.open = false;
 
   state.sold = 0;
   state.revenue = 0;
   state.cost = 0;
+
+  state.customer = null;
 
   order = {
     container:null,
@@ -1672,69 +2406,111 @@ $("newDayBtn").addEventListener("click",()=>{
     topping:null
   };
 
-  $("summaryModal").classList.add("hidden");
+  $("summaryModal")
+    .classList.add("hidden");
 
-  $("closedBox").style.display = "none";
+  $("closedBox").style.display =
+    "none";
 
   $("openBtn").disabled = false;
+
+  $("openBtn").classList.remove(
+    "opened"
+  );
+
   $("openBtn").textContent =
     "🔓 MỞ CỬA TIỆM";
 
   updateClock();
-  renderSteps();
+
+  renderOrder();
+
   renderCustomer();
 
-  saveState();
+  save();
 
-  toast("Một ngày mới bắt đầu! 🌤️");
-});
+  toast(
+    "Ngày mới bắt đầu! 🌤️"
+  );
 
-/* ---------- CUSTOMER ---------- */
+};
 
-function makeCustomer(){
+/* =========================================================
+   CUSTOMER
+========================================================= */
 
-  const name = random(customers);
+function createCustomer(){
 
   const available =
-    Object.keys(flavors)
-      .filter(key => state.stock[key] > 0);
+    Object.keys(FLAVORS)
+      .filter(
+        key=>state.stock[key] > 0
+      );
 
   if(!available.length){
+
+    toast(
+      "Kho hết kem rồi! Hãy sang Kho Hàng 📦"
+    );
+
     return null;
   }
 
-  const flavor = random(available);
-
-  const toppingKeys = Object.keys(toppings);
-  const topping = random(toppingKeys);
-
-  const container =
-    Math.random() > .45 ? "cone" : "cup";
+  const flavor =
+    random(available);
 
   return {
-    token:++currentCustomerToken,
-    name,
+
+    name:random(CUSTOMER_NAMES),
+
+    container:
+      Math.random() > .45
+        ? "cone"
+        : "cup",
+
     flavor,
-    topping,
-    container,
-    maxWait:35 - state.upgrades.speed * 3,
-    wait:35 - state.upgrades.speed * 3,
-    color:random(customerColors)
+
+    topping:
+      random(
+        Object.keys(TOPPINGS)
+      ),
+
+    maxWait:
+      Math.max(
+        22,
+        35 -
+        state.upgrades.speed * 4
+      ),
+
+    wait:
+      Math.max(
+        22,
+        35 -
+        state.upgrades.speed * 4
+      )
+
   };
+
 }
 
 function spawnCustomer(){
 
-  if(!state.open || state.hour >= 21) return;
+  if(!state.open){
+    return;
+  }
+
+  if(state.hour >= 21){
+    return;
+  }
 
   if(state.customer){
     return;
   }
 
-  const customer = makeCustomer();
+  const customer =
+    createCustomer();
 
   if(!customer){
-    toast("Kho hết kem rồi! Hãy nhập hàng 📦");
     return;
   }
 
@@ -1744,224 +2520,434 @@ function spawnCustomer(){
 
   startCustomerTimer();
 
-  saveState();
+  save();
+
 }
 
 function startCustomerTimer(){
 
   clearInterval(customerTimer);
 
-  const token = state.customer.token;
+  customerTimer =
+    setInterval(()=>{
 
-  customerTimer = setInterval(()=>{
+      if(
+        !state.open ||
+        !state.customer
+      ){
 
-    if(
-      !state.customer ||
-      state.customer.token !== token ||
-      !state.open
-    ){
-      clearInterval(customerTimer);
-      return;
-    }
+        clearInterval(
+          customerTimer
+        );
 
-    state.customer.wait--;
+        return;
+      }
 
-    renderCustomer();
+      state.customer.wait--;
 
-    if(state.customer.wait <= 0){
-      customerLeaves();
-    }
+      renderCustomer();
 
-  },1000);
+      if(
+        state.customer.wait <= 0
+      ){
+
+        customerLeaves();
+
+      }
+
+    },1000);
+
 }
 
-/* ---------- CUSTOMER SVG ---------- */
+/* =========================================================
+   CUSTOMER SVG
+========================================================= */
 
-function customerSVG(c,angry=false){
+function customerAvatar(angry=false){
+
+  const colors = [
+    "#e7ad88",
+    "#f0c19d",
+    "#d99b77"
+  ];
+
+  const skin =
+    random(colors);
 
   const hair =
-    c.name.length % 2
-      ? "#754d55"
-      : "#4e4a55";
-
-  const shirt = c.color;
-
-  const eyes = angry
-    ? `
-      <path d="M28 39l7 4M35 39l-7 4
-               M48 43l7-4M55 43l-7-4"
-            stroke="#513f40"
-            stroke-width="2.5"
-            fill="none"
-            stroke-linecap="round"/>
-    `
-    : `
-      <circle cx="33" cy="42" r="2.2" fill="#513f40"/>
-      <circle cx="50" cy="42" r="2.2" fill="#513f40"/>
-    `;
-
-  const mouth = angry
-    ? `<path d="M35 55q7-8 14 0"
-              fill="none"
-              stroke="#513f40"
-              stroke-width="2.5"
-              stroke-linecap="round"/>`
-    : `<path d="M39 52q4 4 8 0"
-              fill="none"
-              stroke="#513f40"
-              stroke-width="2"
-              stroke-linecap="round"/>`;
+    Math.random()>.5
+      ? "#60474d"
+      : "#3f3b45";
 
   return `
-    <svg viewBox="0 0 82 82" width="82" height="82">
-      <circle cx="41" cy="41" r="40" fill="#f9eee9"/>
+    <svg viewBox="0 0 82 82"
+         width="73"
+         height="73">
 
-      <path d="M16 37
-               Q12 13 41 10
-               Q70 13 66 37
-               L61 26
-               Q51 18 41 23
-               Q30 18 20 27Z"
-            fill="${hair}"/>
+      <circle cx="41"
+              cy="41"
+              r="40"
+              fill="#f7ebe4"/>
 
-      <path d="M20 35
-               Q19 22 41 22
-               Q63 22 62 35
-               L58 57
-               Q52 67 41 67
-               Q30 67 24 57Z"
-            fill="#f8d5b9"/>
+      <path
+        d="M15 37
+           Q12 12 41 10
+           Q70 12 67 38
+           L60 25
+           Q50 18 41 23
+           Q30 18 21 27Z"
+        fill="${hair}"/>
 
-      ${eyes}
-      ${mouth}
+      <path
+        d="M20 35
+           Q19 22 41 22
+           Q63 22 62 35
+           L58 57
+           Q52 67 41 67
+           Q30 67 24 57Z"
+        fill="${skin}"/>
 
-      <path d="M18 82
-               Q19 61 41 60
-               Q63 61 64 82Z"
-            fill="${shirt}"/>
+      ${
+        angry
+        ?
+        `
+        <path
+          d="M27 39l8 5
+             M35 39l-8 5
+             M47 44l8-5
+             M55 44l-8-5"
+          stroke="#59413f"
+          stroke-width="2.5"
+          stroke-linecap="round"/>
 
-      <circle cx="21" cy="48" r="4"
-              fill="#f3b4b4" opacity=".7"/>
-      <circle cx="61" cy="48" r="4"
-              fill="#f3b4b4" opacity=".7"/>
+        <path
+          d="M34 55
+             Q41 48 48 55"
+          fill="none"
+          stroke="#59413f"
+          stroke-width="2.5"/>
+        `
+        :
+        `
+        <circle cx="33"
+                cy="42"
+                r="2.2"
+                fill="#59413f"/>
+
+        <circle cx="50"
+                cy="42"
+                r="2.2"
+                fill="#59413f"/>
+
+        <path
+          d="M38 52
+             Q41 55 44 52"
+          fill="none"
+          stroke="#59413f"
+          stroke-width="2"/>
+        `
+      }
+
+      <circle cx="21"
+              cy="49"
+              r="4"
+              fill="#f0a8a8"
+              opacity=".65"/>
+
+      <circle cx="61"
+              cy="49"
+              r="4"
+              fill="#f0a8a8"
+              opacity=".65"/>
+
+      <path
+        d="M18 82
+           Q20 61 41 60
+           Q62 61 64 82Z"
+        fill="#cce9df"/>
+
     </svg>
   `;
+
 }
 
 function renderCustomer(){
 
-  const area = $("customerArea");
+  const area =
+    $("customerArea");
 
   if(!state.customer){
+
     area.innerHTML = "";
+
     return;
   }
 
-  const c = state.customer;
+  const c =
+    state.customer;
 
   const percent =
-    clamp(c.wait / c.maxWait * 100,0,100);
+    clamp(
+      c.wait /
+      c.maxWait *
+      100,
+      0,
+      100
+    );
 
-  const angry = c.wait <= 0;
+  const angry =
+    c.wait <= 0;
 
-  const phrase = angry
-    ? "Chờ héo cả người, chán quá!"
-    : `
-      Dạ shop múc cho em 1
-      ${flavors[c.flavor].name.toLowerCase()}
+  const phrase =
+    angry
+      ? "Chờ héo cả người, chán quá! 😤"
+      :
+      `
+      Dạ shop múc cho em
+      1 ${FLAVORS[c.flavor].name.toLowerCase()}
       nhé! 🍦
-    `;
+      `;
 
   area.innerHTML = `
+
     <div class="customer-card">
 
-      <div class="customer-top">
+      <div class="customer-row">
 
-        <div class="customer-svg">
-          ${customerSVG(c,angry)}
+        <div class="avatar">
+          ${customerAvatar(angry)}
         </div>
 
         <div class="customer-info">
 
           <div class="customer-name">
-            ${c.name}
+            ${safe(c.name)}
           </div>
 
           <div class="order-bubble">
+
             ${phrase}
+
             <br>
-            <small>
-              ${containers[c.container]}
-              · ${flavors[c.flavor].name}
-              · ${toppings[c.topping]}
-            </small>
+
+            <span style="
+              font-size:9px;
+              color:#967c72;
+            ">
+              ${
+                c.container==="cone"
+                  ? "🍦 Ốc quế"
+                  : "🍨 Ly kem"
+              }
+              ·
+              ${FLAVORS[c.flavor].name}
+              ·
+              ${TOPPINGS[c.topping]}
+            </span>
+
           </div>
 
         </div>
 
       </div>
 
-      <div class="wait-wrap">
+      <div class="customer-bottom">
 
         <div class="ring"
-             style="--progress:${percent}">
-          <span>${Math.ceil(c.wait)}s</span>
+             style="--p:${percent}">
+
+          <span>
+            ${Math.ceil(c.wait)}s
+          </span>
+
         </div>
 
-        <div class="wait-bar">
-          <div class="wait-fill"
-               style="width:${percent}%"></div>
+        <div class="wait-line">
+
+          <div class="wait-line-fill"
+               style="width:${percent}%">
+          </div>
+
         </div>
 
       </div>
 
     </div>
+
   `;
+
 }
 
-/* ---------- CUSTOMER LEAVES ---------- */
+/* =========================================================
+   CUSTOMER LEAVES
+========================================================= */
 
 function customerLeaves(){
 
-  if(!state.customer) return;
+  if(!state.customer){
+    return;
+  }
 
   clearInterval(customerTimer);
 
-  const c = state.customer;
+  const c =
+    state.customer;
 
   addReview(
     1,
-    random(angryReviews),
+    random(ANGRY_REVIEWS),
     c.name
   );
 
   toast(
     c.name +
-    ": " +
-    random(angryReviews)
+    ": Chờ héo cả người, chán quá! 😤"
   );
 
   state.customer = null;
 
   renderCustomer();
-  updateStats();
   renderReviews();
+  updateStats();
 
-  saveState();
+  save();
 
   setTimeout(()=>{
-    if(state.open){
+
+    if(
+      state.open &&
+      state.hour < 21
+    ){
       spawnCustomer();
     }
-  },1500);
+
+  },1400);
+
 }
 
-/* ---------- CONTAINER ---------- */
+/* =========================================================
+   ORDER / FIXED PREVIEW
+========================================================= */
 
-document.querySelectorAll("[data-container]")
+function renderOrder(){
+
+  const container =
+    $("previewContainer");
+
+  const scoops =
+    $("previewScoops");
+
+  const topping =
+    $("previewTopping");
+
+  const hint =
+    $("previewHint");
+
+  container.innerHTML = "";
+  scoops.innerHTML = "";
+  topping.textContent = "";
+
+  /*
+    Container luôn được render vào
+    cùng một vùng absolute.
+  */
+
+  if(order.container){
+
+    hint.style.display =
+      "none";
+
+    if(order.container === "cone"){
+
+      container.innerHTML =
+        `<div class="ice-cone"></div>`;
+
+    }else{
+
+      container.innerHTML =
+        `<div class="ice-cup"></div>`;
+
+    }
+
+  }else{
+
+    hint.style.display =
+      "block";
+
+  }
+
+  /*
+    Kem luôn nằm trong scoop-stack
+    có tọa độ cố định.
+  */
+
+  if(order.flavor){
+
+    const color =
+      order.flavor;
+
+    scoops.innerHTML = `
+      <div class="scoop one ${color}"></div>
+    `;
+
+  }
+
+  /*
+    Topping có tọa độ riêng,
+    không tác động layout.
+  */
+
+  if(order.topping){
+
+    topping.textContent =
+      order.topping;
+
+  }
+
+  $("step1").style.display =
+    order.container
+      ? "none"
+      : "block";
+
+  $("step2").style.display =
+    order.container &&
+    !order.flavor
+      ? "block"
+      : "none";
+
+  $("step3").style.display =
+    order.container &&
+    order.flavor
+      ? "block"
+      : "none";
+
+  $("stepLabel").textContent =
+    order.container
+      ? (
+          order.flavor
+            ? "BƯỚC 3 / 3"
+            : "BƯỚC 2 / 3"
+        )
+      : "BƯỚC 1 / 3";
+
+  $("deliverBtn").disabled =
+    !(
+      order.container &&
+      order.flavor &&
+      order.topping
+    );
+
+}
+
+/* =========================================================
+   CONTAINER BUTTONS
+========================================================= */
+
+document
+.querySelectorAll(".containerBtn")
 .forEach(btn=>{
 
-  btn.addEventListener("click",()=>{
+  btn.onclick = ()=>{
 
     order.container =
       btn.dataset.container;
@@ -1969,76 +2955,128 @@ document.querySelectorAll("[data-container]")
     order.flavor = null;
     order.topping = null;
 
-    document.querySelectorAll("[data-container]")
-      .forEach(x=>x.classList.remove("selected"));
+    document
+      .querySelectorAll(".containerBtn")
+      .forEach(x =>
+        x.classList.remove("selected")
+      );
 
     btn.classList.add("selected");
 
-    renderSteps();
-  });
+    document
+      .querySelectorAll(
+        ".flavorBtn,.toppingBtn"
+      )
+      .forEach(x =>
+        x.classList.remove("selected")
+      );
+
+    renderOrder();
+
+  };
 
 });
 
-/* ---------- FLAVOR ---------- */
+/* =========================================================
+   FLAVOR BUTTONS
+========================================================= */
 
-document.querySelectorAll(".flavor")
+document
+.querySelectorAll(".flavorBtn")
 .forEach(btn=>{
 
-  btn.addEventListener("click",()=>{
+  btn.onclick = ()=>{
 
     if(!order.container){
-      toast("Hãy chọn ốc quế hoặc ly trước nhé!");
+
+      toast(
+        "Hãy chọn ốc quế hoặc ly trước nhé!"
+      );
+
       return;
     }
 
-    const flavor = btn.dataset.flavor;
+    const flavor =
+      btn.dataset.flavor;
 
     if(state.stock[flavor] <= 0){
-      toast("Hũ kem này đã hết! Nhập thêm hàng nhé.");
+
+      toast(
+        "Hũ " +
+        FLAVORS[flavor].name +
+        " đã hết!"
+      );
+
       return;
     }
 
-    order.flavor = flavor;
-    order.topping = null;
+    order.flavor =
+      flavor;
 
-    document.querySelectorAll(".flavor")
-      .forEach(x=>x.classList.remove("selected"));
+    order.topping =
+      null;
+
+    document
+      .querySelectorAll(".flavorBtn")
+      .forEach(x =>
+        x.classList.remove("selected")
+      );
 
     btn.classList.add("selected");
 
-    renderSteps();
-  });
+    document
+      .querySelectorAll(".toppingBtn")
+      .forEach(x =>
+        x.classList.remove("selected")
+      );
+
+    renderOrder();
+
+  };
 
 });
 
-/* ---------- TOPPING ---------- */
+/* =========================================================
+   TOPPING
+========================================================= */
 
-document.querySelectorAll(".toppingBtn")
+document
+.querySelectorAll(".toppingBtn")
 .forEach(btn=>{
 
-  btn.addEventListener("click",()=>{
+  btn.onclick = ()=>{
 
     if(!order.flavor){
-      toast("Hãy múc ít nhất một viên kem trước!");
+
+      toast(
+        "Hãy múc kem trước nhé!"
+      );
+
       return;
     }
 
     order.topping =
       btn.dataset.topping;
 
-    document.querySelectorAll(".toppingBtn")
-      .forEach(x=>x.classList.remove("selected"));
+    document
+      .querySelectorAll(".toppingBtn")
+      .forEach(x =>
+        x.classList.remove("selected")
+      );
 
     btn.classList.add("selected");
 
-    renderSteps();
-  });
+    renderOrder();
+
+  };
 
 });
 
-/* ---------- RESET ---------- */
+/* =========================================================
+   RESET
+========================================================= */
 
-$("resetBtn").addEventListener("click",()=>{
+$("resetBtn").onclick = ()=>{
 
   order = {
     container:null,
@@ -2046,22 +3084,35 @@ $("resetBtn").addEventListener("click",()=>{
     topping:null
   };
 
-  document.querySelectorAll(".option")
-    .forEach(x=>x.classList.remove("selected"));
+  document
+    .querySelectorAll(".option")
+    .forEach(x =>
+      x.classList.remove("selected")
+    );
 
-  renderSteps();
+  renderOrder();
 
-  toast("Đã làm lại chiếc kem 🍦");
-});
+  toast(
+    "Đã làm lại chiếc kem 🍦"
+  );
 
-/* ---------- DELIVER ---------- */
+};
 
-$("deliverBtn").addEventListener("click",deliverIceCream);
+/* =========================================================
+   DELIVER
+========================================================= */
 
-function deliverIceCream(){
+$("deliverBtn").onclick =
+  deliver;
+
+function deliver(){
 
   if(!state.customer){
-    toast("Hiện không có khách đang chờ.");
+
+    toast(
+      "Không có khách đang chờ."
+    );
+
     return;
   }
 
@@ -2070,54 +3121,69 @@ function deliverIceCream(){
     !order.flavor ||
     !order.topping
   ){
-    toast("Hãy hoàn thành đủ 3 bước!");
+
+    toast(
+      "Hãy hoàn thành đủ 3 bước!"
+    );
+
     return;
   }
 
-  const c = state.customer;
+  const c =
+    state.customer;
 
   const correct =
-    order.container === c.container &&
-    order.flavor === c.flavor &&
-    order.topping === c.topping;
+    order.container ===
+      c.container &&
+    order.flavor ===
+      c.flavor &&
+    order.topping ===
+      c.topping;
 
   if(!correct){
 
     toast(
-      "Ơ... khách gọi " +
-      flavors[c.flavor].name +
-      " và " +
-      toppings[c.topping] +
-      " cơ! 😅"
+      "Ơ... hình như chưa đúng món khách gọi! 😅"
     );
 
     return;
   }
 
-  const basePrice =
-    flavors[order.flavor].price;
+  const price =
+    FLAVORS[
+      order.flavor
+    ].price;
 
   const speedBonus =
     Math.round(
-      c.wait / c.maxWait * 5000
+      c.wait /
+      c.maxWait *
+      5000
     );
 
   const total =
-    basePrice + speedBonus;
+    price +
+    speedBonus;
 
-  state.stock[order.flavor]--;
+  state.stock[
+    order.flavor
+  ]--;
 
   state.money += total;
+
   state.revenue += total;
+
   state.sold++;
 
   addReview(
     5,
-    random(happyReviews),
+    random(HAPPY_REVIEWS),
     c.name
   );
 
-  clearInterval(customerTimer);
+  clearInterval(
+    customerTimer
+  );
 
   toast(
     "Giao thành công! +" +
@@ -2133,289 +3199,389 @@ function deliverIceCream(){
     topping:null
   };
 
-  document.querySelectorAll(".option")
-    .forEach(x=>x.classList.remove("selected"));
+  document
+    .querySelectorAll(".option")
+    .forEach(x =>
+      x.classList.remove("selected")
+    );
 
-  renderSteps();
+  renderOrder();
   renderCustomer();
   renderStock();
   renderReviews();
   updateStats();
 
-  saveState();
+  save();
 
   setTimeout(()=>{
-    if(state.open && state.hour < 21){
+
+    if(
+      state.open &&
+      state.hour < 21
+    ){
       spawnCustomer();
     }
-  },1200);
+
+  },1100);
+
 }
 
-/* ---------- REVIEWS ---------- */
+/* =========================================================
+   REVIEWS
+========================================================= */
 
-function addReview(rating,text,name){
+function addReview(
+  rating,
+  text,
+  name
+){
 
   state.reviews.unshift({
-    id:Date.now()+Math.random(),
+
     rating,
     text,
     name,
+
     day:state.day,
+
     time:
-      String(state.hour).padStart(2,"0")+
-      ":"+
-      String(state.minute).padStart(2,"0")
+      String(state.hour)
+        .padStart(2,"0") +
+      ":" +
+      String(state.minute)
+        .padStart(2,"0")
+
   });
 
-  /* Giữ lịch sử gọn nhẹ */
   if(state.reviews.length > 100){
-    state.reviews.length = 100;
+
+    state.reviews =
+      state.reviews.slice(0,100);
+
   }
+
+}
+
+function avatarForReview(name){
+
+  const emoji =
+    [
+      "🐰","🐱","🐻",
+      "🐼","🐹","🐨",
+      "🦊","🐥","🐶"
+    ][
+      name.length %
+      9
+    ];
+
+  return `
+    <div style="
+      width:100%;
+      height:100%;
+      display:grid;
+      place-items:center;
+      font-size:25px;
+      background:#fff0e7;
+    ">
+      ${emoji}
+    </div>
+  `;
+
 }
 
 function renderReviews(){
 
-  const list = $("reviewsList");
+  const list =
+    $("reviewsList");
 
   if(!state.reviews.length){
 
     list.innerHTML = `
       <div style="
         text-align:center;
-        padding:25px;
-        color:#a28e88;
-        font-size:13px;
+        padding:25px 5px;
+        color:#a08b84;
+        font-size:11px;
       ">
         Chưa có đánh giá nào.<br>
-        Hãy phục vụ khách đầu tiên nhé! 🍦
+        Hãy phục vụ vị khách đầu tiên nhé! 🍦
       </div>
     `;
 
     updateStats();
+
     return;
   }
 
   list.innerHTML =
-    state.reviews.map(r=>`
-      <div class="review">
+    state.reviews
+      .map(r=>`
 
-        <div style="
-          display:flex;
-          justify-content:space-between;
-          gap:5px;
-        ">
-          <div class="review-name">
-            ${escapeHTML(r.name)}
+        <div class="review">
+
+          <div class="review-avatar">
+            ${avatarForReview(r.name)}
           </div>
 
-          <div>
-            ${stars(r.rating)}
+          <div class="review-content">
+
+            <div class="review-head">
+
+              <div class="review-name">
+                ${safe(r.name)}
+              </div>
+
+              <div class="review-stars">
+                ${"⭐".repeat(r.rating)}
+              </div>
+
+            </div>
+
+            <div class="review-text">
+              ${safe(r.text)}
+            </div>
+
+            <div class="review-time">
+              📅 Ngày ${r.day}
+              · ${r.time}
+            </div>
+
           </div>
+
         </div>
 
-        <div class="review-text">
-          ${escapeHTML(r.text)}
-        </div>
-
-        <div class="review-date">
-          Ngày ${r.day} · ${r.time}
-        </div>
-
-      </div>
-    `).join("");
+      `)
+      .join("");
 
   updateStats();
+
 }
 
-function escapeHTML(value){
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/* ---------- STOCK ---------- */
+/* =========================================================
+   STOCK
+========================================================= */
 
 function renderStock(){
 
-  const grid = $("stockGrid");
+  const grid =
+    $("stockGrid");
 
   grid.innerHTML =
-    Object.entries(flavors).map(([key,f])=>{
+    Object.entries(FLAVORS)
+      .map(([key,f])=>`
 
-      const amount = state.stock[key];
-
-      const cost = 30000;
-
-      return `
         <div class="stock-card">
 
-          <div class="stock-card-head">
-            <strong>${f.name}</strong>
-            <span class="stock-count">
-              ${amount} viên
-            </span>
+          <span class="stock-count">
+            ${state.stock[key]} viên
+          </span>
+
+          <div class="stock-name">
+            ${f.name}
           </div>
 
           <div style="
             margin-top:8px;
-            height:8px;
-            background:#eaded8;
+            height:7px;
             border-radius:20px;
+            background:#eadfd9;
             overflow:hidden;
           ">
             <div style="
-              width:${Math.min(amount,10)*10}%;
+              width:${Math.min(
+                state.stock[key],
+                20
+              )/20*100}%;
               height:100%;
-              background:#b9dfd0;
+              background:${f.color};
             "></div>
           </div>
 
-          <button class="buy-btn"
-                  data-buy="${key}">
-            📦 Nhập thùng · ${money(cost)}
+          <button
+            class="buy"
+            data-buy="${key}">
+
+            📦 Nhập 10 viên
+            · 30.000đ
+
           </button>
 
         </div>
-      `;
 
-    }).join("");
+      `)
+      .join("");
 
-  grid.querySelectorAll("[data-buy]")
+  grid
+    .querySelectorAll("[data-buy]")
     .forEach(btn=>{
 
-      btn.addEventListener("click",()=>{
+      btn.onclick = ()=>{
 
-        const key = btn.dataset.buy;
+        const key =
+          btn.dataset.buy;
 
-        const cost = 30000;
+        const cost =
+          30000;
 
         if(state.money < cost){
-          toast("Không đủ tiền để nhập hàng.");
+
+          toast(
+            "Chưa đủ tiền nhập hàng."
+          );
+
           return;
         }
 
         state.money -= cost;
         state.cost += cost;
 
-        /*
-          Mỗi thùng bổ sung 10 viên.
-        */
         state.stock[key] += 10;
 
         toast(
           "Đã nhập thêm 10 viên " +
-          flavors[key].name + " 📦"
+          FLAVORS[key].name +
+          " 📦"
         );
 
         renderStock();
         updateStats();
-        saveState();
 
-      });
+        save();
+
+      };
 
     });
+
 }
 
-/* ---------- UPGRADES ---------- */
+/* =========================================================
+   UPGRADES
+========================================================= */
 
-const upgradeData = [
+const UPGRADES = [
+
   {
     key:"freezer",
     icon:"🧊",
     name:"Tủ đông lớn",
-    desc:"Tăng sức chứa mỗi hũ.",
-    costs:[80000,130000,200000]
+    desc:"Tăng sức chứa kho.",
+    costs:[
+      80000,
+      130000,
+      200000
+    ]
   },
+
   {
     key:"speed",
     icon:"🥄",
     name:"Múc kem nhanh",
     desc:"Khách kiên nhẫn lâu hơn.",
-    costs:[60000,100000,160000]
+    costs:[
+      60000,
+      100000,
+      160000
+    ]
   },
+
   {
     key:"worker",
     icon:"👩‍🍳",
     name:"Thuê nhân viên",
     desc:"Có cơ hội tự phục vụ khách.",
-    costs:[120000,200000,300000]
+    costs:[
+      120000,
+      200000,
+      300000
+    ]
   }
+
 ];
 
 function renderUpgrades(){
 
-  const list = $("upgradeList");
+  const list =
+    $("upgradeList");
 
   list.innerHTML =
-    upgradeData.map(u=>{
+    UPGRADES
+      .map(u=>{
 
-      const level =
-        state.upgrades[u.key];
+        const level =
+          state.upgrades[u.key];
 
-      const max = u.costs.length;
+        const max =
+          level >= u.costs.length;
 
-      const cost =
-        u.costs[level];
+        const cost =
+          max
+            ? 0
+            : u.costs[level];
 
-      const maxed =
-        level >= max;
+        return `
 
-      return `
-        <div class="upgrade">
+          <div class="upgrade">
 
-          <div class="upgrade-row">
+            <div class="upgrade-row">
 
-            <div class="upgrade-icon">
-              ${u.icon}
-            </div>
-
-            <div class="upgrade-info">
-
-              <div class="upgrade-name">
-                ${u.name}
-                · Lv.${level}
+              <div class="upgrade-icon">
+                ${u.icon}
               </div>
 
-              <div class="upgrade-desc">
-                ${u.desc}
+              <div class="upgrade-info">
+
+                <div class="upgrade-name">
+                  ${u.name}
+                  · Lv.${level}
+                </div>
+
+                <div class="upgrade-desc">
+                  ${u.desc}
+                </div>
+
               </div>
 
+              <button
+                class="upgrade-btn"
+                data-upgrade="${u.key}"
+                ${max ? "disabled" : ""}>
+
+                ${max
+                  ? "MAX"
+                  : money(cost)}
+
+              </button>
+
             </div>
-
-            <button
-              class="upgrade-btn"
-              data-upgrade="${u.key}"
-              ${maxed ? "disabled" : ""}>
-
-              ${maxed
-                ? "MAX"
-                : money(cost)}
-
-            </button>
 
           </div>
 
-        </div>
-      `;
+        `;
 
-    }).join("");
+      })
+      .join("");
 
-  list.querySelectorAll("[data-upgrade]")
+  list
+    .querySelectorAll("[data-upgrade]")
     .forEach(btn=>{
 
-      btn.addEventListener("click",()=>{
+      btn.onclick = ()=>{
 
-        const key = btn.dataset.upgrade;
+        const key =
+          btn.dataset.upgrade;
+
         const data =
-          upgradeData.find(x=>x.key===key);
+          UPGRADES.find(
+            x=>x.key===key
+          );
 
         const level =
           state.upgrades[key];
 
-        if(level >= data.costs.length){
+        if(
+          level >=
+          data.costs.length
+        ){
           return;
         }
 
@@ -2423,50 +3589,61 @@ function renderUpgrades(){
           data.costs[level];
 
         if(state.money < cost){
-          toast("Chưa đủ tiền nâng cấp.");
+
+          toast(
+            "Chưa đủ tiền nâng cấp."
+          );
+
           return;
         }
 
         state.money -= cost;
+
         state.upgrades[key]++;
 
         toast(
-          "Đã nâng cấp " +
+          "Đã nâng " +
           data.name +
           " lên Lv." +
           state.upgrades[key]
         );
 
         renderUpgrades();
-        updateStats();
-        saveState();
 
-      });
+        updateStats();
+
+        save();
+
+      };
 
     });
+
 }
 
-/* ---------- WORKER ---------- */
+/* =========================================================
+   WORKER
+========================================================= */
 
 function workerTick(){
 
-  if(!state.open) return;
-
-  if(state.upgrades.worker <= 0) return;
-
-  if(!state.customer) return;
-
-  /*
-    Nhân viên không trực tiếp bỏ qua đơn.
-    Mỗi level có xác suất hỗ trợ giao đúng đơn.
-  */
+  if(
+    !state.open ||
+    !state.customer ||
+    state.upgrades.worker <= 0
+  ){
+    return;
+  }
 
   const chance =
-    .08 * state.upgrades.worker;
+    .08 *
+    state.upgrades.worker;
 
-  if(Math.random() > chance) return;
+  if(Math.random() > chance){
+    return;
+  }
 
-  const c = state.customer;
+  const c =
+    state.customer;
 
   if(
     state.stock[c.flavor] <= 0
@@ -2475,47 +3652,100 @@ function workerTick(){
   }
 
   const value =
-    flavors[c.flavor].price;
+    FLAVORS[c.flavor].price;
 
   state.stock[c.flavor]--;
 
   state.money += value;
+
   state.revenue += value;
+
   state.sold++;
 
   addReview(
     5,
-    random(happyReviews),
+    random(HAPPY_REVIEWS),
     c.name
   );
 
-  clearInterval(customerTimer);
-
-  toast(
-    "Nhân viên đã phục vụ " +
-    c.name +
-    " 👩‍🍳"
+  clearInterval(
+    customerTimer
   );
 
   state.customer = null;
+
+  toast(
+    "Nhân viên đã phục vụ khách 👩‍🍳"
+  );
 
   renderCustomer();
   renderReviews();
   renderStock();
   updateStats();
 
-  saveState();
+  save();
 
   setTimeout(()=>{
+
     if(state.open){
       spawnCustomer();
     }
+
   },1000);
+
 }
 
-setInterval(workerTick,5000);
+workerTimer =
+  setInterval(
+    workerTick,
+    5000
+  );
 
-/* ---------- NAV ---------- */
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats(){
+
+  $("money").textContent =
+    state.money.toLocaleString(
+      "vi-VN"
+    );
+
+  const average =
+    state.reviews.length
+      ?
+      state.reviews.reduce(
+        (sum,r)=>
+          sum+r.rating,
+        0
+      ) /
+      state.reviews.length
+      :
+      5;
+
+  $("rating").textContent =
+    average.toFixed(1);
+
+  $("bigRating").textContent =
+    average.toFixed(1);
+
+  $("bigStars").textContent =
+    "⭐".repeat(
+      Math.round(average)
+    ) +
+    "☆".repeat(
+      5-Math.round(average)
+    );
+
+  $("reviewCount").textContent =
+    state.reviews.length;
+
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 const tabs = {
   shop:$("shopTab"),
@@ -2524,85 +3754,120 @@ const tabs = {
   review:$("reviewTab")
 };
 
-document.querySelectorAll(".nav-btn")
+document
+.querySelectorAll(".nav-btn")
 .forEach(btn=>{
 
-  btn.addEventListener("click",()=>{
+  btn.onclick = ()=>{
 
-    const tab = btn.dataset.tab;
+    const target =
+      btn.dataset.tab;
 
-    Object.entries(tabs).forEach(([key,el])=>{
-      el.style.display =
-        key === tab ? "block" : "none";
-    });
+    Object.entries(tabs)
+      .forEach(([name,el])=>{
 
-    document.querySelectorAll(".nav-btn")
-      .forEach(x=>x.classList.remove("active"));
+        el.style.display =
+          name === target
+            ? "block"
+            : "none";
+
+      });
+
+    document
+      .querySelectorAll(".nav-btn")
+      .forEach(x =>
+        x.classList.remove("active")
+      );
 
     btn.classList.add("active");
 
-    if(tab === "stock"){
+    if(target === "stock"){
       renderStock();
     }
 
-    if(tab === "upgrade"){
+    if(target === "upgrade"){
       renderUpgrades();
     }
 
-    if(tab === "review"){
+    if(target === "review"){
       renderReviews();
     }
 
-  });
+  };
 
 });
 
-/* ---------- INITIAL ---------- */
+/* =========================================================
+   INITIALIZE
+========================================================= */
 
-function initialize(){
+function init(){
 
   updateClock();
+
   updateStats();
 
-  renderSteps();
+  renderOrder();
+
   renderCustomer();
+
   renderStock();
+
   renderUpgrades();
+
   renderReviews();
 
-  $("closedBox").style.display =
-    state.open || state.hour < 21
-      ? "none"
-      : "block";
+  if(
+    state.started
+  ){
 
-  if(state.gameStarted){
-    $("welcomeModal").classList.add("hidden");
+    $("welcomeModal")
+      .classList.add("hidden");
+
   }
 
   if(state.open){
-    $("openBtn").disabled = true;
+
+    $("openBtn").disabled =
+      true;
+
+    $("openBtn").classList.add(
+      "opened"
+    );
+
     $("openBtn").textContent =
-      "🔒 TIỆM ĐANG MỞ CỬA";
+      "🔒 TIỆM ĐANG MỞ";
 
     startClock();
 
     if(!state.customer){
       spawnCustomer();
     }
+
+  }
+
+  if(
+    !state.open &&
+    state.hour >= 21
+  ){
+
+    $("closedBox").style.display =
+      "block";
+
   }
 
 }
 
-initialize();
+init();
 
-/*
-  Nếu người chơi đóng trình duyệt,
-  tiến trình vẫn được lưu bằng localStorage.
-*/
-
-window.addEventListener("beforeunload",saveState);
+window.addEventListener(
+  "beforeunload",
+  save
+);
 
 </script>
+
+</div>
 
 </body>
 </html>
