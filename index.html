@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tiệm Bán Kem Ngọt Ngào</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7e8de;--card:#fff8f2;--br:#7b5546;--br2:#a8806f;--pk:#f2b3bf;--pk2:#e48a9e;--mint:#86cdb8;--line:#ecd3c6}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#e6cbbd;font-family:'Nunito','Segoe UI',system-ui,sans-serif;color:var(--br)}
+button{font-family:inherit;cursor:pointer;border:0;color:inherit}
+#app{max-width:480px;height:100dvh;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden;padding-top:env(safe-area-inset-top,0)}
+#head{padding:8px 12px 6px;display:flex;flex-direction:column;gap:6px}
+.r1,.r2{display:flex;align-items:center;gap:6px}
+.pill{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:4px 11px;font-weight:900;font-size:13px;white-space:nowrap}
+.pill.m{margin-left:auto}
+.r2{justify-content:space-between}
+#nm{font-weight:900;font-size:17px;display:flex;align-items:center;gap:6px;min-width:0}
+#nm input{font:900 16px inherit;color:var(--br);border:2px solid var(--pk);border-radius:10px;padding:2px 8px;width:190px;background:#fff}
+.ib{background:var(--card);border:1.5px solid var(--line);border-radius:12px;width:34px;height:34px;font-size:16px}
+#stage{position:relative;flex:0 0 36%;min-height:190px;margin:0 10px;border-radius:22px;overflow:hidden;background:linear-gradient(#fbe3e6 0,#f9d5d6 55%,#f3c6c3 100%);border:2px solid #efc9c4}
+#shelf{position:absolute;top:8px;left:10px;right:10px;display:flex;gap:6px;justify-content:center;padding:6px 8px 4px;border-bottom:5px solid #c89a86;border-radius:10px 10px 0 0;background:rgba(255,255,255,.35)}
+.jar{width:15%;text-align:center;font-size:10px;font-weight:800}
+.jb{height:38px;border:2px solid #fff;border-radius:9px 9px 13px 13px;background:rgba(255,255,255,.55);position:relative;overflow:hidden;box-shadow:0 2px 0 #d9aa9a}
+.jb b{position:absolute;left:0;right:0;bottom:0;transition:height .4s}
+.jar span{display:block;margin-top:2px}
+#cust{position:absolute;left:8px;bottom:40px;display:flex;align-items:flex-end;gap:6px;width:58%}
+.cu{position:relative;width:62px;flex:0 0 62px;text-align:center}
+.cu .avw{position:relative;width:62px;height:62px}
+.cu .ring{position:absolute;inset:-3px;width:68px;height:68px}
+.cu .av{position:absolute;inset:4px;border-radius:50%;background:#fff;overflow:hidden}
+.av svg{width:100%;height:100%;display:block}
+.bub{position:absolute;bottom:72px;left:0;background:#fff;border:2px solid var(--pk);border-radius:14px;padding:5px 8px;font-size:12px;font-weight:800;width:max-content;max-width:190px;text-align:left;line-height:1.25;box-shadow:0 3px 0 #efc9c4}
+.bub:after{content:"";position:absolute;left:22px;bottom:-8px;width:12px;height:12px;background:#fff;border-right:2px solid var(--pk);border-bottom:2px solid var(--pk);transform:rotate(45deg)}
+.cu.wait{opacity:.85;transform:scale(.86);transform-origin:bottom}
+#counter{position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(#d9a58f,#c68b76);border-top:4px solid #e8bba8;border-radius:14px 14px 0 0}
+#cat{position:absolute;right:6px;bottom:22px;width:42%}
+#cat svg{width:100%;display:block}
+.z{position:absolute;font-weight:900;color:#b58bd6;opacity:0;animation:z 3s infinite;left:30%;top:18%}
+.z:nth-child(3){animation-delay:1s;font-size:15px}.z:nth-child(4){animation-delay:2s;font-size:19px}
+@keyframes z{0%{opacity:0;transform:translate(0,0) scale(.6)}30%{opacity:1}100%{opacity:0;transform:translate(16px,-40px) scale(1.2)}}
+#strip{display:flex;align-items:center;gap:8px;margin:8px 12px 4px}
+#clock{font-weight:900;font-size:14px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:5px 11px}
+#prog{flex:1;height:9px;background:#ecd3c6;border-radius:9px;overflow:hidden}
+#prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pk),var(--pk2));border-radius:9px}
+.btn{background:var(--pk2);color:#fff;font-weight:900;font-size:14px;padding:9px 15px;border-radius:14px;box-shadow:0 3px 0 #c76d83}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #c76d83}
+.btn:disabled{background:#d9c4ba;box-shadow:0 3px 0 #bfa89c;color:#fff}
+.btn.g{background:#7fc4ae;box-shadow:0 3px 0 #5ea38d}
+.btn.s{background:#fff;color:var(--br);border:1.5px solid var(--line);box-shadow:none}
+#work{position:relative;flex:1;min-height:0;margin:0 10px}
+#serve,#sheet{position:absolute;inset:0;overflow-y:auto;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px}
+#sheet{display:none;z-index:3}
+.hint{text-align:center;font-weight:800;color:var(--br2);padding:26px 10px;line-height:1.5}
+.want{font-size:14px;margin-bottom:6px}.want b{color:var(--pk2)}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px}
+.chip{background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 9px;font-weight:800;font-size:12.5px;display:flex;align-items:center;gap:5px}
+.chip.on{border-color:var(--pk2);background:#ffe9ee}
+.chip i{width:13px;height:13px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px #d9b8ab}
+.chip small{opacity:.6;font-weight:800}
+.build{background:#fff;border:2px dashed var(--pk);border-radius:12px;padding:7px 9px;font-weight:800;font-size:13px;margin-bottom:8px;min-height:34px}
+.acts{display:flex;gap:8px}.acts .btn{flex:1}
+h3{font-size:15px;margin:2px 0 8px}
+.li{display:flex;align-items:center;gap:8px;padding:8px 2px;border-bottom:1px solid var(--line);font-weight:800;font-size:13px}
+.li .t{flex:1;min-width:0}.li small{display:block;font-weight:600;color:var(--br2)}
+.li .btn{padding:6px 10px;font-size:12px}
+.dot{width:16px;height:16px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #d9b8ab}
+.pr{display:flex;align-items:center;gap:6px}.pr b{min-width:44px;text-align:center}
+.pr button{width:28px;height:28px;border-radius:9px;background:#ffe3e9;font-weight:900;font-size:16px;color:var(--pk2)}
+.rv{padding:9px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.rh{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+.avs{width:34px;height:34px;border-radius:50%;overflow:hidden;background:#fff;flex:0 0 34px;border:1.5px solid var(--line)}
+.st{color:#f2a73b;font-size:13px;letter-spacing:1px}.st span{color:#e5d3c8}.st small{color:var(--br2);letter-spacing:0;margin-left:4px;font-weight:700}
+.rv p{line-height:1.45;font-weight:600}
+.rpl{margin-top:6px;background:#ffeef1;border-radius:10px;padding:6px 9px;font-weight:700}
+.lnk{background:none;color:var(--pk2);font-weight:900;font-size:12.5px;padding:4px 0}
+.rin{display:flex;gap:6px;margin-top:6px}.rin input{flex:1;min-width:0;border:2px solid var(--pk);border-radius:10px;padding:6px 9px;font:700 13px inherit;color:var(--br)}
+.gr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.sc{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:9px;text-align:center}.sc b{display:block;font-size:19px}.sc span{font-size:11.5px;color:var(--br2);font-weight:800}
+#nav{display:flex;gap:4px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0));background:var(--card);border-top:2px solid var(--line);margin-top:8px}
+#nav button{flex:1;background:none;border-radius:14px;padding:6px 0 5px;font-weight:800;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--br2)}
+#nav button span{font-size:19px}
+#nav button.on{background:var(--pk);color:#fff;box-shadow:0 3px 0 #d98598}
+#toast{position:absolute;top:70px;left:50%;transform:translateX(-50%);background:var(--br);color:#fff;padding:7px 14px;border-radius:999px;font-weight:800;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:9;white-space:nowrap}
+#toast.on{opacity:1}
+@media(prefers-reduced-motion:reduce){.z{animation:none;opacity:.7}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="head">
+    <div class="r1"><div class="pill" id="pDay"></div><div class="pill m" id="pMoney"></div><div class="pill" id="pStar"></div></div>
+    <div class="r2"><div id="nm"></div><button class="ib" id="mus" onclick="toggleMusic()" title="Nhạc nền">🎵</button></div>
+  </div>
+  <div id="stage">
+    <div id="shelf"></div>
+    <div id="cust"></div>
+    <div id="counter"></div>
+    <div id="cat">
+      <span class="z">Z</span><span class="z">z</span><span class="z">Z</span>
+      <svg viewBox="0 0 200 120" aria-label="Chú mèo béo đang ngủ">
+        <ellipse cx="100" cy="104" rx="94" ry="15" fill="#ee9fb1"/>
+        <ellipse cx="100" cy="97" rx="90" ry="14" fill="#f8bccb"/>
+        <path d="M14 96q40 8 86 6t86-6" stroke="#fde0e8" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M152 88c34-2 42-40 12-54" stroke="#e8ad66" stroke-width="15" fill="none" stroke-linecap="round"/>
+        <ellipse cx="102" cy="74" rx="70" ry="33" fill="#f6c98d"/>
+        <path d="M112 46q5 9 0 18M128 48q5 9 0 18M144 54q4 8 -1 16" stroke="#e0a465" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="96" cy="92" rx="42" ry="13" fill="#fff0dc"/>
+        <path d="M38 56L40 27L64 43Z M68 43L92 27L94 56Z" fill="#f8d29b"/>
+        <path d="M44 50L45 35L57 44Z M75 44L87 35L88 50Z" fill="#f4a1b0"/>
+        <circle cx="66" cy="70" r="31" fill="#f9d6a2"/>
+        <path d="M50 70q6 6 12 0M72 70q6 6 12 0" stroke="#6b4535" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M63 77h6l-3 4z" fill="#e98aa0"/>
+        <path d="M60 83q6 5 12 0" stroke="#6b4535" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="46" cy="79" rx="8" ry="5.5" fill="#f6a1ae" opacity=".85"/>
+        <ellipse cx="86" cy="79" rx="8" ry="5.5" fill="#f6a1ae" opacity=".85"/>
+        <path d="M38 76l-16-3M38 82l-16 3M94 76l16-3M94 82l16 3" stroke="#b98d78" stroke-width="1.6" stroke-linecap="round"/>
+        <ellipse cx="56" cy="99" rx="14" ry="8" fill="#f9d6a2"/><ellipse cx="82" cy="100" rx="13" ry="7.5" fill="#f9d6a2"/>
+      </svg>
+    </div>
+  </div>
+  <div id="strip"><div id="clock">🕘 09:00</div><div id="prog"><i id="pg"></i></div><button class="btn" id="openBtn" onclick="openShop()">Mở cửa</button></div>
+  <div id="work"><div id="serve"></div><div id="sheet"></div></div>
+  <div id="nav"></div>
+  <div id="toast"></div>
+</div>
+<script>
+/* ===== DỮ LIỆU CƠ BẢN ===== */
+const FL=[{id:'van',n:'Vani',c:'#fff0c9',u:500,p:2000},{id:'dau',n:'Dâu',c:'#ff9db4',u:500,p:2000},{id:'cho',n:'Socola',c:'#8a5a44',u:500,p:2200},{id:'mat',n:'Matcha',c:'#a8d08d',u:600,p:2400},{id:'xoa',n:'Xoài',c:'#ffc24d',u:500,p:2200},{id:'vq',n:'Việt quất',c:'#8b8fe0',u:600,p:2400}];
+const BA=[{id:'cone',n:'Ốc quế',e:'🍦',u:300,p:1000},{id:'cup',n:'Cốc',e:'🥣',u:200,p:800}];
+const TP=[{id:'spr',n:'Cốm',e:'🌈',u:200,p:1000},{id:'nut',n:'Hạt',e:'🥜',u:250,p:1200},{id:'che',n:'Cherry',e:'🍒',u:300,p:1200}];
+const ALL=[...FL,...BA,...TP],KEY='tiem-kem-ngot-ngao-v1';
+const NF=['Mai','Lan','Thu','Bống','Hà','Chi','Ngọc','Vy'],NM=['Nam','Khoa','Bảo','Long','Minh','Tú','Huy','Đạt'];
+const SK=['#ffdcc2','#f5c6a5','#e8b48f'],HC=['#4a3228','#2f2a2a','#7a4a2c','#a0623a','#3b3350'];
+const R={
+5:["Kem {f} béo mịn, ngọt thanh, ăn xong thấy cả ngày vui hẳn. Bạn phục vụ nhanh và nhẹ nhàng, chắc chắn mình sẽ quay lại!","Tiệm nhỏ xinh mà kem ngon quá trời, vị {f} thơm nức. Còn có bé mèo ngủ ngoan trên đệm hồng nữa, đáng yêu xỉu!","Order ra đúng ý từng chi tiết, kem múc tròn đẹp, topping rắc đều tay. Điểm 10 cho tiệm nè!","Chưa đầy một phút mà ly kem đã tới tay, vị {f} ngon hơn mong đợi. Cho trọn 5 sao luôn!"],
+4:["Kem {f} ngon, đúng vị mình thích. Chỉ tiếc phải chờ hơi lâu một chút, nhưng vẫn rất ổn!","Ly kem đẹp mắt, vị thanh mát dễ ăn. Nếu nhanh tay hơn xíu nữa là mình cho 5 sao rồi.","Phục vụ dễ thương, không gian ấm áp. Đợi hơi lâu nhưng kem {f} xứng đáng, sẽ ghé lại."],
+3:["Kem tạm ổn, nhưng mình phải đứng chờ khá lâu nên hơi mất hứng. Hy vọng lần sau tiệm nhanh hơn.","Vị {f} bình thường, không có gì đặc biệt. Chờ lâu quá nên kem cũng bớt ngon.","Phục vụ chậm, mình đứng chờ mỏi cả chân. Kem thì được, chỉ ở mức trung bình thôi."],
+2:["Mình gọi một đằng mà nhận về một nẻo! Ly kem này đâu phải món mình order, buồn ghê.","Sai cả vị lẫn topping, mình đâu có gọi thế này. Lần sau nhớ kiểm tra kỹ bong bóng order nhé.","Nhận nhầm ly kem rồi bạn ơi. Đã chờ lâu mà còn sai món, hơi thất vọng."],
+1:["Đứng chờ mãi không ai ra phục vụ, mình bỏ về luôn. Thất vọng thật sự!","Chờ hoài chưa thấy kem đâu, kem chưa tan mà kiên nhẫn của mình tan trước rồi. Không quay lại nữa.","Tiệm đông mà phục vụ chậm quá, mình có việc gấp nên phải rời đi tay không. 1 sao."],
+0:["Tới tiệm kem mà hết sạch nguyên liệu, đi một chuyến công cốc. Tiệm nhớ nhập hàng đầy đủ nhé!"]
+};
+const $=id=>document.getElementById(id),rnd=n=>Math.floor(Math.random()*n),pick=a=>a[rnd(a.length)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>n>=1000?(Math.round(n/100)/10).toString().replace('.',',')+'k':String(Math.round(n));
+const item=id=>ALL.find(x=>x.id===id);
+const emptyD=()=>({cu:0,rev:0,exp:0,left:0,wrong:0,st:[]});
+function def(){const s={day:1,name:'Tiệm Kem Ngọt Ngào',money:20000,rs:0,rn:0,stock:{},price:{},up:{sign:0,seat:0,tool:0},staff:[0,0,0],rv:[],hist:[],D:emptyD(),music:true,rid:1};ALL.forEach(x=>{s.stock[x.id]=x.u<=250?10:FL.includes(x)?10:20;s.price[x.id]=x.p});return s}
+function load(){const d=def();try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j){Object.assign(d,j);d.up=Object.assign({sign:0,seat:0,tool:0},j.up);d.stock=Object.assign(def().stock,j.stock);d.price=Object.assign(def().price,j.price);d.D=Object.assign(emptyD(),j.D)}}catch(e){}return d}
+let S=load(),Q=[],B={base:null,sc:[],top:null},open=false,tm=540,sp=0,t2=0,t3=0,last=performance.now(),tab=-1,RO=null,cid=1;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+/* ===== ÂM THANH & NHẠC ===== */
+let AC,MG,MUS,mt=null,bar=0;
+const CH=[[110,261.6,329.6,392],[87.3,220,261.6,329.6],[73.4,174.6,220,261.6],[98,246.9,293.7,349.2]],PN=[440,523.3,587.3,659.3,784,880];
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.gain.value=.7;MG.connect(AC.destination);const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=1100;MUS=AC.createGain();MUS.gain.value=.5;MUS.connect(f);f.connect(MG)}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
+function tn(f,t,d,ty,v,dest){const a=ac();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=ty;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||MG);o.start(t);o.stop(t+d+.05)}
+const now=()=>AC?AC.currentTime:0;
+function sfx(k){if(!ac())return;const t=now();if(k=='click')tn(700,t,.07,'triangle',.14);if(k=='scoop'){tn(320,t,.1,'sine',.2);tn(480,t+.06,.12,'sine',.15)}if(k=='coin'){tn(988,t,.12,'square',.05);tn(1319,t+.09,.28,'square',.05)}if(k=='bad')tn(180,t,.3,'sawtooth',.06)}
+function playBar(){if(!ac())return;const t=now()+.05,c=CH[bar%4];c.forEach(f=>tn(f,t,3.3,'sine',.11,MUS));for(let k=0;k<4;k++){if(Math.random()<.7)tn(pick(PN),t+k*.83+.4,.8,'triangle',.07,MUS);tn(65,t+k*.83,.3,'sine',.14,MUS)}bar++}
+function startMusic(){if(mt||!S.music)return;if(!ac())return;MUS.gain.setTargetAtTime(.5,now(),.1);playBar();mt=setInterval(playBar,3320)}
+function stopMusic(){clearInterval(mt);mt=null;if(MUS)MUS.gain.setTargetAtTime(0,now(),.1)}
+function toggleMusic(){S.music=!S.music;S.music?startMusic():stopMusic();$('mus').textContent=S.music?'🎵':'🔇';save()}
+addEventListener('pointerdown',()=>{if(S.music)startMusic()},{once:true});
+
+/* ===== NHÂN VẬT ===== */
+function av(g,s,an){
+ if(an)return '<svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#2b2b33"/><circle cx="30" cy="26" r="11" fill="#55555f"/><path d="M8 60q22-26 44 0z" fill="#55555f"/><text x="30" y="31" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">?</text></svg>';
+ const sk=SK[s%3],hc=HC[s%5];
+ const head=g?`<circle cx="12" cy="30" r="8" fill="${hc}"/><circle cx="48" cy="30" r="8" fill="${hc}"/><path d="M14 60q16-18 32 0z" fill="#f59bb0"/><circle cx="30" cy="32" r="18" fill="${sk}"/><path d="M11 32Q12 8 30 8Q48 8 49 32Q42 19 30 21Q19 19 11 32Z" fill="${hc}"/><path d="M40 10l8-4 0 10z M40 10l-6-4 0 10z" fill="#f2698a" transform="translate(4 2)"/>`
+ :`<path d="M14 60q16-18 32 0z" fill="#7fb0e8"/><circle cx="30" cy="32" r="18" fill="${sk}"/><path d="M11 33Q9 6 30 7Q51 6 49 33Q44 20 33 21Q24 14 11 33Z" fill="${hc}"/><path d="M26 8q4-6 9-2" stroke="${hc}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+ return `<svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#fff4ee"/>${head}<circle cx="23" cy="35" r="2.4" fill="#4a3228"/><circle cx="37" cy="35" r="2.4" fill="#4a3228"/><circle cx="23.8" cy="34.2" r=".8" fill="#fff"/><circle cx="37.8" cy="34.2" r=".8" fill="#fff"/><ellipse cx="18" cy="41" rx="4" ry="2.6" fill="#ff9fb0" opacity=".7"/><ellipse cx="42" cy="41" rx="4" ry="2.6" fill="#ff9fb0" opacity=".7"/><path d="M27 41q3 3 6 0" stroke="#a5503f" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>`}
+
+/* ===== LOGIC GAME ===== */
+const otxt=o=>`${item(o.base).e} ${o.sc.map(x=>item(x).n).join(' + ')}${o.top?' '+item(o.top).e:''}`;
+const oprice=o=>S.price[o.base]+o.sc.reduce((a,x)=>a+S.price[x],0)+(o.top?S.price[o.top]:0);
+const odef=o=>item(o.base).p+o.sc.reduce((a,x)=>a+item(x).p,0)+(o.top?item(o.top).p:0);
+function genOrder(){const fl=FL.filter(f=>S.stock[f.id]>0),ba=BA.filter(b=>S.stock[b.id]>0),tp=TP.filter(t=>S.stock[t.id]>0);if(!fl.length||!ba.length)return null;const n=1+rnd(3),sc=[];for(let i=0;i<n;i++)sc.push(pick(fl).id);return{base:pick(ba).id,sc,top:tp.length&&Math.random()<.5?pick(tp).id:null}}
+function addReview(c,st,cat,extra){let tx=pick(R[cat]).replace('{f}',c.o?item(c.o.sc[0]).n.toLowerCase():'kem')+(extra||'');const an=st<=2&&Math.random()<.7;S.rv.unshift({id:S.rid++,nm:c.nm,g:c.g,s:c.s,an,st,tx,d:S.day,rp:''});S.rv.length=Math.min(S.rv.length,80);S.rs+=st;S.rn++;S.D.st.push(st)}
+function nextSp(){return(4.5+Math.random()*3.5)/(1+.25*S.up.sign)*(S.staff[0]?.7:1)}
+function addCust(){const g=Math.random()<.5?1:0,s=rnd(50),c={id:cid++,g,s,nm:pick(g?NF:NM),o:genOrder()};c.max=c.pat=24*(1+.15*S.up.seat)*(S.staff[0]?1.3:1);if(!c.o){addReview(c,1,0);S.D.left++;toast(c.nm+' bỏ về vì hết hàng!');sfx('bad');refresh();return}Q.push(c);S.D.cu++;renderCust();rServe()}
+function openShop(){ac();if(open)return;open=true;tm=540;Q=[];B={base:null,sc:[],top:null};sp=1;t2=t3=0;$('openBtn').disabled=true;$('openBtn').textContent='Đang mở cửa';setTab(-1);sfx('coin');renderCust();rServe()}
+function removeC(c){Q=Q.filter(x=>x!==c);B={base:null,sc:[],top:null};renderCust();rServe()}
+const sameO=(o,b)=>b.base===o.base&&(b.top||null)===(o.top||null)&&[...b.sc].sort().join()===[...o.sc].sort().join();
+function serve(){const c=Q[0];if(!c||!B.base||!B.sc.length){sfx('click');return}const o=c.o,ok=sameO(o,B),p=c.pat/c.max;
+ S.stock[B.base]--;B.sc.forEach(x=>S.stock[x]--);if(B.top)S.stock[B.top]--;
+ if(ok){let pr=oprice(o),tip=p>.5?Math.round(pr*.05*S.up.tool):0;S.money+=pr+tip;S.D.rev+=pr+tip;popMoney('+'+fmt(pr+tip));sfx('coin');
+  let st=p>.5?5:p>.25?4:3,ex='';const r=pr/odef(o);if(r>1.35){st=Math.max(1,st-1);ex=' Giá hơi chát so với mặt bằng chung.'}else if(r<.9&&st<5&&Math.random()<.6){st++;ex=' Giá lại còn mềm nữa, quá hời!'}
+  addReview(c,st,st,ex)}
+ else{S.D.wrong++;sfx('bad');addReview(c,2,2);toast('Sai đơn rồi! Khách không trả tiền.')}
+ removeC(c);refresh()}
+function tickStaff(dt){const c=Q[0];if(!c)return;
+ if(S.staff[1]){t2+=dt;if(t2>=.9){t2=0;const o=c.o;if(!B.base){if(S.stock[o.base]>0){B.base=o.base;sfx('click')}}else if(B.sc.length<o.sc.length){const need=[...o.sc];B.sc.forEach(x=>need.splice(need.indexOf(x),1));const f=need[0];if(f&&avail(f)>0){B.sc.push(f);sfx('scoop')}}rServe()}}
+ if(S.staff[2]){t3+=dt;if(t3>=1.1){t3=0;const o=c.o;const done=B.base===o.base&&B.sc.length===o.sc.length&&[...B.sc].sort().join()===[...o.sc].sort().join();if(done){if(o.top&&!B.top){if(S.stock[o.top]>0){B.top=o.top;sfx('click');rServe()}}else serve()}}}}
+function avail(id){return S.stock[id]-B.sc.filter(x=>x===id).length-(B.base===id?1:0)-(B.top===id?1:0)}
+function endDay(){Q.forEach(c=>{addReview(c,3,3);S.D.left++});Q=[];B={base:null,sc:[],top:null};open=false;const D=S.D;S.hist.unshift({day:S.day,cu:D.cu,rev:D.rev,exp:D.exp,left:D.left,wrong:D.wrong,avg:D.st.length?D.st.reduce((a,b)=>a+b,0)/D.st.length:0});S.hist.length=Math.min(S.hist.length,14);S.day++;S.D=emptyD();$('openBtn').disabled=false;$('openBtn').textContent='Mở cửa';tm=540;renderCust();setTab(4);toast('Hết ngày! Xem tổng kết nhé 🌙');refresh()}
+function loop(){const n=performance.now(),dt=Math.min((n-last)/1000,.5);last=n;
+ if(open){tm+=dt*12;sp-=dt;if(sp<=0){sp=nextSp();if(tm<1230&&Q.length<3)addCust()}
+  for(const c of Q.slice()){c.pat-=dt;if(c.pat<=0){addReview(c,1,1);S.D.left++;sfx('bad');toast(c.nm+' chờ lâu quá nên bỏ về');const f=Q[0]===c;Q=Q.filter(x=>x!==c);if(f)B={base:null,sc:[],top:null};renderCust();rServe();rHead()}}
+  tickStaff(dt);
+  Q.forEach(c=>{const e=$('r'+c.id);if(e){const p=Math.max(0,c.pat/c.max);e.style.strokeDashoffset=194.8*(1-p);e.style.stroke=p>.5?'#86cdb8':'#f08aa2'}});
+  if(tm>=1260){endDay()}}
+ const m=Math.min(tm,1260);$('clock').textContent='🕘 '+String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.floor(m%60)).padStart(2,'0');$('pg').style.width=((m-540)/720*100)+'%';
+ requestAnimationFrame(loop)}
+
+/* ===== HIỂN THỊ ===== */
+function rHead(){$('pDay').textContent='Ngày '+S.day;$('pMoney').textContent='💰 '+fmt(S.money);$('pStar').textContent='⭐ '+(S.rn?(S.rs/S.rn).toFixed(1).replace('.',','):'–');$('mus').textContent=S.music?'🎵':'🔇'}
+function rName(edit){const e=$('nm');if(edit){e.innerHTML=`<input id="ni" maxlength="22" value="${esc(S.name)}">`;const i=$('ni');i.focus();i.select();const ok=()=>{S.name=i.value.trim()||S.name;save();rName()};i.onblur=ok;i.onkeydown=k=>{if(k.key==='Enter')i.blur()}}else e.innerHTML=`<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🍨 ${esc(S.name)}</span><button class="ib" style="width:28px;height:28px;font-size:13px" onclick="rName(true)" title="Sửa tên tiệm">✏️</button>`}
+function rJars(){$('shelf').innerHTML=FL.map(f=>`<div class="jar"><div class="jb"><b style="height:${Math.min(100,S.stock[f.id]*8)}%;background:${f.c}"></b></div><span>${S.stock[f.id]}</span></div>`).join('')}
+function ringSvg(c){return `<svg class="ring" viewBox="0 0 68 68"><circle cx="34" cy="34" r="31" fill="none" stroke="#f0dcd2" stroke-width="5"/><circle id="r${c.id}" cx="34" cy="34" r="31" fill="none" stroke="#86cdb8" stroke-width="5" stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="0" transform="rotate(-90 34 34)"/></svg>`}
+function renderCust(){$('cust').innerHTML=Q.map((c,i)=>`<div class="cu ${i?'wait':''}">${i?'':`<div class="bub">${otxt(c.o)}</div>`}<div class="avw">${ringSvg(c)}<div class="av">${av(c.g,c.s,false)}</div></div></div>`).join('')}
+function rServe(){const c=Q[0],e=$('serve');
+ if(!c){e.innerHTML=`<div class="hint">${open?'Đang chờ khách ghé tiệm… 🍦':'Tiệm đang đóng cửa.<br>Bấm <b>Mở cửa</b> để bắt đầu một ngày mới nhé!'}</div>`;return}
+ let h=`<div class="want">${c.nm} muốn: <b>${otxt(c.o)}</b></div><div class="row">`;
+ BA.forEach(b=>h+=`<button class="chip ${B.base===b.id?'on':''}" onclick="setBase('${b.id}')">${b.e} ${b.n}<small>${S.stock[b.id]}</small></button>`);
+ h+='</div><div class="row">';
+ FL.forEach(f=>h+=`<button class="chip" onclick="addSc('${f.id}')"><i style="background:${f.c}"></i>${f.n}<small>${S.stock[f.id]}</small></button>`);
+ h+='</div><div class="row">';
+ TP.forEach(t=>h+=`<button class="chip ${B.top===t.id?'on':''}" onclick="setTop('${t.id}')">${t.e} ${t.n}<small>${S.stock[t.id]}</small></button>`);
+ h+=`</div><div class="build">Ly của bạn: ${B.base||B.sc.length||B.top?otxt({base:B.base||'cone',sc:B.sc,top:B.top}).replace(B.base?'':'🍦',B.base?'':'❔'):'chưa có gì'}</div><div class="acts"><button class="btn s" onclick="clearB()">Làm lại</button><button class="btn g" onclick="serve()">Giao kem</button></div>`;
+ e.innerHTML=h}
+function setBase(id){if(S.stock[id]<=0){toast('Hết '+item(id).n+'!');return}B.base=id;sfx('click');rServe()}
+function addSc(id){if(B.sc.length>=3){toast('Tối đa 3 viên kem');return}if(avail(id)<=0){toast('Hết kem '+item(id).n+'!');return}B.sc.push(id);sfx('scoop');rServe()}
+function setTop(id){if(B.top===id)B.top=null;else{if(avail(id)<=0){toast('Hết '+item(id).n+'!');return}B.top=id}sfx('click');rServe()}
+function clearB(){B={base:null,sc:[],top:null};sfx('click');rServe()}
+const TABS=[['📦','Kho'],['⬆️','Nâng cấp'],['🏷️','Giá bán'],['⭐','Đánh giá'],['📊','Tổng kết']];
+function rNav(){$('nav').innerHTML=TABS.map((t,i)=>`<button class="${tab===i?'on':''}" onclick="setTab(${tab===i?-1:i})"><span>${t[0]}</span>${t[1]}</button>`).join('')}
+function setTab(i){tab=i;sfx('click');rNav();$('sheet').style.display=i<0?'none':'block';$('serve').style.display=i<0?'block':'none';if(i>=0){$('sheet').scrollTop=0;rTab()}}
+function rTab(){const e=$('sheet');if(tab===3&&document.activeElement&&document.activeElement.id==='rp')return;
+ let h='';
+ if(tab===0){h='<h3>Kho nguyên liệu · nhập 10 phần</h3>'+ALL.map(x=>`<div class="li">${x.e?`<span style="font-size:18px">${x.e}</span>`:`<span class="dot" style="background:${x.c}"></span>`}<div class="t">${x.n}<small>Còn ${S.stock[x.id]} · vốn ${fmt(x.u)}/phần</small></div><button class="btn" onclick="buy('${x.id}')">Nhập ${fmt(x.u*10)}</button></div>`).join('')}
+ if(tab===1){const U=[['sign','🪧 Biển hiệu','Thêm 25% lượng khách mỗi cấp'],['seat','🪑 Ghế chờ','Khách kiên nhẫn hơn 15% mỗi cấp'],['tool','🥄 Dụng cụ vàng','Thêm 5% tiền tip mỗi cấp']],SN=[['🧑‍💼 Thu ngân','Khách đến nhanh hơn, kiên nhẫn lâu hơn',30000],['🧁 Pha chế','Tự chọn đế và múc đúng kem',40000],['🍒 Topping & giao kem','Tự thêm topping và giao cho khách',50000]];
+  h='<h3>Nâng cấp tiệm</h3>'+U.map(u=>{const lv=S.up[u[0]];return `<div class="li"><div class="t">${u[1]} · cấp ${lv}/3<small>${u[2]}</small></div>${lv>=3?'<b>Tối đa</b>':`<button class="btn" onclick="upg('${u[0]}')">${fmt(15000*(lv+1))}</button>`}</div>`}).join('')+'<h3 style="margin-top:12px">Thuê nhân viên</h3>'+SN.map((s,i)=>`<div class="li"><div class="t">${s[0]}<small>${s[1]}</small></div>${S.staff[i]?'<b>Đã thuê ✓</b>':`<button class="btn" onclick="hire(${i})">${fmt(s[2])}</button>`}</div>`).join('')+(S.staff.every(x=>x)?'<div class="hint">Cả 3 nhân viên đã sẵn sàng, tiệm chạy tự động từ A đến Z!</div>':'')}
+ if(tab===2){h='<h3>Giá bán</h3>'+ALL.map(x=>`<div class="li">${x.e?`<span style="font-size:18px">${x.e}</span>`:`<span class="dot" style="background:${x.c}"></span>`}<div class="t">${x.n}<small>Giá gốc ${fmt(x.p)}</small></div><div class="pr"><button onclick="pr('${x.id}',-100)">−</button><b>${fmt(S.price[x.id])}</b><button onclick="pr('${x.id}',100)">+</button></div></div>`).join('')}
+ if(tab===3){h=`<h3>Đánh giá khách hàng (${S.rn?(S.rs/S.rn).toFixed(1).replace('.',','):'–'} ★)</h3>`+(S.rv.length?S.rv.map(r=>`<div class="rv"><div class="rh"><span class="avs">${av(r.g,r.s,r.an)}</span><div><b>${r.an?'Ẩn danh':esc(r.nm)}</b><div class="st">${'★'.repeat(r.st)}<span>${'★'.repeat(5-r.st)}</span><small>Ngày ${r.d}</small></div></div></div><p>${esc(r.tx)}</p>${r.rp?`<div class="rpl">🐱 ${esc(S.name)}: ${esc(r.rp)}</div>`:RO===r.id?`<div class="rin"><input id="rp" maxlength="140" placeholder="Nhập lời phản hồi…"><button class="btn" onclick="sendR(${r.id})">Gửi</button></div>`:`<button class="lnk" onclick="replyTo(${r.id})">Trả lời</button>`}</div>`).join(''):'<div class="hint">Chưa có đánh giá nào. Hãy mở cửa đón khách!</div>')}
+ if(tab===4){const D=S.D,av2=D.st.length?(D.st.reduce((a,b)=>a+b,0)/D.st.length).toFixed(1).replace('.',','):'–';
+  h=`<h3>Ngày ${S.day} (hôm nay)</h3><div class="gr"><div class="sc"><b>${D.cu}</b><span>Khách đã đến</span></div><div class="sc"><b>${fmt(D.rev)}</b><span>Doanh thu</span></div><div class="sc"><b>${fmt(D.exp)}</b><span>Chi nhập hàng</span></div><div class="sc"><b>${av2} ★</b><span>Đánh giá TB</span></div></div><h3>Các ngày trước</h3>`+(S.hist.length?S.hist.map(x=>`<div class="li"><div class="t">Ngày ${x.day}<small>${x.cu} khách · ${x.left} bỏ về · ${x.wrong} sai đơn · ${x.avg?x.avg.toFixed(1).replace('.',','):'–'} ★</small></div><div style="text-align:right">${fmt(x.rev-x.exp)}<small style="display:block;font-weight:600;color:var(--br2)">lãi ròng</small></div></div>`).join(''):'<div class="hint">Chưa có ngày nào hoàn thành.</div>')}
+ e.innerHTML=h}
+function buy(id){const x=item(id),c=x.u*10;if(S.money<c){toast('Không đủ tiền!');sfx('bad');return}S.money-=c;S.D.exp+=c;S.stock[id]+=10;sfx('coin');refresh()}
+function upg(k){const c=15000*(S.up[k]+1);if(S.money<c){toast('Không đủ tiền!');sfx('bad');return}S.money-=c;S.up[k]++;sfx('coin');refresh()}
+function hire(i){const c=[30000,40000,50000][i];if(S.money<c){toast('Không đủ tiền!');sfx('bad');return}S.money-=c;S.staff[i]=1;sfx('coin');toast('Đã thuê nhân viên mới!');refresh()}
+function pr(id,d){S.price[id]=Math.max(300,Math.min(item(id).p*3,S.price[id]+d));sfx('click');refresh()}
+function replyTo(id){RO=id;rTab();const i=$('rp');if(i)i.focus()}
+function sendR(id){const v=$('rp').value.trim();if(!v)return;const r=S.rv.find(x=>x.id===id);if(r)r.rp=v;RO=null;sfx('coin');refresh()}
+let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1800)}
+function popMoney(m){toast('💰 '+m)}
+function refresh(){rHead();rJars();rServe();if(tab>=0)rTab();save()}
+
+/* ===== KHỞI ĐỘNG ===== */
+rName();rNav();refresh();renderCust();
+setInterval(save,3000);
+addEventListener('beforeunload',save);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
