@@ -2,64 +2,61 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
->
-
-<meta name="theme-color" content="#ffe4eb">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ffe7ed">
 <meta name="apple-mobile-web-app-capable" content="yes">
-
 <title>Tiệm Bán Kem Ngọt Ngào</title>
 
 <style>
-/* =========================================================
-   RESET
-========================================================= */
+:root{
+  --pink:#f6a7b9;
+  --pink2:#ffdce5;
+  --pink3:#fff0f4;
+  --cream:#fff9ed;
+  --cream2:#fff2d5;
+  --brown:#8d604c;
+  --brown2:#6f4737;
+  --wood:#c98d65;
+  --wood2:#e7b083;
+  --green:#9dbb8b;
+  --green2:#dcebcf;
+  --gold:#e7b83f;
+  --red:#d96b72;
+  --ink:#62483f;
+  --white:#fffdfb;
+  --shadow:0 10px 28px rgba(126,82,69,.14);
+  --soft-shadow:0 5px 14px rgba(126,82,69,.12);
+  --radius:22px;
+}
+
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body{
+html,body{
   margin:0;
-  padding:0;
   width:100%;
-  min-height:100%;
+  height:100%;
+  overflow:hidden;
+  background:#fce7df;
+  color:var(--ink);
   font-family:
-    "Trebuchet MS",
-    "Arial Rounded MT Bold",
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
-  background:#f9e8df;
-  color:#604b49;
+    -apple-system,BlinkMacSystemFont,"Segoe UI",
+    "Helvetica Neue",Arial,sans-serif;
 }
 
-body{
-  overflow:hidden;
+button,input{
+  font:inherit;
 }
 
 button{
-  font:inherit;
   border:0;
   cursor:pointer;
+  color:inherit;
 }
 
-button:active{
-  transform:scale(.96);
-}
-
-svg{
-  display:block;
-}
-
-/* =========================================================
-   APP
-========================================================= */
 #app{
   width:100%;
   height:100dvh;
@@ -70,188 +67,220 @@ svg{
 }
 
 .game{
-  width:min(100%,520px);
-  height:100%;
   position:relative;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 8% 15%,rgba(255,255,255,.8) 0 3px,transparent 4px),
-    radial-gradient(circle at 92% 22%,rgba(255,255,255,.65) 0 4px,transparent 5px),
-    linear-gradient(#fff4f1 0%,#fff8ee 48%,#f9e7d7 100%);
-  box-shadow:0 0 40px rgba(100,65,50,.14);
-}
-
-/* =========================================================
-   TOP CANOPY
-========================================================= */
-.canopy{
-  height:98px;
-  position:absolute;
-  left:0;
-  top:0;
-  right:0;
-  z-index:20;
-  overflow:hidden;
-}
-
-.canopy-main{
-  height:78px;
   width:100%;
+  max-width:540px;
+  height:100%;
   background:
-    repeating-linear-gradient(
-      90deg,
-      #ffd5de 0 42px,
-      #fff6e9 42px 84px
-    );
-  border-bottom:4px solid #efc0b8;
-  box-shadow:0 5px 12px rgba(110,72,59,.12);
+    radial-gradient(circle at 15% 20%,rgba(255,255,255,.7) 0 4px,transparent 5px),
+    radial-gradient(circle at 82% 32%,rgba(255,255,255,.55) 0 3px,transparent 4px),
+    linear-gradient(#fff3ed,#fffaf4 42%,#f8e6d8);
+  overflow:hidden;
 }
-
-.canopy-main:after{
-  content:"";
-  position:absolute;
-  left:-2%;
-  bottom:2px;
-  width:104%;
-  height:30px;
-  background:
-    radial-gradient(
-      ellipse 44px 27px at 22px 0,
-      #ffd5de 98%,
-      transparent 100%
-    );
-  background-size:84px 30px;
-}
-
-.shop-sign{
-  position:absolute;
-  z-index:5;
-  left:50%;
-  top:34px;
-  transform:translateX(-50%);
-  min-width:250px;
-  padding:9px 22px 10px;
-  text-align:center;
-  background:linear-gradient(#b77b54,#9e6648);
-  border:4px solid #e6b28b;
-  border-radius:18px;
-  color:#fff9ed;
-  box-shadow:
-    0 5px 0 #7e523e,
-    0 9px 15px rgba(100,55,40,.16);
-}
-
-.shop-sign strong{
-  display:block;
-  font-size:18px;
-  letter-spacing:.4px;
-}
-
-.shop-sign small{
-  font-size:9px;
-  opacity:.9;
-}
-
-.lantern{
-  position:absolute;
-  top:8px;
-  width:14px;
-  height:18px;
-  border-radius:7px;
-  background:#f3bd66;
-  border:2px solid #c68d50;
-  z-index:7;
-}
-
-.lantern:after{
-  content:"";
-  position:absolute;
-  left:5px;
-  top:-7px;
-  width:2px;
-  height:7px;
-  background:#806052;
-}
-
-.l1{left:13%}
-.l2{right:13%}
 
 /* =========================================================
-   DECORATIONS
+   START SCREEN
 ========================================================= */
-.sticker{
+
+.start-screen{
   position:absolute;
-  z-index:4;
-  user-select:none;
+  inset:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(circle at 20% 12%,#fff 0 4px,transparent 5px),
+    radial-gradient(circle at 85% 20%,#fff 0 5px,transparent 6px),
+    radial-gradient(circle at 10% 75%,#ffe5eb 0 18px,transparent 19px),
+    linear-gradient(145deg,#ffdce6,#fff4df 55%,#e9f2df);
+  transition:opacity .55s ease,visibility .55s ease;
+}
+
+.start-screen.hide{
+  opacity:0;
+  visibility:hidden;
   pointer-events:none;
 }
 
-.sticker.cloud{
-  width:48px;
-  height:20px;
-  border-radius:20px;
-  background:#fff;
-  opacity:.75;
+.start-card{
+  width:min(100%,430px);
+  padding:26px 20px 22px;
+  border:3px solid rgba(255,255,255,.8);
+  border-radius:34px;
+  background:rgba(255,253,249,.92);
+  box-shadow:0 25px 60px rgba(118,76,62,.2);
+  text-align:center;
+  position:relative;
+  overflow:hidden;
 }
 
-.cloud:before,
-.cloud:after{
+.start-card:before{
   content:"";
   position:absolute;
-  background:#fff;
-  border-radius:50%;
+  left:-10%;
+  right:-10%;
+  top:0;
+  height:18px;
+  background:repeating-linear-gradient(
+    90deg,
+    #f49bb0 0 28px,
+    #fff8ee 28px 56px
+  );
+  border-radius:0 0 14px 14px;
 }
 
-.cloud:before{
-  width:25px;
-  height:25px;
-  left:8px;
-  top:-12px;
+.start-deco{
+  font-size:28px;
+  letter-spacing:12px;
+  margin:12px 0 4px;
 }
 
-.cloud:after{
-  width:19px;
-  height:19px;
-  right:7px;
-  top:-8px;
+.logo-cat{
+  width:120px;
+  height:100px;
+  margin:2px auto 5px;
 }
 
-.star{
-  font-size:22px;
-  color:#f2bd69;
-  animation:floatSticker 3.5s ease-in-out infinite;
+.start-title{
+  margin:0;
+  color:#805646;
+  font-size:29px;
+  line-height:1.1;
+  font-weight:900;
+  letter-spacing:-.8px;
 }
 
-.heart{
-  font-size:18px;
-  color:#ee9cad;
-  animation:floatSticker 4s ease-in-out infinite reverse;
+.start-subtitle{
+  margin:9px 0 20px;
+  color:#a47767;
+  font-size:14px;
+  line-height:1.55;
 }
 
-@keyframes floatSticker{
-  0%,100%{transform:translateY(0) rotate(-3deg)}
-  50%{transform:translateY(-5px) rotate(4deg)}
+.start-info{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.info-chip{
+  padding:7px 11px;
+  border-radius:999px;
+  background:#fff1d7;
+  color:#906b43;
+  font-size:12px;
+  font-weight:800;
+}
+
+.start-button{
+  width:100%;
+  min-height:55px;
+  border-radius:18px;
+  background:linear-gradient(#f8b2c2,#ed91a8);
+  color:#fff;
+  font-weight:900;
+  font-size:16px;
+  box-shadow:0 8px 0 #cf7890,0 13px 20px rgba(207,120,144,.2);
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+
+.start-button:active{
+  transform:translateY(5px);
+  box-shadow:0 3px 0 #cf7890;
 }
 
 /* =========================================================
-   MAIN AREA
+   GAME HEADER
 ========================================================= */
-.main{
-  position:absolute;
-  left:0;
-  right:0;
-  top:84px;
-  bottom:75px;
+
+.game-shell{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+
+.top{
+  position:relative;
+  flex:0 0 auto;
+  z-index:10;
+  background:#fff7ed;
+  box-shadow:0 3px 13px rgba(115,76,63,.09);
+}
+
+.awning{
+  height:34px;
+  background:repeating-linear-gradient(
+    105deg,
+    #f3a1b6 0 25px,
+    #fff7ed 25px 50px
+  );
+  border-bottom:2px solid #e7c7b2;
+}
+
+.header-row{
+  min-height:68px;
+  padding:8px 14px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:8px;
+}
+
+.shop-name{
+  font-weight:900;
+  color:#754e40;
+  font-size:17px;
+  line-height:1.05;
+}
+
+.day-label{
+  display:block;
+  margin-top:3px;
+  font-size:10px;
+  font-weight:700;
+  color:#ad8170;
+}
+
+.day-center{
+  text-align:center;
+  font-weight:900;
+  color:#a66a55;
+  font-size:13px;
+}
+
+.money{
+  justify-self:end;
+  padding:8px 11px;
+  border-radius:13px;
+  background:#fff0c9;
+  border:1px solid #f1d89d;
+  color:#87612f;
+  font-weight:900;
+  font-size:12px;
+}
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.content{
+  flex:1;
+  min-height:0;
   overflow:hidden;
+  position:relative;
 }
 
 .screen{
   position:absolute;
   inset:0;
-  display:none;
   overflow-y:auto;
   overflow-x:hidden;
-  padding:10px 12px 18px;
+  padding:12px 12px calc(82px + env(safe-area-inset-bottom));
   scrollbar-width:none;
 }
 
@@ -259,1079 +288,1098 @@ svg{
   display:none;
 }
 
-.screen.active{
-  display:block;
-}
-
-/* =========================================================
-   HUD
-========================================================= */
-.hud{
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  gap:7px;
-  align-items:center;
-  margin-bottom:8px;
-}
-
-.hud-box{
-  min-height:44px;
-  padding:6px 9px;
-  border-radius:16px;
-  background:rgba(255,255,255,.9);
-  border:2px solid #f2d5cf;
-  box-shadow:0 4px 10px rgba(104,69,56,.07);
-}
-
-.hud-box small{
-  display:block;
-  font-size:9px;
-  color:#aa8880;
-  font-weight:bold;
-}
-
-.hud-box strong{
-  display:block;
-  margin-top:1px;
-  font-size:14px;
-  color:#684e4a;
-}
-
-.clock{
-  padding:7px 12px;
-  border-radius:20px;
-  background:#fff;
-  border:2px solid #efc9c8;
-  text-align:center;
-  box-shadow:0 4px 10px rgba(104,69,56,.08);
-}
-
-.clock strong{
-  font-size:18px;
-  color:#8e5c56;
-}
-
-/* =========================================================
-   CUSTOMER CARD
-========================================================= */
-.customer-card{
-  position:relative;
-  min-height:184px;
-  border-radius:25px;
-  background:
-    linear-gradient(145deg,#fffdf9,#fff1ef);
-  border:2px solid #efd4ce;
-  box-shadow:
-    0 7px 16px rgba(101,68,55,.10);
-  padding:11px;
-  overflow:visible;
-}
-
-.customer-card.enter{
-  animation:customerEnter .5s cubic-bezier(.2,.8,.2,1);
-}
-
-.customer-card.leave{
-  animation:customerLeave .55s ease forwards;
-}
-
-@keyframes customerEnter{
-  from{
-    opacity:0;
-    transform:translateY(25px) scale(.96);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0) scale(1);
-  }
-}
-
-@keyframes customerLeave{
-  to{
-    opacity:0;
-    transform:translateX(110px) rotate(5deg);
-  }
-}
-
-.customer-head{
+.section-title{
   display:flex;
   align-items:center;
-  gap:10px;
+  justify-content:space-between;
+  margin:0 2px 8px;
 }
 
-.avatar-wrap{
-  width:78px;
-  height:78px;
-  flex:0 0 78px;
-  border-radius:50%;
-  background:#ffe5e6;
-  border:3px solid #fff;
-  box-shadow:0 4px 9px rgba(90,62,53,.14);
+.section-title h2{
+  margin:0;
+  font-size:16px;
+  color:#795445;
+}
+
+.section-title span{
+  font-size:11px;
+  color:#b18a7a;
+}
+
+/* =========================================================
+   CUSTOMER PANEL
+========================================================= */
+
+.customer-panel{
+  position:relative;
+  min-height:154px;
+  border-radius:24px;
+  background:linear-gradient(145deg,#fffaf2,#ffeaf0);
+  border:1px solid rgba(222,183,163,.5);
+  box-shadow:var(--soft-shadow);
+  padding:12px;
+  margin-bottom:10px;
   overflow:hidden;
+}
+
+.customer-panel:after{
+  content:"";
+  position:absolute;
+  width:80px;
+  height:80px;
+  right:-20px;
+  bottom:-30px;
+  border-radius:50%;
+  background:#f9d8c7;
+  opacity:.4;
+}
+
+.customer-inner{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:94px 1fr;
+  gap:11px;
+  align-items:center;
+}
+
+.customer-avatar{
+  width:94px;
+  height:116px;
+  position:relative;
+}
+
+.customer-avatar svg{
+  width:100%;
+  height:100%;
+  display:block;
 }
 
 .customer-info{
   min-width:0;
-  flex:1;
+}
+
+.customer-name-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:5px;
 }
 
 .customer-name{
-  font-size:16px;
+  font-size:15px;
   font-weight:900;
-  color:#624b49;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  color:#734d42;
 }
 
-.customer-type{
-  margin-top:2px;
-  font-size:10px;
-  color:#ae8580;
+.gender-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#e89bad;
+}
+
+.gender-dot.male{
+  background:#88afd0;
 }
 
 .speech{
-  margin-top:8px;
   position:relative;
+  padding:9px 10px;
   background:#fff;
-  border:2px solid #efd9d4;
-  border-radius:15px;
-  padding:8px 10px;
-  color:#634e4a;
+  border:1px solid #f0dcd2;
+  border-radius:14px 14px 14px 4px;
   font-size:12px;
   line-height:1.35;
-  min-height:39px;
+  font-weight:750;
+  color:#77584c;
+  box-shadow:0 3px 9px rgba(120,80,65,.06);
 }
 
 .speech:before{
   content:"";
   position:absolute;
-  left:28px;
-  top:-7px;
-  width:11px;
-  height:11px;
+  left:-6px;
+  bottom:10px;
+  width:10px;
+  height:10px;
   background:#fff;
-  border-left:2px solid #efd9d4;
-  border-top:2px solid #efd9d4;
+  border-left:1px solid #f0dcd2;
+  border-bottom:1px solid #f0dcd2;
   transform:rotate(45deg);
 }
 
-.order-highlight{
-  color:#c86c75;
-  font-weight:900;
-}
-
-.patience{
+.customer-bottom{
   position:absolute;
-  right:11px;
-  top:-13px;
-  width:59px;
-  height:59px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:conic-gradient(#75cfa4 100%,#eadeda 0);
-  box-shadow:0 4px 9px rgba(80,55,45,.13);
-  transition:background .15s linear;
+  left:12px;
+  right:12px;
+  bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  z-index:3;
 }
 
-.patience:before{
-  content:"";
-  position:absolute;
-  inset:5px;
-  background:#fff9f5;
-  border-radius:50%;
+.patience-ring{
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  transform:rotate(-90deg);
 }
 
-.patience-text{
-  position:relative;
-  z-index:2;
-  font-size:11px;
-  font-weight:900;
-  color:#6e5955;
+.patience-ring .track{
+  fill:none;
+  stroke:#ead9d2;
+  stroke-width:4;
 }
 
-.patience-label{
-  position:absolute;
-  right:2px;
-  top:57px;
-  white-space:nowrap;
-  font-size:7px;
-  color:#aa817c;
+.patience-ring .progress{
+  fill:none;
+  stroke:#8ebf8b;
+  stroke-width:4;
+  stroke-linecap:round;
+  transition:stroke .3s ease;
 }
 
-/* =========================================================
-   CHIBI CUSTOMER SVG
-========================================================= */
-.chibi{
+.patience-ring.warning .progress{
+  stroke:#e5ad51;
+}
+
+.patience-ring.danger .progress{
+  stroke:#d96f78;
+}
+
+.patience-caption{
+  flex:1;
+  height:7px;
+  border-radius:999px;
+  background:#f2dfd8;
+  overflow:hidden;
+}
+
+.patience-caption i{
+  display:block;
   width:100%;
   height:100%;
+  border-radius:inherit;
+  background:#a7c995;
+  transition:width .1s linear,background .3s ease;
 }
 
-.chibi .blink{
-  animation:blink 4s infinite;
-  transform-origin:center;
-}
-
-@keyframes blink{
-  0%,45%,48%,100%{transform:scaleY(1)}
-  46%,47%{transform:scaleY(.08)}
-}
-
-.customer-card.impatient .blink{
-  animation:none;
-}
-
-.customer-card.impatient .eye{
-  transform:scaleY(.55);
-}
-
-.customer-card.impatient .mouth{
-  transform:translateY(1px);
-}
-
-/* =========================================================
-   SHOP COUNTER
-========================================================= */
-.counter{
-  margin-top:9px;
-  position:relative;
-  height:125px;
-  border-radius:23px 23px 14px 14px;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(116,72,43,.08) 0 2px,
-      transparent 2px 70px
-    ),
-    linear-gradient(#dca77a,#bd8058);
-  border:3px solid #b87952;
-  box-shadow:
-    inset 0 5px 0 rgba(255,255,255,.25),
-    0 8px 13px rgba(87,53,40,.15);
-  overflow:hidden;
-}
-
-.counter-top{
-  position:absolute;
-  left:-2px;
-  right:-2px;
-  top:-2px;
-  height:25px;
-  border-radius:20px 20px 7px 7px;
-  background:linear-gradient(#edc294,#cf9365);
-  border:3px solid #b87952;
-}
-
-.counter-front{
-  position:absolute;
-  left:10px;
-  right:10px;
-  bottom:7px;
-  height:72px;
-  border-radius:10px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      rgba(112,68,42,.13) 0 3px,
-      transparent 3px 64px
-    );
-}
-
-/* =========================================================
-   ICE CREAM JARS
-========================================================= */
-.jar-row{
-  position:absolute;
-  left:11px;
-  right:11px;
-  top:29px;
+.customer-loading{
+  min-height:130px;
   display:flex;
-  justify-content:space-between;
-  gap:7px;
-  z-index:5;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:8px;
+  color:#ad8679;
+  font-size:12px;
 }
 
-.jar{
-  flex:1;
-  min-width:0;
-  height:77px;
+.loading-heart{
+  font-size:30px;
+  animation:float 1.3s ease-in-out infinite;
+}
+
+/* =========================================================
+   COUNTER / WORKSPACE
+========================================================= */
+
+.counter{
+  border-radius:26px;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.15) 1px,transparent 1px),
+    linear-gradient(#d89d70,#bd7e58);
+  background-size:18px 18px,auto;
+  border:4px solid #ad704f;
+  box-shadow:var(--shadow);
+  padding:11px;
   position:relative;
-  border-radius:9px 9px 12px 12px;
-  background:
-    linear-gradient(
-      90deg,
-      #a9afb2,
-      #f4f5f4 17%,
-      #a8adb0 38%,
-      #f8f8f7 58%,
-      #92999d
-    );
-  border:2px solid #858d90;
-  box-shadow:
-    inset 0 4px 7px rgba(255,255,255,.6),
-    0 3px 6px rgba(60,50,45,.16);
+  margin-bottom:10px;
 }
 
-.jar:before{
-  content:"";
-  position:absolute;
-  left:5px;
-  right:5px;
-  top:-12px;
-  height:17px;
-  border-radius:50%;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255,255,255,.25),
-      rgba(255,255,255,.75),
-      rgba(255,255,255,.2)
-    );
-  border:2px solid rgba(120,128,130,.7);
-}
-
-.jar-ice{
-  position:absolute;
-  left:7px;
-  right:7px;
-  bottom:6px;
-  height:51px;
-  border-radius:5px 5px 9px 9px;
-  overflow:hidden;
-}
-
-.jar-ice:after{
-  content:"";
-  position:absolute;
-  left:7px;
-  top:2px;
-  width:7px;
-  height:38px;
-  border-radius:8px;
-  background:rgba(255,255,255,.35);
-  transform:skew(-12deg);
-}
-
-.jar-name{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:1px;
-  text-align:center;
-  font-size:6px;
-  color:#5f514f;
-  font-weight:bold;
-  z-index:2;
-}
-
-.jar-count{
-  position:absolute;
-  right:-4px;
-  top:-18px;
-  min-width:19px;
-  height:19px;
-  padding:0 4px;
-  display:grid;
-  place-items:center;
-  border-radius:9px;
-  background:#fff;
-  border:1px solid #e1c4bd;
-  color:#7b625e;
-  font-size:8px;
-  font-weight:900;
-  z-index:10;
-}
-
-/* =========================================================
-   SLEEPING CAT
-========================================================= */
-.cat-area{
-  position:absolute;
-  right:7px;
-  bottom:8px;
-  width:150px;
-  height:120px;
-  z-index:9;
-  pointer-events:none;
-}
-
-.cat-svg{
-  width:150px;
-  height:120px;
-  overflow:visible;
-}
-
-.cat-float{
-  animation:catFloat 4s ease-in-out infinite;
-}
-
-@keyframes catFloat{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-3px)}
-}
-
-.zzz{
-  animation:zzz 3.4s ease-in-out infinite;
-  transform-origin:center;
-}
-
-@keyframes zzz{
-  0%,100%{opacity:.3;transform:translate(0,5px) scale(.85)}
-  50%{opacity:1;transform:translate(3px,-5px) scale(1)}
-}
-
-/* =========================================================
-   MAKING AREA
-========================================================= */
-.make-card{
-  margin-top:9px;
-  background:rgba(255,255,255,.9);
-  border:2px solid #efd7d0;
-  border-radius:23px;
-  padding:10px;
-  box-shadow:0 6px 14px rgba(92,63,52,.08);
-}
-
-.make-title{
+.counter-label{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:6px;
+  color:#fff8ee;
+  margin-bottom:9px;
 }
 
-.make-title strong{
-  font-size:13px;
-  color:#735652;
+.counter-label strong{
+  font-size:15px;
 }
 
-.step-pill{
-  padding:4px 8px;
-  border-radius:10px;
-  background:#fff0d9;
-  color:#ae7c45;
-  font-size:8px;
-  font-weight:bold;
+.counter-label small{
+  font-size:10px;
+  opacity:.9;
+}
+
+/* workspace is intentionally fixed and stable */
+.workspace{
+  width:100%;
+  min-height:318px;
+  position:relative;
+  border-radius:21px;
+  background:
+    radial-gradient(circle at 75% 20%,rgba(255,255,255,.55) 0 3px,transparent 4px),
+    linear-gradient(145deg,#fff9ef,#fbeee0);
+  border:2px solid rgba(255,255,255,.85);
+  overflow:hidden;
+  padding:10px;
+}
+
+.workspace-head{
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.step-indicator{
+  display:flex;
+  gap:5px;
+}
+
+.step-dot{
+  width:22px;
+  height:6px;
+  border-radius:99px;
+  background:#e9d9d1;
+  transition:background .2s ease,width .2s ease;
+}
+
+.step-dot.active{
+  width:34px;
+  background:#efa0b3;
+}
+
+.workspace-hint{
+  font-size:10px;
+  font-weight:800;
+  color:#ae8879;
 }
 
 .ice-stage{
   position:relative;
-  height:145px;
-  border-radius:17px;
-  background:
-    radial-gradient(circle at 30% 30%,rgba(255,255,255,.9) 0 2px,transparent 3px),
-    linear-gradient(#fff9f1,#fcece5);
-  border:2px dashed #ead2cb;
-  overflow:hidden;
-}
-
-.stage-label{
-  position:absolute;
-  left:9px;
-  top:8px;
-  padding:3px 7px;
-  border-radius:8px;
-  background:#fff;
-  color:#ad8982;
-  font-size:8px;
-  font-weight:bold;
-}
-
-.cup-display{
-  position:absolute;
-  left:50%;
-  top:48px;
-  width:95px;
-  height:83px;
-  transform:translateX(-50%);
-  z-index:5;
-}
-
-.cone{
-  position:absolute;
-  left:50%;
-  top:4px;
-  transform:translateX(-50%);
-  width:67px;
-  height:84px;
-  clip-path:polygon(8% 0,92% 0,67% 100%,33% 100%);
-  background:
-    repeating-linear-gradient(
-      45deg,
-      transparent 0 9px,
-      rgba(139,88,44,.28) 9px 11px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      transparent 0 9px,
-      rgba(139,88,44,.25) 9px 11px
-    ),
-    #e6ad70;
-  filter:drop-shadow(0 4px 3px rgba(80,50,30,.16));
-}
-
-.cup{
-  position:absolute;
-  left:50%;
-  top:11px;
-  transform:translateX(-50%);
-  width:72px;
-  height:75px;
-  border-radius:8px 8px 22px 22px;
-  background:
-    linear-gradient(90deg,#ffedf0,#fff,#ffdfe4);
-  border:3px solid #e5b9bb;
-  box-shadow:0 5px 8px rgba(100,65,55,.13);
-}
-
-.scoop-stack{
-  position:absolute;
-  left:50%;
-  top:-8px;
-  transform:translateX(-50%);
+  height:188px;
+  width:100%;
   display:flex;
-  flex-direction:column-reverse;
   align-items:center;
-  gap:-2px;
-  z-index:9;
+  justify-content:center;
 }
 
-.scoop{
-  width:48px;
-  height:48px;
-  margin-top:-13px;
-  border-radius:50%;
-  border:2px solid rgba(100,65,55,.12);
-  box-shadow:
-    inset -5px -6px 0 rgba(90,50,40,.08),
-    inset 5px 4px 0 rgba(255,255,255,.27),
-    0 2px 4px rgba(80,50,40,.12);
+.ice-display{
+  position:relative;
+  width:130px;
+  height:145px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
 }
 
-.topping-display{
+.empty-plate{
   position:absolute;
+  bottom:12px;
+  width:116px;
+  height:20px;
+  border-radius:50%;
+  background:#ead7ca;
+}
+
+.cone-art{
+  position:absolute;
+  bottom:17px;
+  width:58px;
+  height:78px;
+  clip-path:polygon(4% 2%,96% 2%,66% 98%,34% 98%);
+  background:
+    repeating-linear-gradient(45deg,transparent 0 9px,rgba(139,90,48,.22) 10px 12px),
+    repeating-linear-gradient(-45deg,#f4c77f 0 10px,#eeb86c 11px 14px);
+  border-radius:5px 5px 28px 28px;
+  display:none;
+}
+
+.cup-art{
+  position:absolute;
+  bottom:16px;
+  width:82px;
+  height:69px;
+  border:4px solid #d8bba8;
+  border-top:7px solid #f2ddd0;
+  border-radius:8px 8px 27px 27px;
+  background:rgba(255,255,255,.72);
+  display:none;
+}
+
+.cup-art:after{
+  content:"";
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:10px;
+  height:4px;
+  border-radius:99px;
+  background:#efb0bd;
+  opacity:.7;
+}
+
+.ice-scoop{
+  position:absolute;
+  width:58px;
+  height:58px;
+  border-radius:50%;
   left:50%;
-  top:15px;
-  width:85px;
   transform:translateX(-50%);
+  bottom:65px;
+  box-shadow:inset -8px -9px 0 rgba(130,75,55,.08),0 4px 8px rgba(111,70,55,.12);
+  display:none;
+}
+
+.ice-scoop.two{
+  left:39%;
+  bottom:72px;
+}
+
+.ice-scoop.three{
+  left:61%;
+  bottom:72px;
+}
+
+.topping-art{
+  position:absolute;
+  z-index:5;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:99px;
+  font-size:22px;
+  letter-spacing:3px;
+  display:none;
+  white-space:nowrap;
+}
+
+.workspace-empty{
+  position:absolute;
+  inset:48px 20px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   text-align:center;
-  z-index:15;
-  font-size:20px;
+  flex-direction:column;
+  color:#b49182;
   pointer-events:none;
 }
 
-.scoop.chocolate{background:#815039}
-.scoop.strawberry{background:#f59eae}
-.scoop.vanilla{background:#ffe6a8}
-.scoop.matcha{background:#9dbd87}
-.scoop.butter{background:#f3c967}
-.scoop.durian{background:#d8d878}
-
-.option-title{
-  margin:8px 0 5px;
-  font-size:9px;
-  color:#a27f78;
-  font-weight:900;
+.workspace-empty strong{
+  font-size:14px;
+  margin-bottom:4px;
 }
 
-.options{
+.workspace-empty span{
+  font-size:11px;
+}
+
+.workspace.has-base .workspace-empty{
+  display:none;
+}
+
+.choice-row{
   display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+}
+
+.choice-row.wide{
   grid-template-columns:repeat(4,1fr);
-  gap:6px;
 }
 
-.option-btn{
-  min-height:45px;
-  border-radius:13px;
-  background:#fff8f6;
-  border:2px solid #efdcd6;
-  color:#735957;
-  font-size:9px;
-  font-weight:bold;
-  transition:.18s;
+.choice{
+  min-height:58px;
+  padding:6px 4px;
+  border-radius:15px;
+  background:#fffdf9;
+  border:1px solid #ecdcd2;
+  box-shadow:0 3px 7px rgba(115,77,65,.07);
+  font-size:10px;
+  font-weight:850;
+  color:#75574c;
+  transition:transform .12s ease,border .12s ease,background .12s ease;
 }
 
-.option-btn .emoji{
+.choice:active{
+  transform:scale(.96);
+}
+
+.choice.selected{
+  border:2px solid #ee9eb1;
+  background:#fff0f4;
+}
+
+.choice .emoji{
   display:block;
-  font-size:19px;
+  font-size:21px;
+  line-height:24px;
   margin-bottom:2px;
 }
 
-.option-btn.selected{
-  border-color:#d9969e;
-  background:#ffe6e9;
-  transform:translateY(-2px);
-  box-shadow:0 4px 8px rgba(190,115,125,.14);
+.choice.locked{
+  opacity:.45;
 }
 
-.option-btn.disabled{
-  opacity:.4;
+.ingredient-area{
+  margin-top:9px;
 }
 
-/* =========================================================
-   ACTION BUTTONS
-========================================================= */
+.ingredient-title{
+  font-size:11px;
+  font-weight:900;
+  color:#7c5b4e;
+  margin:0 2px 6px;
+}
+
+.inventory-note{
+  font-size:9px;
+  color:#b18b7a;
+  margin-left:4px;
+}
+
 .action-row{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
-  margin-top:8px;
+  margin-top:10px;
 }
 
-.action-btn{
-  min-height:45px;
-  border-radius:16px;
-  font-weight:900;
+.primary-action,
+.secondary-action{
+  min-height:47px;
+  border-radius:15px;
   font-size:12px;
-  box-shadow:0 4px 0 rgba(90,60,50,.14);
+  font-weight:900;
 }
 
-.action-btn.serve{
-  background:linear-gradient(#f3a9b6,#dc8291);
+.primary-action{
+  background:linear-gradient(#f3a8b9,#e98da6);
   color:white;
+  box-shadow:0 5px 0 #ca748c;
 }
 
-.action-btn.reset{
-  background:#fff;
-  border:2px solid #e8cfca;
-  color:#8d6c67;
+.primary-action:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #ca748c;
+}
+
+.primary-action:disabled{
+  opacity:.45;
+  box-shadow:none;
+}
+
+.secondary-action{
+  background:#fff7ed;
+  border:1px solid #ead4c7;
+  color:#946b5b;
 }
 
 /* =========================================================
-   NAV
+   CAT
 ========================================================= */
+
+.cat-rest{
+  margin-top:9px;
+  height:104px;
+  border-radius:23px;
+  background:#fff2ee;
+  border:1px solid #efd9d0;
+  position:relative;
+  overflow:hidden;
+}
+
+.cat-rest .cushion{
+  position:absolute;
+  width:145px;
+  height:42px;
+  border-radius:50%;
+  background:#efb1be;
+  left:50%;
+  bottom:5px;
+  transform:translateX(-50%);
+  box-shadow:inset 0 -6px rgba(196,126,143,.2);
+}
+
+.sleep-cat{
+  position:absolute;
+  width:125px;
+  height:92px;
+  left:50%;
+  bottom:11px;
+  transform:translateX(-50%);
+}
+
+.cat-body{
+  position:absolute;
+  width:77px;
+  height:48px;
+  background:#f6d995;
+  border-radius:48% 55% 45% 45%;
+  left:24px;
+  bottom:15px;
+  transform:rotate(-5deg);
+  box-shadow:inset -8px -5px rgba(198,151,83,.14);
+}
+
+.cat-head{
+  position:absolute;
+  width:55px;
+  height:50px;
+  background:#f8dfa4;
+  border-radius:47%;
+  left:10px;
+  top:18px;
+  box-shadow:inset -6px -4px rgba(198,151,83,.1);
+}
+
+.ear{
+  position:absolute;
+  width:21px;
+  height:24px;
+  background:#f8dfa4;
+  top:5px;
+  transform:rotate(17deg);
+  clip-path:polygon(0 100%,12% 5%,100% 83%);
+}
+
+.ear.left{left:8px}
+.ear.right{
+  right:7px;
+  transform:scaleX(-1) rotate(17deg);
+}
+
+.cat-cheek{
+  position:absolute;
+  width:9px;
+  height:5px;
+  border-radius:50%;
+  background:#e99a9e;
+  top:36px;
+  opacity:.65;
+}
+
+.cat-cheek.l{left:7px}
+.cat-cheek.r{right:7px}
+
+.cat-face{
+  position:absolute;
+  left:16px;
+  top:26px;
+  width:25px;
+  height:12px;
+}
+
+.cat-face:before,
+.cat-face:after{
+  content:"";
+  position:absolute;
+  top:0;
+  width:8px;
+  height:3px;
+  border-bottom:2px solid #76584d;
+  border-radius:50%;
+}
+
+.cat-face:before{left:0}
+.cat-face:after{right:0}
+
+.cat-nose{
+  position:absolute;
+  width:5px;
+  height:4px;
+  border-radius:50%;
+  background:#c77b7c;
+  left:26px;
+  top:34px;
+}
+
+.cat-tail{
+  position:absolute;
+  width:46px;
+  height:40px;
+  border:9px solid #f6d995;
+  border-left-color:transparent;
+  border-bottom-color:transparent;
+  border-radius:50%;
+  right:0;
+  bottom:20px;
+  transform:rotate(25deg);
+}
+
+.zzz{
+  position:absolute;
+  right:7px;
+  top:3px;
+  color:#b993a4;
+  font-size:11px;
+  font-weight:900;
+  animation:zzz 2.5s ease-in-out infinite;
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+
 .bottom-nav{
   position:absolute;
+  z-index:20;
   left:8px;
   right:8px;
-  bottom:max(8px,env(safe-area-inset-bottom));
-  height:65px;
+  bottom:calc(7px + env(safe-area-inset-bottom));
+  min-height:65px;
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:5px;
   padding:5px;
-  border-radius:22px;
-  background:rgba(255,250,247,.96);
-  border:2px solid #efd8d2;
-  box-shadow:0 -5px 18px rgba(90,60,50,.10);
-  z-index:50;
+  border-radius:21px;
+  background:rgba(255,250,246,.96);
+  border:1px solid #ecd8ce;
+  box-shadow:0 8px 25px rgba(100,65,55,.15);
 }
 
 .nav-btn{
-  border-radius:17px;
   background:transparent;
-  color:#a1817b;
+  border-radius:16px;
+  font-size:9px;
+  font-weight:850;
+  color:#a18175;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:1px;
-  font-size:8px;
-  font-weight:900;
+  gap:2px;
 }
 
-.nav-btn .nav-icon{
+.nav-btn span{
   font-size:21px;
-  line-height:22px;
+  line-height:23px;
 }
 
 .nav-btn.active{
-  background:#ffe5e8;
-  color:#bb6e79;
-}
-
-/* =========================================================
-   GENERAL PANELS
-========================================================= */
-.panel{
-  background:rgba(255,255,255,.92);
-  border:2px solid #efd7d0;
-  border-radius:23px;
-  padding:13px;
-  box-shadow:0 6px 15px rgba(92,63,52,.08);
-  margin-bottom:10px;
-}
-
-.page-title{
-  font-size:19px;
-  font-weight:900;
-  color:#70524e;
-}
-
-.page-subtitle{
-  margin-top:2px;
-  font-size:10px;
-  color:#aa8580;
-}
-
-.section-title{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:8px;
-}
-
-.section-title strong{
-  font-size:13px;
-}
-
-.section-title span{
-  font-size:9px;
-  color:#a9857f;
+  background:#fff0f4;
+  color:#ce7188;
 }
 
 /* =========================================================
    WAREHOUSE
 ========================================================= */
-.summary-grid{
+
+.inventory-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-  margin-top:10px;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
 }
 
-.summary-box{
-  padding:10px 5px;
-  text-align:center;
-  border-radius:15px;
-  background:#fff7ed;
-  border:1px solid #f0ddd0;
-}
-
-.summary-box .big{
-  font-size:17px;
-  font-weight:900;
-  color:#8c6158;
-}
-
-.summary-box small{
-  display:block;
-  font-size:8px;
-  color:#aa8880;
-}
-
-.stock-list{
-  display:grid;
-  gap:7px;
-}
-
-.stock-row{
-  display:grid;
-  grid-template-columns:32px 1fr auto;
-  align-items:center;
-  gap:7px;
-  padding:8px;
-  border-radius:15px;
-  background:#fff9f7;
-  border:1px solid #efded9;
+.stock-card{
+  padding:12px;
+  border-radius:19px;
+  background:#fffaf5;
+  border:1px solid #ecdcd1;
+  box-shadow:var(--soft-shadow);
 }
 
 .stock-icon{
-  width:30px;
-  height:30px;
-  border-radius:10px;
-  border:2px solid rgba(90,60,50,.08);
+  font-size:26px;
 }
 
 .stock-name{
+  margin-top:5px;
+  font-weight:900;
+  font-size:12px;
+}
+
+.stock-amount{
+  margin-top:3px;
+  font-size:10px;
+  color:#a78374;
+}
+
+.stock-bar{
+  margin-top:8px;
+  height:7px;
+  background:#eee0d8;
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.stock-bar i{
+  display:block;
+  height:100%;
+  background:#a8c98e;
+  border-radius:inherit;
+}
+
+.restock{
+  margin-top:7px;
+  width:100%;
+  min-height:34px;
+  border-radius:11px;
+  background:#f7e3b5;
+  color:#856331;
   font-size:10px;
   font-weight:900;
 }
 
-.stock-count{
-  font-size:8px;
-  color:#a0807b;
+.capacity-card{
+  margin-top:10px;
+  padding:13px;
+  border-radius:20px;
+  background:linear-gradient(145deg,#fff8eb,#fff0e8);
+  border:1px solid #ecd9ca;
 }
 
-.small-btn{
-  padding:7px 8px;
-  border-radius:10px;
-  background:#f7d9d8;
-  color:#805a56;
-  font-size:8px;
-  font-weight:900;
-}
-
-.buy-row{
+.capacity-line{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  gap:8px;
-  padding:10px;
-  border-radius:16px;
-  background:#fff4e7;
-  border:1px solid #efd9c2;
-  margin-bottom:7px;
-}
-
-.buy-info strong{
-  display:block;
   font-size:11px;
-}
-
-.buy-info small{
-  display:block;
-  margin-top:2px;
-  font-size:8px;
-  color:#a27d72;
-}
-
-.buy-btn{
-  flex:0 0 auto;
-  padding:9px 11px;
-  border-radius:12px;
-  background:#d99a69;
-  color:#fff;
-  font-size:9px;
-  font-weight:900;
+  font-weight:850;
 }
 
 /* =========================================================
    UPGRADES
 ========================================================= */
+
 .upgrade-list{
   display:grid;
   gap:9px;
 }
 
 .upgrade-card{
-  padding:11px;
-  border-radius:18px;
-  background:linear-gradient(135deg,#fff9f5,#fff0ed);
-  border:2px solid #efd9d3;
+  padding:13px;
+  border-radius:20px;
+  background:#fffaf5;
+  border:1px solid #ecdcd1;
+  box-shadow:var(--soft-shadow);
 }
 
 .upgrade-top{
   display:flex;
   align-items:center;
-  gap:9px;
+  gap:10px;
 }
 
 .upgrade-icon{
-  width:42px;
-  height:42px;
+  width:43px;
+  height:43px;
   border-radius:14px;
-  display:grid;
-  place-items:center;
-  background:#ffe3df;
-  font-size:23px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff0f4;
+  font-size:22px;
+  flex:0 0 43px;
 }
 
-.upgrade-info{
+.upgrade-main{
   flex:1;
 }
 
-.upgrade-info strong{
-  display:block;
-  font-size:12px;
-}
-
-.upgrade-info small{
-  display:block;
-  margin-top:3px;
-  font-size:8px;
-  line-height:1.35;
-  color:#a27d77;
-}
-
-.level{
-  margin-top:7px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  font-size:8px;
-  color:#9a7771;
-}
-
-.level-bar{
-  margin-top:4px;
-  height:7px;
-  border-radius:5px;
-  overflow:hidden;
-  background:#eadfdb;
-}
-
-.level-fill{
-  height:100%;
-  border-radius:5px;
-  background:linear-gradient(90deg,#f2b0b8,#d98591);
-}
-
-.upgrade-button{
-  margin-top:8px;
-  width:100%;
-  padding:9px;
-  border-radius:12px;
-  background:#d88994;
-  color:#fff;
-  font-size:9px;
+.upgrade-name{
+  font-size:13px;
   font-weight:900;
 }
 
-.upgrade-button:disabled{
+.upgrade-desc{
+  margin-top:2px;
+  font-size:10px;
+  color:#aa8171;
+  line-height:1.35;
+}
+
+.upgrade-level{
+  margin-top:5px;
+  font-size:10px;
+  color:#bd8d49;
+  font-weight:850;
+}
+
+.upgrade-btn{
+  margin-top:9px;
+  width:100%;
+  min-height:37px;
+  border-radius:12px;
+  background:#f5e0ad;
+  color:#806132;
+  font-size:10px;
+  font-weight:900;
+}
+
+.upgrade-btn:disabled{
   opacity:.45;
 }
 
 /* =========================================================
    REVIEWS
 ========================================================= */
-.rating-head{
-  text-align:center;
-  padding:12px;
-}
-
-.rating-number{
-  font-size:38px;
-  font-weight:900;
-  color:#77534d;
-}
-
-.stars{
-  display:flex;
-  justify-content:center;
-  gap:2px;
-  margin:2px 0;
-}
-
-.star-svg{
-  width:27px;
-  height:27px;
-  filter:drop-shadow(0 2px 2px rgba(170,115,40,.16));
-}
-
-.rating-count{
-  font-size:9px;
-  color:#a88780;
-}
 
 .review-list{
   display:grid;
-  gap:8px;
+  gap:9px;
 }
 
 .review-card{
-  padding:10px;
-  border-radius:17px;
-  border:2px solid #efddd8;
-  background:#fffafa;
+  padding:13px;
+  border-radius:20px;
+  background:#fffaf6;
+  border:1px solid #ecdcd1;
+  box-shadow:var(--soft-shadow);
 }
 
 .review-head{
   display:flex;
   align-items:center;
-  gap:7px;
+  gap:9px;
 }
 
 .review-avatar{
-  width:36px;
-  height:36px;
+  width:39px;
+  height:39px;
   border-radius:50%;
   overflow:hidden;
-  background:#ffe6e7;
+  background:#ffe7ed;
+  flex:0 0 39px;
 }
 
-.review-meta{
+.review-avatar svg{
+  width:100%;
+  height:100%;
+}
+
+.review-person{
+  min-width:0;
   flex:1;
 }
 
-.review-meta strong{
+.review-person strong{
   display:block;
-  font-size:10px;
-}
-
-.review-meta small{
-  display:block;
-  margin-top:2px;
-  color:#aa8580;
-  font-size:7px;
+  font-size:12px;
 }
 
 .review-stars{
+  margin-top:3px;
+  white-space:nowrap;
   font-size:12px;
-  letter-spacing:-2px;
+  line-height:1;
+  letter-spacing:1px;
+}
+
+.star.gold{
+  color:#e6b642;
+  text-shadow:0 1px 3px rgba(225,178,62,.25);
+}
+
+.star.white{
+  color:#e1d9d4;
 }
 
 .review-text{
-  margin-top:7px;
-  font-size:10px;
-  line-height:1.4;
-  color:#705955;
+  margin:9px 0 0;
+  font-size:11px;
+  line-height:1.45;
+  color:#795d51;
 }
 
-.review-emotion{
-  margin-top:6px;
-  font-size:19px;
+.reply-box{
+  margin-top:9px;
+  display:none;
+}
+
+.reply-box.show{
+  display:flex;
+  gap:6px;
+}
+
+.reply-input{
+  min-width:0;
+  flex:1;
+  height:37px;
+  border-radius:11px;
+  border:1px solid #e5d3ca;
+  background:#fff;
+  outline:none;
+  padding:0 10px;
+  color:#6f5147;
+  font-size:11px;
+}
+
+.reply-send{
+  padding:0 12px;
+  border-radius:11px;
+  background:#efabc0;
+  color:#fff;
+  font-size:10px;
+  font-weight:900;
+}
+
+.reply-display{
+  margin-top:8px;
+  padding:8px 9px;
+  border-radius:11px;
+  background:#fff0f4;
+  color:#9a6575;
+  font-size:10px;
+  line-height:1.35;
+}
+
+.reply-toggle{
+  margin-top:8px;
+  padding:0;
+  background:transparent;
+  color:#ca7b8f;
+  font-size:10px;
+  font-weight:900;
 }
 
 /* =========================================================
-   CLOSING OVERLAY
+   SUMMARY
 ========================================================= */
-.transition{
+
+.summary-screen{
   position:absolute;
   inset:0;
-  z-index:100;
-  pointer-events:none;
-  opacity:0;
+  z-index:80;
+  display:none;
+  overflow-y:auto;
+  padding:25px 16px calc(25px + env(safe-area-inset-bottom));
   background:
-    linear-gradient(
-      135deg,
-      rgba(255,230,235,.98),
-      rgba(255,246,231,.98)
-    );
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:opacity .35s ease;
+    radial-gradient(circle at 20% 15%,#fff 0 4px,transparent 5px),
+    radial-gradient(circle at 80% 20%,#fff 0 5px,transparent 6px),
+    linear-gradient(145deg,#ffe2e9,#fff5df 55%,#e5efd9);
 }
 
-.transition.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.transition-box{
-  text-align:center;
-  transform:translateY(15px);
-  transition:.35s;
-}
-
-.transition.show .transition-box{
-  transform:translateY(0);
-}
-
-.transition-icon{
-  font-size:52px;
-}
-
-.transition-box strong{
+.summary-screen.show{
   display:block;
-  margin-top:7px;
-  font-size:19px;
-  color:#765650;
+  animation:fadeIn .45s ease;
+}
+
+.summary-card{
+  width:min(100%,450px);
+  margin:0 auto;
+  padding:24px 17px;
+  border-radius:30px;
+  background:rgba(255,253,248,.95);
+  border:2px solid rgba(255,255,255,.9);
+  box-shadow:0 20px 55px rgba(113,73,59,.17);
+}
+
+.summary-ribbon{
+  width:max-content;
+  margin:0 auto 9px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:#f9e2ad;
+  color:#856738;
+  font-size:10px;
+  font-weight:900;
+}
+
+.summary-title{
+  text-align:center;
+  margin:0;
+  color:#795344;
+  font-size:24px;
+}
+
+.summary-sub{
+  text-align:center;
+  margin:5px 0 18px;
+  color:#ae8171;
+  font-size:11px;
+}
+
+.coin-counter{
+  text-align:center;
+  font-size:35px;
+  font-weight:1000;
+  color:#bd8130;
+  letter-spacing:-1px;
+  margin-bottom:18px;
+}
+
+.summary-lines{
+  border-top:1px dashed #dfc9bc;
+  border-bottom:1px dashed #dfc9bc;
+  padding:11px 0;
+}
+
+.summary-line{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:7px 2px;
+  font-size:12px;
+}
+
+.summary-line span:last-child{
+  font-weight:900;
+}
+
+.summary-line.cost span:last-child{
+  color:#c9777b;
+}
+
+.summary-line.profit{
+  margin-top:4px;
+  padding-top:10px;
+  border-top:1px solid #eadbd4;
+  font-size:14px;
+  font-weight:900;
+}
+
+.summary-note{
+  margin-top:14px;
+  text-align:center;
+  font-size:10px;
+  color:#aa8376;
+  line-height:1.5;
+}
+
+.next-day{
+  width:100%;
+  min-height:49px;
+  margin-top:17px;
+  border-radius:15px;
+  background:linear-gradient(#f3afc0,#e992a8);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 5px 0 #c8758b;
+}
+
+.next-day:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #c8758b;
 }
 
 /* =========================================================
    TOAST
 ========================================================= */
+
 .toast{
   position:absolute;
+  z-index:200;
   left:50%;
   bottom:82px;
-  transform:translate(-50%,15px);
-  z-index:150;
-  width:max-content;
-  max-width:calc(100% - 30px);
+  transform:translate(-50%,12px);
+  min-width:190px;
+  max-width:88%;
   padding:10px 14px;
-  border-radius:15px;
-  background:#684e49;
-  color:#fff;
-  font-size:10px;
-  font-weight:900;
+  border-radius:14px;
+  background:#6f5148;
+  color:white;
+  font-size:11px;
+  font-weight:750;
   text-align:center;
   opacity:0;
   pointer-events:none;
-  transition:.25s;
-  box-shadow:0 7px 16px rgba(80,50,45,.2);
+  transition:opacity .25s ease,transform .25s ease;
+  box-shadow:0 8px 20px rgba(80,50,42,.2);
 }
 
 .toast.show{
@@ -1340,805 +1388,430 @@ svg{
 }
 
 /* =========================================================
-   CLOSED STORE
+   ANIMATIONS
 ========================================================= */
-.closed-banner{
-  padding:12px;
-  border-radius:17px;
-  background:#fff0d9;
-  border:2px solid #efd6b4;
-  color:#8b674e;
-  font-size:10px;
-  line-height:1.4;
-  margin-bottom:9px;
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
 }
 
-.next-day{
-  width:100%;
-  padding:13px;
-  border-radius:16px;
-  background:linear-gradient(#dc9d70,#c98055);
-  color:#fff;
-  font-size:11px;
-  font-weight:900;
-  box-shadow:0 4px 0 rgba(110,65,42,.15);
+@keyframes zzz{
+  0%{opacity:.2;transform:translate(0,4px)}
+  45%{opacity:1}
+  100%{opacity:.1;transform:translate(9px,-8px)}
 }
 
-/* =========================================================
-   MOBILE SAFETY
-========================================================= */
-@media(max-width:380px){
-  .customer-card{
-    min-height:176px;
-  }
-
-  .avatar-wrap{
-    width:70px;
-    height:70px;
-    flex-basis:70px;
-  }
-
-  .speech{
-    font-size:11px;
-  }
-
-  .option-btn{
-    font-size:8px;
-  }
-
-  .jar{
-    height:70px;
-  }
-
-  .counter{
-    height:118px;
-  }
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
-/* =========================================================
-   NO SELECTION / NO GLOW
-========================================================= */
-button,
-.option-btn,
-.nav-btn,
-.upgrade-button,
-.buy-btn,
-.action-btn{
-  -webkit-user-select:none;
-  user-select:none;
+@keyframes pop{
+  0%{transform:scale(.75);opacity:.3}
+  70%{transform:scale(1.04);opacity:1}
+  100%{transform:scale(1);opacity:1}
 }
 
-.hidden{
-  display:none!important;
+.pop{
+  animation:pop .22s ease;
+}
+
+@media(max-height:700px){
+  .customer-panel{
+    min-height:140px;
+  }
+
+  .workspace{
+    min-height:285px;
+  }
+
+  .ice-stage{
+    height:158px;
+  }
+
+  .cat-rest{
+    height:82px;
+  }
 }
 </style>
 </head>
 
 <body>
-
 <div id="app">
 
-<div class="game">
+  <!-- =====================================================
+       START
+  ====================================================== -->
+  <section class="start-screen" id="startScreen">
+    <div class="start-card">
+
+      <div class="start-deco">🍓 ✦ 🍦 ✦ 🍒</div>
+
+      <div class="logo-cat">
+        <svg viewBox="0 0 120 100" aria-hidden="true">
+          <ellipse cx="60" cy="84" rx="45" ry="10" fill="#efb3c0"/>
+          <ellipse cx="59" cy="63" rx="31" ry="25" fill="#f6d995"/>
+          <path d="M35 48 L39 19 L57 39Z" fill="#f6d995"/>
+          <path d="M64 39 L82 19 L85 49Z" fill="#f6d995"/>
+          <path d="M40 29 L45 25 L50 36Z" fill="#eaaeb0"/>
+          <path d="M75 28 L80 25 L79 38Z" fill="#eaaeb0"/>
+          <ellipse cx="48" cy="61" rx="4" ry="2" fill="#76584d"/>
+          <ellipse cx="72" cy="61" rx="4" ry="2" fill="#76584d"/>
+          <ellipse cx="44" cy="69" rx="7" ry="4" fill="#eea2a9" opacity=".55"/>
+          <ellipse cx="76" cy="69" rx="7" ry="4" fill="#eea2a9" opacity=".55"/>
+          <path d="M57 66 Q60 69 63 66" fill="none" stroke="#b97b7d" stroke-width="2" stroke-linecap="round"/>
+          <path d="M87 65 Q106 50 103 72 Q101 87 87 82" fill="none" stroke="#f6d995" stroke-width="10" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <h1 class="start-title">TIỆM BÁN KEM<br>NGỌT NGÀO</h1>
+
+      <p class="start-subtitle">
+        Một tiệm kem nhỏ xinh, nơi mỗi vị kem<br>
+        được tạo nên từ một chút yêu thương.
+      </p>
+
+      <div class="start-info">
+        <span class="info-chip">🍦 Làm kem</span>
+        <span class="info-chip">🌸 Phục vụ khách</span>
+        <span class="info-chip">⭐ Nhận đánh giá</span>
+      </div>
+
+      <button class="start-button" id="startBtn">
+        ✨ MỞ CỬA TIỆM ✨
+      </button>
+    </div>
+  </section>
 
   <!-- =====================================================
-       CANOPY
+       MAIN GAME
   ====================================================== -->
-  <header class="canopy">
+  <main class="game" id="game">
 
-    <div class="canopy-main"></div>
+    <div class="game-shell">
 
-    <div class="lantern l1"></div>
-    <div class="lantern l2"></div>
+      <header class="top">
+        <div class="awning"></div>
 
-    <div class="shop-sign">
-      <strong>🍦 TIỆM KEM NGỌT NGÀO</strong>
-      <small>một chút ngọt ngào mỗi ngày ♡</small>
+        <div class="header-row">
+          <div>
+            <div class="shop-name">🍦 Tiệm Ngọt Ngào</div>
+            <span class="day-label" id="dayLabel">Ngày 1 · 09:00</span>
+          </div>
+
+          <div class="day-center">♡ KEM & YÊU THƯƠNG ♡</div>
+
+          <div class="money" id="moneyLabel">0đ</div>
+        </div>
+      </header>
+
+      <section class="content">
+
+        <!-- ==================== SHOP ==================== -->
+        <section class="screen" id="shopScreen">
+
+          <div class="section-title">
+            <h2>👛 Khách Đang Chờ</h2>
+            <span id="servedLabel">0 khách đã phục vụ</span>
+          </div>
+
+          <div class="customer-panel" id="customerPanel">
+            <div class="customer-loading" id="customerLoading">
+              <div class="loading-heart">♡</div>
+              <strong>Đang gọi khách tiếp theo...</strong>
+            </div>
+
+            <div class="customer-inner" id="customerContent" style="display:none">
+
+              <div class="customer-avatar" id="customerAvatar"></div>
+
+              <div class="customer-info">
+                <div class="customer-name-row">
+                  <span class="customer-name" id="customerName"></span>
+                  <i class="gender-dot" id="genderDot"></i>
+                </div>
+
+                <div class="speech" id="customerOrder"></div>
+              </div>
+            </div>
+
+            <div class="customer-bottom" id="customerBottom" style="display:none">
+
+              <svg class="patience-ring" id="patienceRing"
+                   viewBox="0 0 36 36">
+                <circle class="track" cx="18" cy="18" r="14"></circle>
+                <circle class="progress" id="patienceProgress"
+                        cx="18" cy="18" r="14"
+                        stroke-dasharray="87.96"
+                        stroke-dashoffset="0"></circle>
+              </svg>
+
+              <div class="patience-caption">
+                <i id="patienceBar"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- WORKSPACE -->
+          <div class="counter">
+
+            <div class="counter-label">
+              <strong>🍨 BÀN LÀM KEM</strong>
+              <small id="workspaceStatus">Bắt đầu chọn đế</small>
+            </div>
+
+            <div class="workspace" id="workspace">
+
+              <div class="workspace-head">
+                <div class="step-indicator">
+                  <i class="step-dot active" id="stepDot1"></i>
+                  <i class="step-dot" id="stepDot2"></i>
+                  <i class="step-dot" id="stepDot3"></i>
+                </div>
+
+                <span class="workspace-hint" id="stepHint">
+                  Bước 1 · Chọn đế
+                </span>
+              </div>
+
+              <div class="ice-stage">
+                <div class="workspace-empty" id="workspaceEmpty">
+                  <strong>🍦 Bắt đầu một ly kem xinh</strong>
+                  <span>Chọn cốc hoặc ốc quế bên dưới</span>
+                </div>
+
+                <div class="ice-display" id="iceDisplay">
+                  <div class="empty-plate"></div>
+                  <div class="cone-art" id="coneArt"></div>
+                  <div class="cup-art" id="cupArt"></div>
+
+                  <div class="ice-scoop" id="scoop1"></div>
+                  <div class="ice-scoop two" id="scoop2"></div>
+                  <div class="ice-scoop three" id="scoop3"></div>
+
+                  <div class="topping-art" id="toppingArt"></div>
+                </div>
+              </div>
+
+              <div class="ingredient-area">
+
+                <!-- STEP 1 -->
+                <div id="baseChoices">
+                  <div class="ingredient-title">① Chọn đế</div>
+
+                  <div class="choice-row">
+                    <button class="choice" data-base="cone">
+                      <span class="emoji">🍦</span>
+                      Ốc quế
+                    </button>
+
+                    <button class="choice" data-base="cup">
+                      <span class="emoji">🍨</span>
+                      Ly kem
+                    </button>
+                  </div>
+                </div>
+
+                <!-- STEP 2 -->
+                <div id="flavorChoices" style="display:none">
+                  <div class="ingredient-title">
+                    ② Chọn vị kem
+                    <span class="inventory-note">Tối đa 3 viên</span>
+                  </div>
+
+                  <div class="choice-row wide" id="flavorRow"></div>
+                </div>
+
+                <!-- STEP 3 -->
+                <div id="toppingChoices" style="display:none">
+                  <div class="ingredient-title">③ Chọn topping</div>
+
+                  <div class="choice-row" id="toppingRow"></div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button class="secondary-action" id="resetBuild">
+                ↺ LÀM LẠI
+              </button>
+
+              <button class="primary-action" id="serveBtn" disabled>
+                🍦 GIAO KEM
+              </button>
+            </div>
+
+          </div>
+
+          <!-- CAT -->
+          <div class="cat-rest">
+
+            <div class="cushion"></div>
+
+            <div class="sleep-cat">
+              <div class="cat-body"></div>
+
+              <div class="cat-head">
+                <div class="ear left"></div>
+                <div class="ear right"></div>
+                <div class="cat-cheek l"></div>
+                <div class="cat-cheek r"></div>
+                <div class="cat-face"></div>
+                <div class="cat-nose"></div>
+              </div>
+
+              <div class="cat-tail"></div>
+              <div class="zzz">Z<br>z<br>z</div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ==================== WAREHOUSE ==================== -->
+        <section class="screen" id="warehouseScreen" style="display:none">
+
+          <div class="section-title">
+            <h2>📦 Kho Hàng</h2>
+            <span id="capacityLabel"></span>
+          </div>
+
+          <div class="inventory-grid" id="inventoryGrid"></div>
+
+          <div class="capacity-card">
+            <div class="capacity-line">
+              <span>Sức chứa kho</span>
+              <span id="warehouseCapacity"></span>
+            </div>
+
+            <div class="stock-bar" style="margin-top:8px">
+              <i id="warehouseBar" style="width:45%"></i>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ==================== UPGRADES ==================== -->
+        <section class="screen" id="upgradeScreen" style="display:none">
+
+          <div class="section-title">
+            <h2>🛠️ Nâng Cấp Tiệm</h2>
+            <span>Đầu tư để phục vụ tốt hơn</span>
+          </div>
+
+          <div class="upgrade-list" id="upgradeList"></div>
+
+        </section>
+
+        <!-- ==================== REVIEWS ==================== -->
+        <section class="screen" id="reviewScreen" style="display:none">
+
+          <div class="section-title">
+            <h2>📱 Đánh Giá</h2>
+            <span id="reviewCount"></span>
+          </div>
+
+          <div class="review-list" id="reviewList"></div>
+
+        </section>
+
+      </section>
+
+      <!-- BOTTOM NAV -->
+      <nav class="bottom-nav">
+
+        <button class="nav-btn active" data-screen="shop">
+          <span>🍦</span>
+          Tiệm Kem
+        </button>
+
+        <button class="nav-btn" data-screen="warehouse">
+          <span>📦</span>
+          Kho Hàng
+        </button>
+
+        <button class="nav-btn" data-screen="upgrade">
+          <span>🛠️</span>
+          Nâng Cấp
+        </button>
+
+        <button class="nav-btn" data-screen="review">
+          <span>⭐</span>
+          Đánh Giá
+        </button>
+
+      </nav>
+
+      <!-- TOAST -->
+      <div class="toast" id="toast"></div>
+
     </div>
 
-  </header>
-
-  <!-- DECOR -->
-  <div class="sticker star" style="left:5%;top:118px">✦</div>
-  <div class="sticker heart" style="right:6%;top:145px">♡</div>
-  <div class="sticker cloud" style="left:4%;top:202px"></div>
-  <div class="sticker cloud" style="right:4%;top:265px"></div>
-  <div class="sticker star" style="right:8%;top:410px">✧</div>
-
-  <!-- =====================================================
-       MAIN
-  ====================================================== -->
-  <main class="main">
-
     <!-- ===================================================
-         SHOP SCREEN
+         SUMMARY
     ==================================================== -->
-    <section id="shopScreen" class="screen active">
+    <section class="summary-screen" id="summaryScreen">
 
-      <div class="hud">
+      <div class="summary-card">
 
-        <div class="hud-box">
-          <small>💰 TIỀN</small>
-          <strong id="moneyText">0đ</strong>
+        <div class="summary-ribbon">✦ CA LÀM VIỆC HOÀN TẤT ✦</div>
+
+        <h2 class="summary-title">
+          Tổng Kết Ngày <span id="summaryDay"></span>
+        </h2>
+
+        <p class="summary-sub">
+          Một ngày thật ngọt ngào tại tiệm kem.
+        </p>
+
+        <div class="coin-counter" id="summaryMoney">
+          0đ
         </div>
 
-        <div class="clock">
-          <strong id="clockText">09:00</strong>
+        <div class="summary-lines">
+
+          <div class="summary-line">
+            <span>🍦 Số ly đã bán</span>
+            <span id="summaryServed">0</span>
+          </div>
+
+          <div class="summary-line">
+            <span>💰 Doanh thu</span>
+            <span id="summaryRevenue">0đ</span>
+          </div>
+
+          <div class="summary-line cost">
+            <span>📦 Chi phí nhập hàng</span>
+            <span id="summaryCosts">0đ</span>
+          </div>
+
+          <div class="summary-line">
+            <span>🚪 Khách bỏ đi</span>
+            <span id="summaryWalkouts">0</span>
+          </div>
+
+          <div class="summary-line profit">
+            <span>🌷 Lãi ròng</span>
+            <span id="summaryProfit">0đ</span>
+          </div>
+
         </div>
 
-        <div class="hud-box" style="text-align:right">
-          <small>🍨 HÔM NAY</small>
-          <strong id="revenueText">0đ</strong>
-        </div>
+        <p class="summary-note">
+          Tiền mặt và kho hàng sẽ được giữ lại.<br>
+          Ngày tiếp theo sẽ bắt đầu lúc 09:00.
+        </p>
+
+        <button class="next-day" id="nextDayBtn">
+          🌸 BẮT ĐẦU NGÀY TIẾP THEO
+        </button>
 
       </div>
-
-      <!-- CUSTOMER -->
-      <div id="customerCard" class="customer-card">
-
-        <div class="patience" id="patienceRing">
-          <span class="patience-text" id="patienceText">40s</span>
-          <span class="patience-label">KIÊN NHẪN</span>
-        </div>
-
-        <div class="customer-head">
-
-          <div class="avatar-wrap" id="customerAvatar"></div>
-
-          <div class="customer-info">
-            <div class="customer-name" id="customerName">Đang gọi khách...</div>
-            <div class="customer-type" id="customerType">
-              Khách đang chờ
-            </div>
-          </div>
-
-        </div>
-
-        <div class="speech" id="customerSpeech">
-          Xin chào! Mình muốn một ly kem thật ngon nhé! 🍦
-        </div>
-
-      </div>
-
-      <!-- COUNTER -->
-      <div class="counter">
-
-        <div class="counter-top"></div>
-        <div class="counter-front"></div>
-
-        <div class="jar-row" id="jarRow"></div>
-
-        <!-- =================================================
-             SLEEPING CAT SVG
-        ================================================== -->
-        <div class="cat-area">
-
-          <svg class="cat-svg" viewBox="0 0 150 120">
-
-            <!-- cushion -->
-            <ellipse
-              cx="78"
-              cy="102"
-              rx="62"
-              ry="14"
-              fill="#e9aab8"
-            />
-
-            <ellipse
-              cx="78"
-              cy="98"
-              rx="55"
-              ry="11"
-              fill="#f5c5cf"
-            />
-
-            <g class="cat-float">
-
-              <!-- tail behind -->
-              <path
-                d="M113 75
-                   C137 75 139 96 119 101
-                   C105 105 99 94 108 88
-                   C117 82 126 89 121 94"
-                fill="none"
-                stroke="#d59662"
-                stroke-width="11"
-                stroke-linecap="round"
-              />
-
-              <!-- curled body -->
-              <ellipse
-                cx="78"
-                cy="76"
-                rx="45"
-                ry="30"
-                fill="#efc28e"
-                stroke="#b97850"
-                stroke-width="2"
-              />
-
-              <!-- belly -->
-              <ellipse
-                cx="75"
-                cy="81"
-                rx="29"
-                ry="21"
-                fill="#f7d9ad"
-              />
-
-              <!-- head -->
-              <path
-                d="M42 65
-                   C36 47 44 28 62 24
-                   C80 18 103 28 108 46
-                   C113 63 102 76 83 80
-                   C62 83 48 76 42 65Z"
-                fill="#efc28e"
-                stroke="#b97850"
-                stroke-width="2"
-              />
-
-              <!-- folded left ear -->
-              <path
-                d="M45 43
-                   C34 36 30 25 36 19
-                   C44 20 54 27 58 37
-                   Z"
-                fill="#dfa974"
-                stroke="#b97850"
-                stroke-width="2"
-              />
-
-              <!-- folded right ear -->
-              <path
-                d="M91 31
-                   C99 21 111 18 116 25
-                   C115 35 108 43 100 46
-                   Z"
-                fill="#dfa974"
-                stroke="#b97850"
-                stroke-width="2"
-              />
-
-              <!-- cheeks -->
-              <ellipse
-                cx="55"
-                cy="60"
-                rx="10"
-                ry="6"
-                fill="#eaa5a5"
-                opacity=".65"
-              />
-
-              <ellipse
-                cx="94"
-                cy="60"
-                rx="10"
-                ry="6"
-                fill="#eaa5a5"
-                opacity=".65"
-              />
-
-              <!-- sleeping eyes -->
-              <path
-                d="M55 53 Q61 58 67 53"
-                fill="none"
-                stroke="#704e49"
-                stroke-width="2.4"
-                stroke-linecap="round"
-              />
-
-              <path
-                d="M83 53 Q89 58 95 53"
-                fill="none"
-                stroke="#704e49"
-                stroke-width="2.4"
-                stroke-linecap="round"
-              />
-
-              <!-- nose -->
-              <path
-                d="M74 59 Q78 56 82 59 Q78 63 74 59"
-                fill="#c98184"
-              />
-
-              <!-- mouth -->
-              <path
-                d="M78 62 Q74 67 70 64
-                   M78 62 Q82 67 86 64"
-                fill="none"
-                stroke="#704e49"
-                stroke-width="1.8"
-                stroke-linecap="round"
-              />
-
-              <!-- paws -->
-              <ellipse
-                cx="52"
-                cy="84"
-                rx="14"
-                ry="8"
-                fill="#f1c99a"
-                transform="rotate(16 52 84)"
-              />
-
-              <ellipse
-                cx="94"
-                cy="84"
-                rx="14"
-                ry="8"
-                fill="#f1c99a"
-                transform="rotate(-16 94 84)"
-              />
-
-              <!-- stripes -->
-              <path
-                d="M55 34 Q60 39 63 43
-                   M68 30 Q72 35 74 40
-                   M82 30 Q85 35 87 40"
-                fill="none"
-                stroke="#c58c5b"
-                stroke-width="3"
-                stroke-linecap="round"
-              />
-
-            </g>
-
-            <!-- Zzz -->
-            <g class="zzz">
-              <text
-                x="111"
-                y="26"
-                font-size="14"
-                font-weight="900"
-                fill="#96716e"
-              >Z</text>
-
-              <text
-                x="123"
-                y="16"
-                font-size="10"
-                font-weight="900"
-                fill="#b48782"
-              >z</text>
-
-              <text
-                x="132"
-                y="9"
-                font-size="7"
-                font-weight="900"
-                fill="#c49b95"
-              >z</text>
-            </g>
-
-          </svg>
-
-        </div>
-
-      </div>
-
-      <!-- MAKING -->
-      <div class="make-card">
-
-        <div class="make-title">
-          <strong>🍨 Khu vực làm kem</strong>
-          <span class="step-pill" id="stepText">Bước 1 / 3</span>
-        </div>
-
-        <div class="ice-stage">
-
-          <div class="stage-label" id="stageLabel">
-            Chọn loại đựng
-          </div>
-
-          <div class="cup-display" id="cupDisplay">
-            <div class="cup"></div>
-          </div>
-
-          <div class="scoop-stack" id="scoopStack"></div>
-
-          <div class="topping-display" id="toppingDisplay"></div>
-
-        </div>
-
-        <!-- BASE -->
-        <div class="option-title">① Chọn ốc quế hoặc ly</div>
-
-        <div class="options" id="baseOptions">
-
-          <button class="option-btn" data-base="cone">
-            <span class="emoji">🍦</span>
-            Ốc quế
-          </button>
-
-          <button class="option-btn" data-base="cup">
-            <span class="emoji">🥤</span>
-            Ly kem
-          </button>
-
-        </div>
-
-        <!-- FLAVOR -->
-        <div class="option-title">② Múc vị kem</div>
-
-        <div class="options" id="flavorOptions">
-
-          <button class="option-btn" data-flavor="chocolate">
-            <span class="emoji">🍫</span>
-            Socola
-          </button>
-
-          <button class="option-btn" data-flavor="strawberry">
-            <span class="emoji">🍓</span>
-            Dâu
-          </button>
-
-          <button class="option-btn" data-flavor="vanilla">
-            <span class="emoji">🍨</span>
-            Vani
-          </button>
-
-          <button class="option-btn" data-flavor="matcha">
-            <span class="emoji">🍵</span>
-            Matcha
-          </button>
-
-          <button class="option-btn" data-flavor="butter">
-            <span class="emoji">🧈</span>
-            Bơ
-          </button>
-
-          <button class="option-btn" data-flavor="durian">
-            <span class="emoji">💛</span>
-            Sầu riêng
-          </button>
-
-        </div>
-
-        <!-- TOPPING -->
-        <div class="option-title">③ Thêm topping</div>
-
-        <div class="options" id="toppingOptions">
-
-          <button class="option-btn" data-topping="sprinkles">
-            <span class="emoji">🌈</span>
-            Cốm màu
-          </button>
-
-          <button class="option-btn" data-topping="strawberrySauce">
-            <span class="emoji">🍓</span>
-            Sốt dâu
-          </button>
-
-          <button class="option-btn" data-topping="cherry">
-            <span class="emoji">🍒</span>
-            Cherry
-          </button>
-
-          <button class="option-btn" data-topping="cookie">
-            <span class="emoji">🍪</span>
-            Bánh vụn
-          </button>
-
-        </div>
-
-        <div class="action-row">
-
-          <button class="action-btn serve" id="serveBtn">
-            🍨 GIAO KEM
-          </button>
-
-          <button class="action-btn reset" id="resetBtn">
-            ↻ LÀM LẠI
-          </button>
-
-        </div>
-
-      </div>
-
-      <button
-        id="closeStoreBtn"
-        style="
-          width:100%;
-          margin-top:8px;
-          padding:11px;
-          border-radius:15px;
-          background:#fff;
-          border:2px solid #e6ccc6;
-          color:#876963;
-          font-size:10px;
-          font-weight:900;
-        "
-      >
-        🔒 ĐÓNG CỬA & TỔNG KẾT NGÀY
-      </button>
-
-    </section>
-
-    <!-- ===================================================
-         WAREHOUSE
-    ==================================================== -->
-    <section id="warehouseScreen" class="screen">
-
-      <div class="panel">
-
-        <div class="page-title">📦 Kho Hàng & Tổng Kết Ngày</div>
-
-        <div class="page-subtitle">
-          Chuẩn bị nguyên liệu và cửa hàng cho ngày mới.
-        </div>
-
-        <div class="summary-grid">
-
-          <div class="summary-box">
-            <div class="big" id="summaryRevenue">0đ</div>
-            <small>Doanh thu</small>
-          </div>
-
-          <div class="summary-box">
-            <div class="big" id="summaryServed">0</div>
-            <small>Ly bán</small>
-          </div>
-
-          <div class="summary-box">
-            <div class="big" id="summaryWalkouts">0</div>
-            <small>Bỏ về</small>
-          </div>
-
-        </div>
-
-      </div>
-
-      <div id="closedBanner" class="closed-banner">
-        🌙 Tiệm đã đóng cửa. Hãy nhập thêm nguyên liệu và nâng cấp trước khi mở cửa ngày mai.
-      </div>
-
-      <!-- BUY CARTONS -->
-      <div class="panel">
-
-        <div class="section-title">
-          <strong>🛒 Nhập kem sỉ</strong>
-          <span>thùng nguyên liệu</span>
-        </div>
-
-        <div id="buyList"></div>
-
-      </div>
-
-      <!-- STOCK -->
-      <div class="panel">
-
-        <div class="section-title">
-          <strong>🧊 Kho kem</strong>
-          <span id="capacityText">0 / 0</span>
-        </div>
-
-        <div class="stock-list" id="stockList"></div>
-
-      </div>
-
-      <button class="next-day" id="nextDayBtn">
-        ☀️ SANG NGÀY MỚI
-      </button>
-
-    </section>
-
-    <!-- ===================================================
-         UPGRADE
-    ==================================================== -->
-    <section id="upgradeScreen" class="screen">
-
-      <div class="panel">
-
-        <div class="page-title">🛠️ Nâng Cấp Tiệm</div>
-
-        <div class="page-subtitle">
-          Dùng tiền kiếm được để biến tiệm kem thành cửa hàng lớn.
-        </div>
-
-      </div>
-
-      <div class="upgrade-list">
-
-        <!-- PRICE -->
-        <div class="upgrade-card">
-
-          <div class="upgrade-top">
-
-            <div class="upgrade-icon">💰</div>
-
-            <div class="upgrade-info">
-              <strong>Nâng cấp công thức / Tăng giá bán kem</strong>
-              <small>
-                Tăng giá bán cơ bản cho mỗi ly kem.
-                Giá càng cao, mỗi đơn hoàn thành càng kiếm nhiều tiền.
-              </small>
-            </div>
-
-          </div>
-
-          <div class="level">
-            <span id="priceLevelText">Cấp 1</span>
-            <span id="priceValueText">10.000đ / ly</span>
-          </div>
-
-          <div class="level-bar">
-            <div class="level-fill" id="priceLevelFill"></div>
-          </div>
-
-          <button class="upgrade-button" id="priceUpgradeBtn">
-            NÂNG CẤP
-          </button>
-
-        </div>
-
-        <!-- SCOOP SPEED -->
-        <div class="upgrade-card">
-
-          <div class="upgrade-top">
-
-            <div class="upgrade-icon">🥄</div>
-
-            <div class="upgrade-info">
-              <strong>Tăng tốc độ múc kem</strong>
-              <small>
-                Múc nhanh hơn và giúp khách có thêm thời gian kiên nhẫn.
-              </small>
-            </div>
-
-          </div>
-
-          <div class="level">
-            <span id="scoopLevelText">Cấp 0</span>
-            <span>+3 giây / cấp</span>
-          </div>
-
-          <div class="level-bar">
-            <div class="level-fill" id="scoopLevelFill"></div>
-          </div>
-
-          <button class="upgrade-button" id="scoopUpgradeBtn">
-            NÂNG CẤP
-          </button>
-
-        </div>
-
-        <!-- STORAGE -->
-        <div class="upgrade-card">
-
-          <div class="upgrade-top">
-
-            <div class="upgrade-icon">🧊</div>
-
-            <div class="upgrade-info">
-              <strong>Mở rộng kho hàng</strong>
-              <small>
-                Tăng sức chứa của từng hũ kem.
-              </small>
-            </div>
-
-          </div>
-
-          <div class="level">
-            <span id="freezerLevelText">Cấp 0</span>
-            <span id="freezerCapacityText">20 / hũ</span>
-          </div>
-
-          <div class="level-bar">
-            <div class="level-fill" id="freezerLevelFill"></div>
-          </div>
-
-          <button class="upgrade-button" id="freezerUpgradeBtn">
-            NÂNG CẤP
-          </button>
-
-        </div>
-
-        <!-- PATIENCE -->
-        <div class="upgrade-card">
-
-          <div class="upgrade-top">
-
-            <div class="upgrade-icon">💗</div>
-
-            <div class="upgrade-info">
-              <strong>Tăng thời gian kiên nhẫn</strong>
-              <small>
-                Khách sẽ chờ lâu hơn trước khi bỏ đi.
-              </small>
-            </div>
-
-          </div>
-
-          <div class="level">
-            <span id="patienceLevelText">Cấp 0</span>
-            <span>+3 giây / cấp</span>
-          </div>
-
-          <div class="level-bar">
-            <div class="level-fill" id="patienceLevelFill"></div>
-          </div>
-
-          <button class="upgrade-button" id="patienceUpgradeBtn">
-            NÂNG CẤP
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- ===================================================
-         REVIEWS
-    ==================================================== -->
-    <section id="reviewsScreen" class="screen">
-
-      <div class="panel rating-head">
-
-        <div class="page-title">📱 Đánh Giá Khách Hàng</div>
-
-        <div class="rating-number" id="ratingNumber">5.0</div>
-
-        <div class="stars" id="bigStars"></div>
-
-        <div class="rating-count" id="ratingCount">
-          Chưa có đánh giá
-        </div>
-
-      </div>
-
-      <div class="review-list" id="reviewList"></div>
-
     </section>
 
   </main>
-
-  <!-- =====================================================
-       BOTTOM NAV
-  ====================================================== -->
-  <nav class="bottom-nav">
-
-    <button class="nav-btn active" data-screen="shop">
-      <span class="nav-icon">🍦</span>
-      Tiệm Kem
-    </button>
-
-    <button class="nav-btn" data-screen="warehouse">
-      <span class="nav-icon">📦</span>
-      Kho Hàng
-    </button>
-
-    <button class="nav-btn" data-screen="upgrade">
-      <span class="nav-icon">🛠️</span>
-      Nâng Cấp
-    </button>
-
-    <button class="nav-btn" data-screen="reviews">
-      <span class="nav-icon">📱</span>
-      Đánh Giá
-    </button>
-
-  </nav>
-
-  <!-- TRANSITION -->
-  <div class="transition" id="transition">
-
-    <div class="transition-box">
-
-      <div class="transition-icon">🌙</div>
-
-      <strong id="transitionText">
-        Đang đóng cửa...
-      </strong>
-
-    </div>
-
-  </div>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
-</div>
 </div>
 
 <script>
@@ -2148,281 +1821,192 @@ button,
    GAME DATA
 ========================================================= */
 
-const FLAVORS = {
-  chocolate:{
-    name:"Socola",
-    emoji:"🍫",
-    color:"#815039"
+const GAME = {
+  day: 1,
+  minutes: 540, // 09:00
+  closeMinute: 1260, // 21:00
+  running: false,
+
+  cash: 50000,
+  dayRevenue: 0,
+  dayCosts: 0,
+  dayServed: 0,
+  dayWalkouts: 0,
+
+  servedTotal: 0,
+
+  activeCustomer: null,
+  customerStartedAt: 0,
+  customerExpiresAt: 0,
+
+  build: {
+    base: null,
+    flavors: [],
+    topping: null
   },
-  strawberry:{
-    name:"Dâu",
-    emoji:"🍓",
-    color:"#f59eae"
+
+  inventory: {
+    cone: 16,
+    cup: 16,
+    chocolate: 12,
+    strawberry: 12,
+    vanilla: 12,
+    matcha: 12,
+    butter: 12,
+    durian: 12,
+    sprinkles: 10,
+    strawberrySauce: 10,
+    cherry: 10,
+    cookie: 10
   },
-  vanilla:{
-    name:"Vani",
-    emoji:"🍨",
-    color:"#ffe6a8"
+
+  upgrades: {
+    warehouse: 0,
+    scoop: 0,
+    patience: 0,
+    price: 0
   },
-  matcha:{
-    name:"Matcha",
-    emoji:"🍵",
-    color:"#9dbd87"
-  },
-  butter:{
-    name:"Bơ",
-    emoji:"🧈",
-    color:"#f3c967"
-  },
-  durian:{
-    name:"Sầu riêng",
-    emoji:"💛",
-    color:"#d8d878"
-  }
+
+  reviews: [],
+
+  usedCustomerKeys: new Set(),
+
+  currentScreen: "shop"
 };
 
-const TOPPINGS = {
-  sprinkles:{
-    name:"Cốm màu",
+const FLAVORS = [
+  {
+    id:"chocolate",
+    name:"Socola",
+    emoji:"🍫",
+    color:"#8b5949"
+  },
+  {
+    id:"strawberry",
+    name:"Dâu",
+    emoji:"🍓",
+    color:"#f09aaa"
+  },
+  {
+    id:"vanilla",
+    name:"Vani",
+    emoji:"🍦",
+    color:"#f6dfa0"
+  },
+  {
+    id:"matcha",
+    name:"Matcha",
+    emoji:"🍵",
+    color:"#a9c38f"
+  },
+  {
+    id:"butter",
+    name:"Bơ",
+    emoji:"🧈",
+    color:"#f1c96c"
+  },
+  {
+    id:"durian",
+    name:"Sầu riêng",
+    emoji:"🌼",
+    color:"#d9d46c"
+  }
+];
+
+const TOPPINGS = [
+  {
+    id:"sprinkles",
+    name:"Cốm cầu vồng",
     emoji:"🌈"
   },
-  strawberrySauce:{
+  {
+    id:"strawberrySauce",
     name:"Sốt dâu",
     emoji:"🍓"
   },
-  cherry:{
+  {
+    id:"cherry",
     name:"Cherry",
     emoji:"🍒"
   },
-  cookie:{
-    name:"Bánh vụn",
+  {
+    id:"cookie",
+    name:"Vụn cookie",
     emoji:"🍪"
   }
-};
+];
 
-const BASES = {
-  cone:{
-    name:"Ốc quế",
-    emoji:"🍦"
-  },
-  cup:{
-    name:"Ly kem",
-    emoji:"🥤"
-  }
-};
+const FEMALE_FIRST = [
+  "Mia","Linh","An","Nhi","Mây","Bông","Hana","Yumi",
+  "Mina","Thư","Vy","Kem","Mộc","Na"
+];
 
-/* =========================================================
-   NAMES
-========================================================= */
-
-const FIRST_NAMES = [
-  "An","Bảo","Chi","Duy","Hà","Hân","Khoa","Khôi","Lan","Linh",
-  "Mai","Minh","My","Nam","Ngọc","Nhi","Phúc","Quân","Thảo","Trang",
-  "Vy","Yến","Tuấn","Huyền","Kiên","Tú","Mộc","Nấm","Mây","Sơn",
-  "Trâm","Ly","Nhã","Hạ","Đăng","Khang","Thư","Uyên","Quỳnh","Tâm"
+const MALE_FIRST = [
+  "Minh","Khoa","Bo","Bin","Ken","Tí","Nam","Leo",
+  "Bon","Tom","Jun","Bắp","Sơn","Duy"
 ];
 
 const LAST_NAMES = [
-  "Nguyễn","Trần","Lê","Phạm","Hoàng","Huỳnh","Phan","Vũ","Võ","Đặng",
-  "Bùi","Đỗ","Ngô","Dương","Lý","Đinh","Mai","Cao","Tạ","Trịnh"
+  "Ngọt","Mây","Kem","Bông","Dâu","Mộc","Nắng",
+  "Nhỏ","Đào","Sữa","Cherry","Mật"
 ];
 
-const CUSTOMER_TYPES = [
-  "Khách ghé tiệm",
-  "Tín đồ kem ngọt",
-  "Khách quen",
-  "Bạn trẻ đáng yêu",
-  "Khách đi dạo",
-  "Thực khách tò mò"
+const FEMALE_HAIRS = [
+  "long","short","bow","long2"
 ];
 
-/* =========================================================
-   DIALOGUE GENERATORS
-========================================================= */
-
-const OPENERS = [
-  "Cho mình",
-  "Mình muốn",
-  "Bán cho mình",
-  "Mình gọi",
-  "Cho em",
-  "Cho tớ",
-  "Mình lấy"
+const MALE_HAIRS = [
+  "short","side","spiky","soft"
 ];
 
-const DIALOGUE_ENDS = [
-  "nhé!",
-  "nha!",
-  "với ạ!",
-  "giúp mình nhé!",
-  "nhé chủ tiệm!",
-  "thật xinh xắn nha!",
-  "ngon ngon một chút nhé!"
+const ORDER_NORMAL = [
+  "Cho mình {qty} viên vị {flavor} nhé!",
+  "Mình muốn {base} với {qty} viên {flavor}.",
+  "Làm cho mình {qty} viên {flavor}, thêm {topping}.",
+  "Cho mình một phần {flavor} thật xinh nhé!",
+  "Mình lấy {base}, vị {flavor}, thêm {topping} nha!"
 ];
 
-const POSITIVE_START = [
-  "Kem ngon quá!",
-  "Mình thích ly kem này lắm!",
-  "Vị kem rất vừa miệng.",
-  "Tiệm làm nhanh thật đó!",
-  "Ly kem xinh và ngon!",
-  "Mình sẽ quay lại!",
-  "Món kem hôm nay tuyệt quá.",
-  "Ăn một miếng là vui cả ngày!",
-  "Kem mịn và topping rất hợp.",
-  "Món này đúng gu của mình!"
+const ORDER_RANDOM = [
+  "Cho mình 2 viên vị bất kỳ, tùy shop mix nhé!",
+  "Làm giúp em 1 ly kem vị ngẫu nhiên ngon nhất quán!",
+  "Shop tự chọn 2 vị kem hợp nhau giúp mình nha!",
+  "Mình muốn một phần kem bất ngờ, shop sáng tạo nhé!",
+  "Cho mình 2 viên kem mix ngẫu nhiên và một topping bất kỳ!"
 ];
 
-const POSITIVE_MIDDLE = [
-  "Múc kem rất đẹp.",
-  "Topping vừa đủ.",
-  "Hương vị dễ thương ghê.",
-  "Ly kem nhìn rất bắt mắt.",
-  "Phục vụ nhanh nên mình rất vui.",
-  "Mọi thứ gọn gàng và đáng yêu.",
-  "Kem có vị thơm nhẹ rất thích.",
-  "Cách làm món rất chỉn chu."
-];
-
-const POSITIVE_END = [
-  "Lần sau mình sẽ thử vị khác.",
-  "Mình cho tiệm một tim nhé!",
-  "Đáng yêu quá trời.",
-  "Một buổi chiều ngọt ngào!",
-  "Nhất định phải ghé lại.",
-  "Rất đáng tiền."
-];
-
-const NEGATIVE_START = [
-  "Mình chờ hơi lâu...",
-  "Tiếc quá, mình không thể đợi thêm.",
-  "Hôm nay mình phải đi mất rồi.",
-  "Mình đợi lâu hơn dự tính.",
-  "Kem chưa kịp làm xong nên mình đi trước.",
-  "Chờ mãi mà vẫn chưa có món."
-];
-
-const NEGATIVE_END = [
-  "Hy vọng lần sau nhanh hơn nhé.",
-  "Mong tiệm cải thiện thời gian phục vụ.",
-  "Lần sau mình sẽ cân nhắc thời gian.",
-  "Tiếc thật sự.",
-  "Mình hơi thất vọng vì phải bỏ về.",
-  "Chúc tiệm buôn bán thuận lợi."
-];
-
-/* =========================================================
-   AVATAR PALETTES
-========================================================= */
-
-const AVATAR_STYLES = [
-  {
-    skin:"#ffd7bd",
-    hair:"#6e4b45",
-    hair2:"#553733",
-    shirt:"#f3a5b4",
-    accent:"#ffe5a9",
-    bg:"#ffe8ed"
-  },
-  {
-    skin:"#f6c8ad",
-    hair:"#8a5a3d",
-    hair2:"#70452f",
-    shirt:"#9ebbd8",
-    accent:"#f8d6e4",
-    bg:"#e8f0fb"
-  },
-  {
-    skin:"#f8d4c2",
-    hair:"#3f3432",
-    hair2:"#292324",
-    shirt:"#b7c994",
-    accent:"#f8e2a7",
-    bg:"#eef3df"
-  },
-  {
-    skin:"#e9b998",
-    hair:"#a35d43",
-    hair2:"#844735",
-    shirt:"#d5a7e8",
-    accent:"#fff0ad",
-    bg:"#f3e8ff"
-  },
-  {
-    skin:"#ffd9c6",
-    hair:"#b87d49",
-    hair2:"#956236",
-    shirt:"#f2c47c",
-    accent:"#f59eae",
-    bg:"#fff0dc"
-  }
-];
-
-/* =========================================================
-   STATE
-========================================================= */
-
-const state = {
-
-  money:50000,
-
-  day:1,
-
-  minutes:540,
-
-  open:true,
-
-  dayRevenue:0,
-
-  dayCosts:0,
-
-  served:0,
-
-  walkouts:0,
-
-  inventory:{},
-
-  bulk:{},
-
-  upgrades:{
-    price:0,
-    scoopSpeed:0,
-    freezer:0,
-    patience:0
-  },
-
-  activeCustomer:null,
-
-  build:{
-    base:null,
-    flavors:[],
-    topping:null
-  },
-
-  reviews:[],
-
-  usedNames:new Set(),
-
-  usedOrders:new Set(),
-
-  usedReviews:new Set(),
-
-  timers:{
-    game:null,
-    patience:null,
-    customerSpawn:null
-  }
-
+const REVIEW_TEXTS = {
+  5: [
+    "Kem xinh quá, vị rất vừa miệng!",
+    "Mình thích cách shop mix vị hôm nay.",
+    "Ly kem đáng yêu và ngon hơn mình mong đợi.",
+    "Topping vừa đủ, kem thơm và mềm.",
+    "Mình sẽ quay lại thử vị khác!"
+  ],
+  4: [
+    "Kem ngon và trình bày rất dễ thương.",
+    "Món hôm nay khá ổn, mình thích.",
+    "Vị kem nhẹ nhàng, topping hợp.",
+    "Một phần kem nhỏ xinh và ngon."
+  ],
+  3: [
+    "Kem ổn nhưng vị hơi khác mong đợi.",
+    "Món khá dễ thương, lần sau mình thử vị khác.",
+    "Topping hơi nhiều một chút.",
+    "Nếu kem lạnh hơn một chút sẽ tuyệt."
+  ],
+  2: [
+    "Món hôm nay chưa đúng điều mình gọi.",
+    "Mình hơi tiếc vì phần kem chưa như mong đợi.",
+    "Vị chưa hợp với mình lắm.",
+    "Hy vọng lần sau shop chú ý order hơn."
+  ],
+  1: [
+    "Mình đã chờ khá lâu nhưng chưa nhận được kem.",
+    "Tiếc quá, hôm nay mình không được phục vụ.",
+    "Hy vọng lần sau shop sẽ nhanh hơn."
+  ]
 };
-
-/* =========================================================
-   INITIAL INVENTORY
-========================================================= */
-
-Object.keys(FLAVORS).forEach(flavor=>{
-  state.inventory[flavor]=20;
-  state.bulk[flavor]=20;
-});
 
 /* =========================================================
    DOM
@@ -2430,1889 +2014,1732 @@ Object.keys(FLAVORS).forEach(flavor=>{
 
 const $ = id => document.getElementById(id);
 
-const moneyText = $("moneyText");
-const revenueText = $("revenueText");
-const clockText = $("clockText");
+const els = {
+  startScreen:$("startScreen"),
+  startBtn:$("startBtn"),
 
-const customerCard = $("customerCard");
-const customerAvatar = $("customerAvatar");
-const customerName = $("customerName");
-const customerType = $("customerType");
-const customerSpeech = $("customerSpeech");
+  dayLabel:$("dayLabel"),
+  moneyLabel:$("moneyLabel"),
+  servedLabel:$("servedLabel"),
 
-const patienceRing = $("patienceRing");
-const patienceText = $("patienceText");
+  customerLoading:$("customerLoading"),
+  customerContent:$("customerContent"),
+  customerBottom:$("customerBottom"),
+  customerAvatar:$("customerAvatar"),
+  customerName:$("customerName"),
+  genderDot:$("genderDot"),
+  customerOrder:$("customerOrder"),
 
-const cupDisplay = $("cupDisplay");
-const scoopStack = $("scoopStack");
-const toppingDisplay = $("toppingDisplay");
+  patienceRing:$("patienceRing"),
+  patienceProgress:$("patienceProgress"),
+  patienceBar:$("patienceBar"),
 
-const stageLabel = $("stageLabel");
-const stepText = $("stepText");
+  workspace:$("workspace"),
+  workspaceStatus:$("workspaceStatus"),
+  stepHint:$("stepHint"),
+  workspaceEmpty:$("workspaceEmpty"),
 
-const toast = $("toast");
-const transition = $("transition");
-const transitionText = $("transitionText");
+  baseChoices:$("baseChoices"),
+  flavorChoices:$("flavorChoices"),
+  toppingChoices:$("toppingChoices"),
+
+  flavorRow:$("flavorRow"),
+  toppingRow:$("toppingRow"),
+
+  coneArt:$("coneArt"),
+  cupArt:$("cupArt"),
+  scoop1:$("scoop1"),
+  scoop2:$("scoop2"),
+  scoop3:$("scoop3"),
+  toppingArt:$("toppingArt"),
+
+  serveBtn:$("serveBtn"),
+  resetBuild:$("resetBuild"),
+
+  inventoryGrid:$("inventoryGrid"),
+  capacityLabel:$("capacityLabel"),
+  warehouseCapacity:$("warehouseCapacity"),
+  warehouseBar:$("warehouseBar"),
+
+  upgradeList:$("upgradeList"),
+
+  reviewList:$("reviewList"),
+  reviewCount:$("reviewCount"),
+
+  toast:$("toast"),
+
+  summaryScreen:$("summaryScreen"),
+  summaryDay:$("summaryDay"),
+  summaryMoney:$("summaryMoney"),
+  summaryServed:$("summaryServed"),
+  summaryRevenue:$("summaryRevenue"),
+  summaryCosts:$("summaryCosts"),
+  summaryWalkouts:$("summaryWalkouts"),
+  summaryProfit:$("summaryProfit"),
+  nextDayBtn:$("nextDayBtn")
+};
 
 /* =========================================================
-   HELPERS
+   UTILS
 ========================================================= */
 
-function money(value){
-  return Math.round(value).toLocaleString("vi-VN") + "đ";
+function money(n){
+  return Math.max(0,Math.round(n)).toLocaleString("vi-VN") + "đ";
 }
 
 function random(arr){
   return arr[Math.floor(Math.random()*arr.length)];
 }
 
-function clamp(value,min,max){
-  return Math.max(min,Math.min(max,value));
+function clamp(n,min,max){
+  return Math.max(min,Math.min(max,n));
 }
 
 function shuffle(arr){
   return [...arr].sort(()=>Math.random()-.5);
 }
 
-function pickUnique(set, generator, max=100){
-  for(let i=0;i<max;i++){
-    const value=generator();
-
-    if(!set.has(value)){
-      set.add(value);
-      return value;
-    }
-  }
-
-  return generator();
-}
-
-function showToast(message){
-  toast.textContent=message;
-  toast.classList.add("show");
+function showToast(text){
+  els.toast.textContent=text;
+  els.toast.classList.add("show");
 
   clearTimeout(showToast.timer);
 
   showToast.timer=setTimeout(()=>{
-    toast.classList.remove("show");
-  },2200);
+    els.toast.classList.remove("show");
+  },1800);
 }
 
-function formatClock(minutes){
+function formatTime(minutes){
   const h=Math.floor(minutes/60);
-  const m=minutes%60;
+  const m=Math.floor(minutes%60);
 
   return String(h).padStart(2,"0")+":"+
          String(m).padStart(2,"0");
 }
 
-/* =========================================================
-   CUSTOMER SVG
-========================================================= */
-
-function createCustomerSVG(styleIndex=0){
-  const s=AVATAR_STYLES[styleIndex % AVATAR_STYLES.length];
-
-  return `
-  <svg class="chibi" viewBox="0 0 100 100">
-
-    <rect
-      width="100"
-      height="100"
-      rx="50"
-      fill="${s.bg}"
-    />
-
-    <!-- shoulders/outfit -->
-    <path
-      d="M17 99
-         C20 78 31 70 50 70
-         C69 70 80 78 83 99Z"
-      fill="${s.shirt}"
-    />
-
-    <!-- outfit collar -->
-    <path
-      d="M39 73 L50 86 L61 73"
-      fill="${s.accent}"
-      opacity=".95"
-    />
-
-    <!-- neck -->
-    <path
-      d="M43 67 L43 77
-         Q50 82 57 77
-         L57 67"
-      fill="${s.skin}"
-    />
-
-    <!-- hair back -->
-    <path
-      d="M22 51
-         C12 27 28 8 51 10
-         C76 8 91 28 78 56
-         L70 72
-         L29 70Z"
-      fill="${s.hair}"
-    />
-
-    <!-- ears/hair side -->
-    <path
-      d="M21 42 Q12 54 23 67
-         Q30 69 34 58Z"
-      fill="${s.hair2}"
-    />
-
-    <path
-      d="M79 42 Q88 54 77 67
-         Q70 69 66 58Z"
-      fill="${s.hair2}"
-    />
-
-    <!-- face -->
-    <ellipse
-      cx="50"
-      cy="48"
-      rx="27"
-      ry="29"
-      fill="${s.skin}"
-    />
-
-    <!-- hair cap -->
-    <path
-      d="M25 41
-         C25 18 37 10 51 11
-         C70 10 81 24 76 42
-         C69 35 66 29 62 24
-         C55 32 45 35 36 35
-         C33 38 30 41 25 41Z"
-      fill="${s.hair}"
-    />
-
-    <!-- bangs -->
-    <path
-      d="M28 36
-         Q38 26 43 19
-         Q48 29 50 34
-         Q56 26 61 18
-         Q69 28 74 38
-         Q65 34 58 36
-         Q51 40 45 35
-         Q37 39 28 36Z"
-      fill="${s.hair}"
-    />
-
-    <!-- eyes -->
-    <g class="blink eye">
-      <ellipse cx="39" cy="49" rx="6" ry="8" fill="#493c3d"/>
-      <ellipse cx="61" cy="49" rx="6" ry="8" fill="#493c3d"/>
-
-      <ellipse cx="37.5" cy="46.5" rx="2.3" ry="3" fill="#fff"/>
-      <ellipse cx="59.5" cy="46.5" rx="2.3" ry="3" fill="#fff"/>
-
-      <circle cx="42" cy="53" r="1.2" fill="#fff"/>
-      <circle cx="64" cy="53" r="1.2" fill="#fff"/>
-    </g>
-
-    <!-- cheeks -->
-    <ellipse
-      cx="30"
-      cy="59"
-      rx="8"
-      ry="4"
-      fill="#ef969e"
-      opacity=".65"
-    />
-
-    <ellipse
-      cx="70"
-      cy="59"
-      rx="8"
-      ry="4"
-      fill="#ef969e"
-      opacity=".65"
-    />
-
-    <!-- nose -->
-    <path
-      d="M48 58 Q50 56 52 58 Q50 61 48 58"
-      fill="#d88186"
-    />
-
-    <!-- smile -->
-    <path
-      class="mouth"
-      d="M44 63 Q50 68 56 63"
-      fill="none"
-      stroke="#744e4e"
-      stroke-width="2"
-      stroke-linecap="round"
-    />
-
-    <!-- tiny accessory -->
-    <circle
-      cx="72"
-      cy="29"
-      r="4"
-      fill="${s.accent}"
-    />
-
-  </svg>
-  `;
-}
-
-/* =========================================================
-   GENERATE NAME
-========================================================= */
-
-function generateName(){
-
-  return pickUnique(
-    state.usedNames,
-    ()=>{
-      const last=random(LAST_NAMES);
-      const first=random(FIRST_NAMES);
-      return last+" "+first;
-    }
-  );
-
-}
-
-/* =========================================================
-   GENERATE CUSTOMER
-========================================================= */
-
-function generateCustomer(){
-
-  const flavors=Object.keys(FLAVORS);
-
-  const count=
-    Math.random()<.55
-      ? 1
-      : Math.random()<.72
-        ? 2
-        : 3;
-
-  const chosen=[];
-
-  for(let i=0;i<count;i++){
-    chosen.push(random(flavors));
-  }
-
-  const base=random(Object.keys(BASES));
-  const topping=random(Object.keys(TOPPINGS));
-
-  const orderKey=[
-    base,
-    [...chosen].sort().join(","),
-    topping
-  ].join("|");
-
-  if(state.usedOrders.has(orderKey)){
-    return generateCustomer();
-  }
-
-  state.usedOrders.add(orderKey);
-
-  const name=generateName();
-
-  const patience=
-    35+
-    Math.floor(Math.random()*11)+
-    state.upgrades.patience*3+
-    state.upgrades.scoopSpeed*3;
-
-  const customer={
-    id:Date.now()+Math.random(),
-
-    name,
-
-    type:random(CUSTOMER_TYPES),
-
-    styleIndex:Math.floor(Math.random()*AVATAR_STYLES.length),
-
-    base,
-
-    flavors:chosen,
-
-    topping,
-
-    patienceMax:patience,
-
-    patienceLeft:patience,
-
-    impatient:false,
-
-    orderKey
-
-  };
-
-  return customer;
-}
-
-/* =========================================================
-   ORDER TEXT
-========================================================= */
-
-function flavorText(flavors){
-
-  const names=flavors.map(x=>FLAVORS[x].name);
-
-  if(names.length===1){
-    return names[0];
-  }
-
-  if(names.length===2){
-    return names[0]+" + "+names[1];
-  }
-
-  return names[0]+", "+names[1]+" + "+names[2];
-}
-
-function createOrderDialogue(customer){
-
-  const base=BASES[customer.base].name;
-  const flavors=flavorText(customer.flavors);
-  const topping=TOPPINGS[customer.topping].name;
-
-  const quantity=customer.flavors.length;
-
-  const intro=random(OPENERS);
-  const end=random(DIALOGUE_ENDS);
-
-  const templates=[
-    `${intro} ${base.toLowerCase()} ${quantity} viên vị ${flavors}, thêm ${topping} ${end}`,
-    `${intro} ${quantity} viên ${flavors} trong ${base.toLowerCase()}, thêm ${topping} ${end}`,
-    `${intro} món ${flavors} ${quantity} viên, ${base.toLowerCase()} và ${topping} ${end}`,
-    `${intro} một phần ${flavors}, dùng ${base.toLowerCase()} với ${topping} ${end}`
+function currentPrice(){
+  const prices=[
+    10000,
+    15000,
+    25000,
+    35000,
+    50000,
+    65000,
+    85000
   ];
 
-  return random(templates);
+  return prices[GAME.upgrades.price] || prices[prices.length-1];
+}
+
+function warehouseCapacity(){
+  return 60 + GAME.upgrades.warehouse*20;
+}
+
+function patienceSeconds(){
+  return 70 + GAME.upgrades.patience*8;
+}
+
+function scoopLimit(){
+  return Math.min(3,1 + GAME.upgrades.scoop);
 }
 
 /* =========================================================
-   CUSTOMER DISPLAY
+   START
 ========================================================= */
 
-function renderCustomer(customer){
+els.startBtn.addEventListener("click",()=>{
+  els.startScreen.classList.add("hide");
 
-  if(!customer){
-    customerName.textContent="Đang chuẩn bị khách...";
-    customerType.textContent="Khách tiếp theo";
-    customerSpeech.textContent="Một vị khách mới sắp bước vào... 🍨";
-    customerAvatar.innerHTML=createCustomerSVG(0);
-    return;
-  }
+  GAME.running=true;
 
-  customerName.textContent=customer.name;
-  customerType.textContent=customer.type;
-
-  customerSpeech.innerHTML=
-    createOrderDialogue(customer)
-      .replace(
-        new RegExp(
-          `(${flavorText(customer.flavors)}|${BASES[customer.base].name}|${TOPPINGS[customer.topping].name})`,
-          "gi"
-        ),
-        `<span class="order-highlight">$1</span>`
-      );
-
-  customerAvatar.innerHTML=createCustomerSVG(customer.styleIndex);
-
-  customerCard.classList.remove("leave");
-  customerCard.classList.add("enter");
+  renderAll();
 
   setTimeout(()=>{
-    customerCard.classList.remove("enter");
-  },600);
+    spawnCustomer();
+  },350);
 
-  updatePatienceVisual();
+  showToast("Tiệm đã mở cửa! Chúc bạn bán thật nhiều kem ♡");
+});
 
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    switchScreen(btn.dataset.screen);
+  });
+});
+
+function switchScreen(screen){
+
+  GAME.currentScreen=screen;
+
+  const screens={
+    shop:$("shopScreen"),
+    warehouse:$("warehouseScreen"),
+    upgrade:$("upgradeScreen"),
+    review:$("reviewScreen")
+  };
+
+  Object.entries(screens).forEach(([key,el])=>{
+    el.style.display=key===screen?"block":"none";
+  });
+
+  document.querySelectorAll(".nav-btn").forEach(btn=>{
+    btn.classList.toggle("active",btn.dataset.screen===screen);
+  });
+
+  if(screen==="warehouse") renderInventory();
+  if(screen==="upgrade") renderUpgrades();
+  if(screen==="review") renderReviews();
 }
 
 /* =========================================================
-   INVENTORY JARS
+   FLAVOR / TOPPING BUTTONS
 ========================================================= */
 
-function getCapacity(){
-  return 20+state.upgrades.freezer*5;
-}
+function renderChoices(){
 
-function renderJars(){
+  els.flavorRow.innerHTML="";
 
-  const row=$("jarRow");
+  FLAVORS.forEach(flavor=>{
+    const button=document.createElement("button");
 
-  row.innerHTML="";
+    button.className="choice";
+    button.dataset.flavor=flavor.id;
 
-  Object.entries(FLAVORS).forEach(([key,data])=>{
-
-    const jar=document.createElement("div");
-    jar.className="jar";
-
-    jar.innerHTML=`
-      <div
-        class="jar-ice"
-        style="background:${data.color}"
-      ></div>
-
-      <div class="jar-count">
-        ${state.inventory[key]}
-      </div>
-
-      <div class="jar-name">
-        ${data.name}
-      </div>
+    button.innerHTML=`
+      <span class="emoji">${flavor.emoji}</span>
+      ${flavor.name}
     `;
 
-    jar.addEventListener("click",()=>{
-
-      if(!state.open)return;
-
-      selectFlavor(key);
-
+    button.addEventListener("click",()=>{
+      chooseFlavor(flavor.id);
     });
 
-    row.appendChild(jar);
-
+    els.flavorRow.appendChild(button);
   });
 
+  els.toppingRow.innerHTML="";
+
+  TOPPINGS.forEach(topping=>{
+    const button=document.createElement("button");
+
+    button.className="choice";
+    button.dataset.topping=topping.id;
+
+    button.innerHTML=`
+      <span class="emoji">${topping.emoji}</span>
+      ${topping.name}
+    `;
+
+    button.addEventListener("click",()=>{
+      chooseTopping(topping.id);
+    });
+
+    els.toppingRow.appendChild(button);
+  });
 }
 
-/* =========================================================
-   BUILD SYSTEM
-========================================================= */
+document.querySelectorAll("[data-base]").forEach(button=>{
+  button.addEventListener("click",()=>{
+    chooseBase(button.dataset.base);
+  });
+});
 
-function renderBuild(){
+function chooseBase(base){
 
-  /* base */
+  if(!GAME.activeCustomer){
+    showToast("Hãy chờ khách vào tiệm nhé!");
+    return;
+  }
+
+  if(GAME.inventory[base]<=0){
+    showToast("Hết loại đế này rồi!");
+    return;
+  }
+
+  GAME.build.base=base;
+  GAME.build.flavors=[];
+  GAME.build.topping=null;
+
   document.querySelectorAll("[data-base]").forEach(btn=>{
-    btn.classList.toggle(
-      "selected",
-      state.build.base===btn.dataset.base
-    );
+    btn.classList.toggle("selected",btn.dataset.base===base);
   });
 
-  /* flavors */
+  els.baseChoices.style.display="none";
+  els.flavorChoices.style.display="block";
+  els.toppingChoices.style.display="none";
+
+  updateStep(2);
+
+  renderIceCream();
+}
+
+function chooseFlavor(id){
+
+  if(!GAME.build.base){
+    showToast("Hãy chọn đế trước nhé!");
+    return;
+  }
+
+  if(GAME.inventory[id]<=0){
+    showToast("Vị kem này đã hết!");
+    return;
+  }
+
+  const index=GAME.build.flavors.indexOf(id);
+
+  if(index>=0){
+    GAME.build.flavors.splice(index,1);
+  }else{
+
+    if(GAME.build.flavors.length>=scoopLimit()){
+      showToast("Tối đa "+scoopLimit()+" viên kem!");
+      return;
+    }
+
+    GAME.build.flavors.push(id);
+  }
+
   document.querySelectorAll("[data-flavor]").forEach(btn=>{
-    const key=btn.dataset.flavor;
-
     btn.classList.toggle(
       "selected",
-      state.build.flavors.includes(key)
-    );
-
-    btn.classList.toggle(
-      "disabled",
-      state.inventory[key]<=0 &&
-      !state.build.flavors.includes(key)
+      GAME.build.flavors.includes(btn.dataset.flavor)
     );
   });
 
-  /* toppings */
+  if(GAME.build.flavors.length>0){
+    els.flavorChoices.style.display="block";
+    els.toppingChoices.style.display="block";
+    updateStep(3);
+  }
+
+  renderIceCream();
+}
+
+function chooseTopping(id){
+
+  if(GAME.build.flavors.length===0){
+    showToast("Chọn ít nhất một vị kem trước!");
+    return;
+  }
+
+  if(GAME.inventory[id]<=0){
+    showToast("Topping này đã hết!");
+    return;
+  }
+
+  GAME.build.topping=id;
+
   document.querySelectorAll("[data-topping]").forEach(btn=>{
-    btn.classList.toggle(
-      "selected",
-      state.build.topping===btn.dataset.topping
+    btn.classList.toggle("selected",btn.dataset.topping===id);
+  });
+
+  updateStep(3);
+  renderIceCream();
+}
+
+function updateStep(step){
+
+  document.querySelectorAll(".step-dot").forEach((dot,i)=>{
+    dot.classList.toggle("active",i<step);
+  });
+
+  const hints={
+    1:"Bước 1 · Chọn đế",
+    2:"Bước 2 · Chọn vị kem",
+    3:"Bước 3 · Chọn topping"
+  };
+
+  els.stepHint.textContent=hints[step];
+
+  const status={
+    1:"Bắt đầu chọn đế",
+    2:"Đang chọn vị kem",
+    3:"Hoàn thiện topping"
+  };
+
+  els.workspaceStatus.textContent=status[step];
+}
+
+/* =========================================================
+   ICE CREAM RENDER
+========================================================= */
+
+function renderIceCream(){
+
+  const build=GAME.build;
+
+  els.coneArt.style.display=
+    build.base==="cone"?"block":"none";
+
+  els.cupArt.style.display=
+    build.base==="cup"?"block":"none";
+
+  const scoops=[
+    els.scoop1,
+    els.scoop2,
+    els.scoop3
+  ];
+
+  scoops.forEach((scoop,index)=>{
+    const flavorId=build.flavors[index];
+
+    if(!flavorId){
+      scoop.style.display="none";
+      return;
+    }
+
+    const flavor=FLAVORS.find(f=>f.id===flavorId);
+
+    scoop.style.display="block";
+    scoop.style.background=flavor.color;
+    scoop.classList.toggle("pop",true);
+
+    setTimeout(()=>{
+      scoop.classList.remove("pop");
+    },250);
+  });
+
+  if(build.topping){
+
+    const topping=TOPPINGS.find(
+      t=>t.id===build.topping
     );
-  });
 
-  /* stage */
-  cupDisplay.innerHTML="";
+    els.toppingArt.style.display="block";
+    els.toppingArt.textContent=topping.emoji;
 
-  if(state.build.base==="cone"){
-    cupDisplay.innerHTML=`<div class="cone"></div>`;
   }else{
-    cupDisplay.innerHTML=`<div class="cup"></div>`;
+    els.toppingArt.style.display="none";
   }
 
-  scoopStack.innerHTML="";
+  els.workspace.classList.toggle(
+    "has-base",
+    !!build.base
+  );
 
-  state.build.flavors.forEach(flavor=>{
+  const complete=
+    !!build.base &&
+    build.flavors.length>0 &&
+    !!build.topping;
 
-    const scoop=document.createElement("div");
-
-    scoop.className="scoop "+flavor;
-
-    scoopStack.appendChild(scoop);
-
-  });
-
-  toppingDisplay.textContent=
-    state.build.topping
-      ? TOPPINGS[state.build.topping].emoji
-      : "";
-
-  if(!state.build.base){
-    stageLabel.textContent="Chọn loại đựng";
-    stepText.textContent="Bước 1 / 3";
-  }else if(
-    state.build.flavors.length===0
-  ){
-    stageLabel.textContent="Chọn vị kem";
-    stepText.textContent="Bước 2 / 3";
-  }else if(!state.build.topping){
-    stageLabel.textContent="Thêm topping";
-    stepText.textContent="Bước 3 / 3";
-  }else{
-    stageLabel.textContent="Sẵn sàng giao khách ♡";
-    stepText.textContent="Hoàn tất";
-  }
-
+  els.serveBtn.disabled=!complete;
 }
-
-/* =========================================================
-   SELECT BASE
-========================================================= */
-
-function selectBase(base){
-
-  if(!state.open)return;
-
-  state.build.base=base;
-
-  renderBuild();
-
-}
-
-/* =========================================================
-   SELECT FLAVOR
-========================================================= */
-
-function selectFlavor(flavor){
-
-  if(!state.open)return;
-
-  const max=
-    state.activeCustomer
-      ? state.activeCustomer.flavors.length
-      : 3;
-
-  const index=state.build.flavors.indexOf(flavor);
-
-  if(index!==-1){
-
-    state.build.flavors.splice(index,1);
-
-    renderBuild();
-
-    return;
-  }
-
-  if(state.build.flavors.length>=max){
-
-    showToast(`Món này chỉ cần ${max} viên kem 🍨`);
-
-    return;
-  }
-
-  if(state.inventory[flavor]<=0){
-
-    showToast("Hũ kem này đã hết! Hãy nhập thêm hàng 📦");
-
-    return;
-  }
-
-  state.build.flavors.push(flavor);
-
-  renderBuild();
-
-}
-
-/* =========================================================
-   TOPPING
-========================================================= */
-
-function selectTopping(topping){
-
-  if(!state.open)return;
-
-  state.build.topping=topping;
-
-  renderBuild();
-
-}
-
-/* =========================================================
-   RESET BUILD
-========================================================= */
 
 function resetBuild(){
 
-  state.build={
+  GAME.build={
     base:null,
     flavors:[],
     topping:null
   };
 
-  renderBuild();
+  els.baseChoices.style.display="block";
+  els.flavorChoices.style.display="none";
+  els.toppingChoices.style.display="none";
 
-}
-
-/* =========================================================
-   ORDER VALIDATION
-========================================================= */
-
-function sameArray(a,b){
-
-  if(a.length!==b.length)return false;
-
-  const x=[...a].sort();
-  const y=[...b].sort();
-
-  return x.every((v,i)=>v===y[i]);
-}
-
-function isCorrectOrder(){
-
-  if(!state.activeCustomer)return false;
-
-  const order=state.activeCustomer;
-
-  return(
-    state.build.base===order.base &&
-    sameArray(state.build.flavors,order.flavors) &&
-    state.build.topping===order.topping
-  );
-}
-
-/* =========================================================
-   PRICE
-========================================================= */
-
-const PRICE_LEVELS=[
-  10000,
-  15000,
-  25000,
-  50000,
-  75000,
-  100000,
-  150000,
-  200000
-];
-
-const PRICE_UPGRADE_COSTS=[
-  70000,
-  140000,
-  280000,
-  500000,
-  850000,
-  1300000,
-  2000000
-];
-
-function getPrice(){
-  return PRICE_LEVELS[
-    clamp(state.upgrades.price,0,PRICE_LEVELS.length-1)
-  ];
-}
-
-/* =========================================================
-   SERVE
-========================================================= */
-
-function serveCustomer(){
-
-  if(!state.open)return;
-
-  if(!state.activeCustomer){
-
-    showToast("Hiện chưa có khách nào 🍦");
-
-    return;
-  }
-
-  if(!state.build.base){
-
-    showToast("Bạn chưa chọn ly hoặc ốc quế!");
-
-    return;
-  }
-
-  if(
-    state.build.flavors.length===
-    0
-  ){
-
-    showToast("Hãy múc ít nhất một viên kem!");
-
-    return;
-  }
-
-  if(!state.build.topping){
-
-    showToast("Hãy chọn một loại topping!");
-
-    return;
-  }
-
-  if(!isCorrectOrder()){
-
-    showToast(
-      `Chưa đúng món của ${state.activeCustomer.name} 😅`
-    );
-
-    return;
-  }
-
-  /* deduct inventory */
-  state.build.flavors.forEach(flavor=>{
-    state.inventory[flavor]--;
+  document.querySelectorAll(".choice").forEach(btn=>{
+    btn.classList.remove("selected");
   });
 
-  const earned=getPrice();
+  els.coneArt.style.display="none";
+  els.cupArt.style.display="none";
+  els.scoop1.style.display="none";
+  els.scoop2.style.display="none";
+  els.scoop3.style.display="none";
+  els.toppingArt.style.display="none";
 
-  state.money+=earned;
-  state.dayRevenue+=earned;
-  state.served++;
+  els.workspace.classList.remove("has-base");
 
-  createPositiveReview();
+  updateStep(1);
+  renderIceCream();
+}
 
-  const oldCustomer=state.activeCustomer;
+els.resetBuild.addEventListener("click",resetBuild);
 
-  state.activeCustomer=null;
+/* =========================================================
+   CUSTOMER GENERATION
+========================================================= */
 
-  clearPatience();
+function createCustomer(){
 
-  customerCard.classList.add("leave");
+  const gender=Math.random()<.56?"female":"male";
 
-  showToast(
-    `Giao món thành công! +${money(earned)} 💰`
+  const first=
+    gender==="female"
+      ?random(FEMALE_FIRST)
+      :random(MALE_FIRST);
+
+  const last=random(LAST_NAMES);
+
+  const name=first+" "+last;
+
+  const base=random(["cone","cup"]);
+
+  const flavorCount=
+    GAME.day>=5
+      ?random([1,1,2,2,3])
+      :random([1,1,1,2]);
+
+  const flavors=shuffle(FLAVORS)
+    .slice(0,flavorCount)
+    .map(x=>x.id);
+
+  const topping=random(TOPPINGS).id;
+
+  const randomOrder=
+    GAME.day>=5 && Math.random()<.32;
+
+  let orderType=randomOrder
+    ?"random"
+    :"specific";
+
+  let text;
+
+  if(orderType==="random"){
+
+    text=random(ORDER_RANDOM);
+
+  }else{
+
+    const template=random(ORDER_NORMAL);
+
+    const flavor=
+      FLAVORS.find(f=>f.id===flavors[0]);
+
+    const toppingData=
+      TOPPINGS.find(t=>t.id===topping);
+
+    const baseText=
+      base==="cone"
+        ?"ốc quế"
+        :"ly";
+
+    text=template
+      .replace("{qty}",flavorCount)
+      .replace("{flavor}",flavor.name)
+      .replace("{base}",baseText)
+      .replace("{topping}",toppingData.name);
+  }
+
+  let key=
+    gender+"|"+name+"|"+text+"|"+Date.now();
+
+  return {
+    id:Date.now()+Math.random(),
+    gender,
+    name,
+    hair:random(
+      gender==="female"
+        ?FEMALE_HAIRS
+        :MALE_HAIRS
+    ),
+
+    requested:{
+      base,
+      flavors,
+      topping,
+      random:orderType==="random"
+    },
+
+    orderText:text,
+    patience:patienceSeconds()
+  };
+}
+
+function spawnCustomer(){
+
+  if(!GAME.running){
+    return;
+  }
+
+  const customer=createCustomer();
+
+  GAME.activeCustomer=customer;
+
+  GAME.customerStartedAt=performance.now();
+  GAME.customerExpiresAt=
+    GAME.customerStartedAt+
+    customer.patience*1000;
+
+  renderCustomer(customer);
+
+  resetBuild();
+}
+
+function renderCustomer(customer){
+
+  els.customerLoading.style.display="none";
+  els.customerContent.style.display="grid";
+  els.customerBottom.style.display="flex";
+
+  els.customerName.textContent=customer.name;
+  els.customerOrder.textContent=customer.orderText;
+
+  els.genderDot.classList.toggle(
+    "male",
+    customer.gender==="male"
   );
 
-  renderJars();
+  els.customerAvatar.innerHTML=
+    customer.gender==="female"
+      ?femaleAvatar(customer)
+      :maleAvatar(customer);
 
-  setTimeout(()=>{
-
-    if(!state.open)return;
-
-    resetBuild();
-
-    customerCard.classList.remove("leave");
-
-    spawnCustomer();
-
-  },650);
-
+  updatePatienceVisual(1);
 }
 
 /* =========================================================
-   POSITIVE REVIEW
+   CHIBI FEMALE
 ========================================================= */
 
-function createPositiveReview(){
+function femaleAvatar(c){
 
-  const customer=state.activeCustomer;
+  const bow=
+    c.hair==="bow"
+      ?`
+        <path d="M27 26 Q9 10 5 25 Q10 39 27 31Z"
+              fill="#ed9bb2"/>
+        <path d="M27 26 Q45 10 49 25 Q44 39 27 31Z"
+              fill="#ed9bb2"/>
+        <circle cx="27" cy="27" r="4" fill="#d9829c"/>
+      `
+      :"";
 
-  if(!customer)return;
+  const longHair=
+    c.hair==="long" || c.hair==="long2"
+      ?`
+        <path d="M19 42 Q6 53 13 95
+                 Q27 104 37 94
+                 L37 48Z"
+              fill="#684c55"/>
+        <path d="M73 42 Q87 53 80 95
+                 Q68 104 56 94
+                 L55 48Z"
+              fill="#684c55"/>
+      `
+      :"";
 
-  const flavor=flavorText(customer.flavors);
+  const shortHair=
+    c.hair==="short"
+      ?`
+        <path d="M18 46 Q18 14 47 15
+                 Q76 16 76 47
+                 Q64 34 57 31
+                 Q44 43 18 46Z"
+              fill="#684c55"/>
+      `
+      :"";
 
-  const speed=[
-    "Phục vụ rất nhanh!",
-    "Đợi một chút thôi là có kem rồi.",
-    "Tiệm làm món rất nhanh.",
-    "Món ra vừa kịp lúc."
-  ];
+  const long2=
+    c.hair==="long2"
+      ?`
+        <path d="M18 45 Q13 16 46 13
+                 Q79 16 77 50
+                 Q69 35 60 28
+                 Q43 40 18 45Z"
+              fill="#8a5e61"/>
+        <path d="M19 43 L12 88 Q24 98 34 90 L32 48Z"
+              fill="#8a5e61"/>
+        <path d="M72 43 L82 87 Q71 99 60 90 L59 48Z"
+              fill="#8a5e61"/>
+      `
+      :"";
 
-  const templates=[
-    `${random(POSITIVE_START)} ${random(POSITIVE_MIDDLE)} ${random(POSITIVE_END)}`,
-    `${random(POSITIVE_START)} Kem ${flavor} rất ngon. ${random(POSITIVE_END)}`,
-    `${random(speed)} ${random(POSITIVE_MIDDLE)} ${random(POSITIVE_END)}`,
-    `${random(POSITIVE_MIDDLE)} ${random(POSITIVE_START)} ${random(POSITIVE_END)}`
-  ];
+  return `
+  <svg viewBox="0 0 100 120" aria-hidden="true">
 
-  let text=pickUnique(
-    state.usedReviews,
-    ()=>random(templates)
-  );
+    <ellipse cx="50" cy="111" rx="33" ry="6"
+             fill="#e9cfc4"/>
 
-  const emotions=[
-    "❤️",
-    "👍",
-    "",
-    "",
-    "❤️👍"
-  ];
+    <path d="M27 72 Q50 62 73 72
+             L82 109 Q50 118 18 109Z"
+          fill="#f5b4c2"/>
 
-  state.reviews.unshift({
-    name:customer.name,
-    avatar:customer.styleIndex,
-    stars:5,
-    text,
-    emotion:random(emotions),
-    time:formatClock(state.minutes),
-    positive:true
-  });
+    <path d="M31 75 Q50 84 69 75
+             L72 108 Q50 113 28 108Z"
+          fill="#fff5ed"/>
 
-  if(state.reviews.length>60){
-    state.reviews.pop();
-  }
+    ${longHair}
+    ${shortHair}
+    ${long2}
 
-  renderReviews();
+    <path d="M25 43 Q25 22 50 22
+             Q75 22 75 43
+             L72 68 Q67 83 50 84
+             Q33 83 28 68Z"
+          fill="#ffe0c2"/>
 
+    <path d="M25 45 Q25 18 49 17
+             Q74 17 76 45
+             Q64 32 58 28
+             Q44 40 25 45Z"
+          fill="#684c55"/>
+
+    ${bow}
+
+    <ellipse cx="39" cy="54" rx="4" ry="5"
+             fill="#624c4b"/>
+    <ellipse cx="61" cy="54" rx="4" ry="5"
+             fill="#624c4b"/>
+
+    <circle cx="38" cy="52" r="1.5" fill="#fff"/>
+    <circle cx="60" cy="52" r="1.5" fill="#fff"/>
+
+    <ellipse cx="31" cy="64" rx="7" ry="4"
+             fill="#ee9fa8" opacity=".55"/>
+    <ellipse cx="69" cy="64" rx="7" ry="4"
+             fill="#ee9fa8" opacity=".55"/>
+
+    <path d="M46 65 Q50 68 54 65"
+          fill="none"
+          stroke="#b97878"
+          stroke-width="2"
+          stroke-linecap="round"/>
+
+    <path d="M20 92 Q50 79 80 92"
+          fill="none"
+          stroke="#e79aaa"
+          stroke-width="6"
+          stroke-linecap="round"/>
+
+  </svg>`;
 }
 
 /* =========================================================
-   NEGATIVE REVIEW
+   CHIBI MALE
 ========================================================= */
 
-function createNegativeReview(customer){
+function maleAvatar(c){
 
-  const text=pickUnique(
-    state.usedReviews,
-    ()=>{
-      const extra=[
-        "Mình phải đi mất rồi.",
-        "Chờ lâu quá nên mình đành bỏ cuộc.",
-        "Hy vọng lần sau mình có thể thử món.",
-        "Tiếc vì chưa được ăn kem hôm nay."
-      ];
+  let hair="";
 
-      return random(NEGATIVE_START)+" "+random(NEGATIVE_END)+" "+random(extra);
-    }
-  );
-
-  const emotions=[
-    "😡",
-    "😢",
-    "👎",
-    "",
-    "",
-    "😢👎"
-  ];
-
-  state.reviews.unshift({
-    name:customer.name,
-    avatar:customer.styleIndex,
-    stars:1,
-    text,
-    emotion:random(emotions),
-    time:formatClock(state.minutes),
-    positive:false
-  });
-
-  if(state.reviews.length>60){
-    state.reviews.pop();
+  if(c.hair==="spiky"){
+    hair=`
+      <path d="M23 46 L20 22 L34 29
+               L39 14 L48 26 L59 12
+               L62 28 L77 20 L75 48Z"
+            fill="#4e5360"/>
+    `;
+  }else if(c.hair==="side"){
+    hair=`
+      <path d="M22 46 Q21 15 51 16
+               Q73 17 77 43
+               Q60 32 50 31
+               Q37 39 22 46Z"
+            fill="#505563"/>
+    `;
+  }else if(c.hair==="soft"){
+    hair=`
+      <path d="M21 47 Q21 17 50 17
+               Q77 18 76 48
+               Q67 35 58 30
+               Q44 39 21 47Z"
+            fill="#74565b"/>
+    `;
+  }else{
+    hair=`
+      <path d="M22 47 Q21 18 50 17
+               Q76 18 77 47
+               Q66 36 57 32
+               Q42 41 22 47Z"
+            fill="#4e5360"/>
+    `;
   }
 
-  renderReviews();
+  return `
+  <svg viewBox="0 0 100 120" aria-hidden="true">
 
+    <ellipse cx="50" cy="111" rx="33" ry="6"
+             fill="#e9cfc4"/>
+
+    <path d="M24 75 Q50 65 76 75
+             L82 109 Q50 117 18 109Z"
+          fill="#9fc3df"/>
+
+    <path d="M35 77 L50 91 L65 77"
+          fill="none"
+          stroke="#fff"
+          stroke-width="5"/>
+
+    <path d="M25 43 Q25 21 50 21
+             Q75 21 75 43
+             L72 68 Q66 82 50 83
+             Q34 82 28 68Z"
+          fill="#ffdfc0"/>
+
+    ${hair}
+
+    <ellipse cx="39" cy="54" rx="4" ry="5"
+             fill="#4f4b50"/>
+    <ellipse cx="61" cy="54" rx="4" ry="5"
+             fill="#4f4b50"/>
+
+    <circle cx="38" cy="52" r="1.5" fill="#fff"/>
+    <circle cx="60" cy="52" r="1.5" fill="#fff"/>
+
+    <ellipse cx="31" cy="64" rx="7" ry="4"
+             fill="#eea5aa" opacity=".48"/>
+    <ellipse cx="69" cy="64" rx="7" ry="4"
+             fill="#eea5aa" opacity=".48"/>
+
+    <path d="M45 66 Q50 70 55 66"
+          fill="none"
+          stroke="#a97070"
+          stroke-width="2"
+          stroke-linecap="round"/>
+
+    <circle cx="72" cy="25" r="4"
+            fill="#fff2bd" opacity=".8"/>
+
+  </svg>`;
 }
 
 /* =========================================================
    PATIENCE
 ========================================================= */
 
-function updatePatienceVisual(){
+function updatePatienceVisual(ratio){
 
-  const customer=state.activeCustomer;
+  ratio=clamp(ratio,0,1);
+
+  const circumference=87.96;
+
+  els.patienceProgress.style.strokeDashoffset=
+    circumference*(1-ratio);
+
+  els.patienceBar.style.width=
+    (ratio*100)+"%";
+
+  els.patienceRing.classList.toggle(
+    "warning",
+    ratio<=.55 && ratio>.25
+  );
+
+  els.patienceRing.classList.toggle(
+    "danger",
+    ratio<=.25
+  );
+
+  if(ratio<=.55 && ratio>.25){
+    els.patienceBar.style.background="#e5b15c";
+  }else if(ratio<=.25){
+    els.patienceBar.style.background="#d9757d";
+  }else{
+    els.patienceBar.style.background="#a7c995";
+  }
+}
+
+/* =========================================================
+   CUSTOMER LOOP
+========================================================= */
+
+let lastFrame=0;
+
+function customerLoop(now){
+
+  if(GAME.running){
+
+    if(GAME.activeCustomer){
+
+      const remaining=
+        GAME.customerExpiresAt-now;
+
+      const total=
+        GAME.activeCustomer.patience*1000;
+
+      const ratio=
+        clamp(remaining/total,0,1);
+
+      updatePatienceVisual(ratio);
+
+      if(remaining<=0){
+        customerWalkout();
+      }
+    }
+
+    updateGameClock();
+  }
+
+  requestAnimationFrame(customerLoop);
+}
+
+requestAnimationFrame(customerLoop);
+
+function updateGameClock(){
+
+  /*
+   * Game clock progresses slowly while the real customer
+   * patience remains independent and always uses real seconds.
+   */
+  const now=Date.now();
+
+  if(!GAME.lastGameTick){
+    GAME.lastGameTick=now;
+    return;
+  }
+
+  const elapsed=now-GAME.lastGameTick;
+
+  if(elapsed>=1000){
+
+    const steps=Math.floor(elapsed/1000);
+
+    GAME.minutes+=steps;
+    GAME.lastGameTick+=steps*1000;
+
+    renderHeader();
+
+    if(GAME.minutes>=GAME.closeMinute){
+      closeShop();
+    }
+  }
+}
+
+/* =========================================================
+   SERVE CUSTOMER
+========================================================= */
+
+els.serveBtn.addEventListener("click",serveCustomer);
+
+function serveCustomer(){
+
+  const customer=GAME.activeCustomer;
 
   if(!customer){
-
-    patienceRing.style.background=
-      "conic-gradient(#75cfa4 0%,#eadeda 0%)";
-
-    patienceText.textContent="--";
-
+    showToast("Hiện chưa có khách!");
     return;
   }
 
-  const ratio=
-    clamp(
-      customer.patienceLeft/customer.patienceMax,
-      0,
-      1
-    );
+  if(!GAME.build.base ||
+     GAME.build.flavors.length===0 ||
+     !GAME.build.topping){
 
-  const percent=ratio*100;
-
-  let color="#75cfa4";
-
-  if(ratio<=.55)color="#e6c45e";
-  if(ratio<=.3)color="#e77c7c";
-
-  patienceRing.style.background=
-    `conic-gradient(${color} ${percent}%,#eadeda ${percent}% 100%)`;
-
-  patienceText.textContent=
-    Math.max(0,Math.ceil(customer.patienceLeft))+"s";
-
-  customerCard.classList.toggle(
-    "impatient",
-    ratio<=.3
-  );
-
-}
-
-function clearPatience(){
-
-  if(state.timers.patience){
-    clearInterval(state.timers.patience);
-    state.timers.patience=null;
+    showToast("Hãy hoàn thiện đủ 3 bước!");
+    return;
   }
 
-}
+  const result=evaluateOrder(customer);
 
-/* =========================================================
-   START PATIENCE
-========================================================= */
+  consumeIngredients();
 
-function startPatience(){
+  const price=currentPrice();
 
-  clearPatience();
+  GAME.cash+=price;
+  GAME.dayRevenue+=price;
+  GAME.dayServed++;
+  GAME.servedTotal++;
 
-  const customer=state.activeCustomer;
+  createReview(customer,result);
 
-  if(!customer)return;
+  GAME.activeCustomer=null;
 
-  const start=performance.now();
-
-  const max=customer.patienceMax;
-
-  state.timers.patience=setInterval(()=>{
-
-    if(!state.activeCustomer){
-      clearPatience();
-      return;
-    }
-
-    const elapsed=
-      (performance.now()-start)/1000;
-
-    customer.patienceLeft=
-      Math.max(
-        0,
-        max-elapsed
-      );
-
-    updatePatienceVisual();
-
-    if(customer.patienceLeft<=0){
-
-      clearPatience();
-
-      customer.patienceLeft=0;
-
-      customerTimeout();
-
-    }
-
-  },80);
-
-}
-
-/* =========================================================
-   CUSTOMER TIMEOUT
-========================================================= */
-
-function customerTimeout(){
-
-  if(!state.activeCustomer)return;
-
-  const customer=state.activeCustomer;
-
-  state.walkouts++;
-
-  customerCard.classList.add("impatient");
-
-  customerSpeech.innerHTML=
-    `<span class="order-highlight">
-      Ôi... mình chờ lâu quá rồi 😣
-    </span>`;
-
-  createNegativeReview(customer);
-
-  showToast(
-    `${customer.name} đã bỏ về vì chờ quá lâu 😢`
-  );
-
-  state.activeCustomer=null;
-
-  customerCard.classList.add("leave");
+  els.customerContent.style.display="none";
+  els.customerBottom.style.display="none";
+  els.customerLoading.style.display="flex";
 
   resetBuild();
+
+  renderHeader();
+  renderInventory();
+
+  showToast(
+    result.score>=4
+      ?"Kem đã giao! Khách rất vui ♡"
+      :"Kem đã giao, hãy chú ý order lần sau nhé."
+  );
 
   setTimeout(()=>{
-
-    if(!state.open)return;
-
-    customerCard.classList.remove("leave");
-
-    spawnCustomer();
-
-  },800);
-
-}
-
-/* =========================================================
-   SPAWN CUSTOMER
-========================================================= */
-
-function spawnCustomer(){
-
-  if(!state.open)return;
-
-  if(state.activeCustomer)return;
-
-  const customer=generateCustomer();
-
-  state.activeCustomer=customer;
-
-  renderCustomer(customer);
-
-  resetBuild();
-
-  startPatience();
-
-}
-
-/* =========================================================
-   GAME CLOCK
-========================================================= */
-
-const GAME_MINUTE_MS=700;
-
-function startGameClock(){
-
-  clearInterval(state.timers.game);
-
-  state.timers.game=setInterval(()=>{
-
-    if(!state.open)return;
-
-    state.minutes++;
-
-    clockText.textContent=
-      formatClock(state.minutes);
-
-    revenueText.textContent=
-      money(state.dayRevenue);
-
-    moneyText.textContent=
-      money(state.money);
-
-    if(state.minutes>=1260){
-
-      closeStore(true);
-
+    if(GAME.running && !GAME.activeCustomer){
+      spawnCustomer();
     }
-
-  },GAME_MINUTE_MS);
-
+  },500);
 }
 
 /* =========================================================
-   CLOSE STORE
+   ORDER EVALUATION
 ========================================================= */
 
-function closeStore(auto=false){
+function evaluateOrder(customer){
 
-  if(!state.open)return;
+  const req=customer.requested;
+  const build=GAME.build;
 
-  state.open=false;
+  let score=5;
 
-  clearPatience();
+  if(req.random){
 
-  clearInterval(state.timers.game);
+    if(build.flavors.length<1){
+      score=2;
+    }else{
+      if(build.flavors.length!==req.flavors.length){
+        score-=0;
+      }
 
-  if(state.activeCustomer){
-
-    state.activeCustomer=null;
-  }
-
-  transitionText.textContent=
-    auto
-      ? "21:00 rồi... Tiệm đóng cửa thôi 🌙"
-      : "Đang đóng cửa tiệm... 🌙";
-
-  transition.classList.add("show");
-
-  setTimeout(()=>{
-
-    updateSummary();
-
-    showScreen("warehouse");
-
-    transitionText.textContent=
-      "Đã sẵn sàng cho phần tổng kết ngày ♡";
-
-    setTimeout(()=>{
-      transition.classList.remove("show");
-    },500);
-
-  },700);
-
-}
-
-/* =========================================================
-   NEXT DAY
-========================================================= */
-
-function nextDay(){
-
-  state.day++;
-
-  state.minutes=540;
-
-  state.open=true;
-
-  state.dayRevenue=0;
-  state.dayCosts=0;
-  state.served=0;
-  state.walkouts=0;
-
-  resetBuild();
-
-  customerCard.classList.remove("leave");
-
-  showToast(
-    `Ngày ${state.day} bắt đầu! Chúc tiệm buôn may bán đắt 🍦`
-  );
-
-  updateAll();
-
-  showScreen("shop");
-
-  spawnCustomer();
-
-  startGameClock();
-
-}
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-function updateSummary(){
-
-  $("summaryRevenue").textContent=
-    money(state.dayRevenue);
-
-  $("summaryServed").textContent=
-    state.served;
-
-  $("summaryWalkouts").textContent=
-    state.walkouts;
-
-  $("capacityText").textContent=
-    `Sức chứa: ${getCapacity()} / hũ`;
-
-}
-
-/* =========================================================
-   BUY LIST
-========================================================= */
-
-function renderBuyList(){
-
-  const list=$("buyList");
-
-  list.innerHTML="";
-
-  Object.entries(FLAVORS).forEach(([key,data])=>{
-
-    const price=25000;
-
-    const row=document.createElement("div");
-
-    row.className="buy-row";
-
-    row.innerHTML=`
-      <div class="buy-info">
-        <strong>${data.emoji} Thùng ${data.name}</strong>
-        <small>+20 viên • ${money(price)}</small>
-      </div>
-
-      <button class="buy-btn">
-        NHẬP SỈ
-      </button>
-    `;
-
-    row.querySelector("button").addEventListener(
-      "click",
-      ()=>buyBulk(key,price)
-    );
-
-    list.appendChild(row);
-
-  });
-
-}
-
-function buyBulk(flavor,price){
-
-  if(state.money<price){
-
-    showToast("Không đủ tiền để nhập thùng này 💸");
-
-    return;
-  }
-
-  state.money-=price;
-
-  state.dayCosts+=price;
-
-  state.bulk[flavor]+=20;
-
-  moneyText.textContent=money(state.money);
-
-  renderStock();
-
-  showToast(
-    `Đã nhập 20 viên ${FLAVORS[flavor].name} 📦`
-  );
-
-}
-
-/* =========================================================
-   STOCK
-========================================================= */
-
-function renderStock(){
-
-  const list=$("stockList");
-
-  list.innerHTML="";
-
-  Object.entries(FLAVORS).forEach(([key,data])=>{
-
-    const row=document.createElement("div");
-
-    row.className="stock-row";
-
-    row.innerHTML=`
-      <div
-        class="stock-icon"
-        style="background:${data.color}"
-      ></div>
-
-      <div>
-        <div class="stock-name">
-          ${data.emoji} ${data.name}
-        </div>
-
-        <div class="stock-count">
-          Hũ: ${state.inventory[key]} / ${getCapacity()}
-          • Thùng: ${state.bulk[key]}
-        </div>
-      </div>
-
-      <button class="small-btn">
-        CHÂM
-      </button>
-    `;
-
-    row.querySelector("button").addEventListener(
-      "click",
-      ()=>refillJar(key)
-    );
-
-    list.appendChild(row);
-
-  });
-
-}
-
-function refillJar(flavor){
-
-  const capacity=getCapacity();
-
-  const need=
-    Math.max(
-      0,
-      capacity-state.inventory[flavor]
-    );
-
-  if(need<=0){
-
-    showToast("Hũ này đã đầy rồi 🧊");
-
-    return;
-  }
-
-  const amount=
-    Math.min(
-      need,
-      state.bulk[flavor]
-    );
-
-  if(amount<=0){
-
-    showToast("Không còn hàng trong kho sỉ 📦");
-
-    return;
-  }
-
-  state.inventory[flavor]+=amount;
-
-  state.bulk[flavor]-=amount;
-
-  renderStock();
-
-  renderJars();
-
-  showToast(
-    `Đã châm ${amount} viên vào hũ 🍨`
-  );
-
-}
-
-/* =========================================================
-   UPGRADE COSTS
-========================================================= */
-
-function getUpgradeCost(type){
-
-  const level=state.upgrades[type];
-
-  switch(type){
-
-    case "price":
-      return PRICE_UPGRADE_COSTS[level] || 99999999;
-
-    case "scoopSpeed":
-      return 90000 + level*65000;
-
-    case "freezer":
-      return 85000 + level*70000;
-
-    case "patience":
-      return 75000 + level*60000;
-
-    default:
-      return 99999999;
-  }
-
-}
-
-/* =========================================================
-   UPGRADE
-========================================================= */
-
-function buyUpgrade(type){
-
-  const cost=getUpgradeCost(type);
-
-  if(state.money<cost){
-
-    showToast(
-      `Cần ${money(cost)} để nâng cấp 💰`
-    );
-
-    return;
-  }
-
-  if(type==="price" &&
-     state.upgrades.price>=PRICE_LEVELS.length-1){
-
-    showToast("Giá bán đã đạt cấp tối đa!");
-
-    return;
-  }
-
-  state.money-=cost;
-
-  state.dayCosts+=cost;
-
-  state.upgrades[type]++;
-
-  renderUpgrades();
-
-  moneyText.textContent=money(state.money);
-
-  showToast(
-    "Nâng cấp thành công! ✨"
-  );
-
-  /* If customer exists, refresh max patience */
-  if(state.activeCustomer){
-
-    const old=
-      state.activeCustomer.patienceLeft;
-
-    state.activeCustomer.patienceMax+=
-      type==="patience"
-        ? 3
-        : type==="scoopSpeed"
-          ? 3
-          : 0;
-
-    state.activeCustomer.patienceLeft=
-      Math.min(
-        state.activeCustomer.patienceMax,
-        old+(type==="patience"||type==="scoopSpeed"?3:0)
-      );
-
-    updatePatienceVisual();
-  }
-
-}
-
-/* =========================================================
-   RENDER UPGRADES
-========================================================= */
-
-function renderUpgrades(){
-
-  const priceLevel=state.upgrades.price;
-  const price=getPrice();
-
-  $("priceLevelText").textContent=
-    `Cấp ${priceLevel+1}`;
-
-  $("priceValueText").textContent=
-    `${money(price)} / ly`;
-
-  $("priceLevelFill").style.width=
-    `${((priceLevel+1)/PRICE_LEVELS.length)*100}%`;
-
-  const priceBtn=$("priceUpgradeBtn");
-
-  if(priceLevel>=PRICE_LEVELS.length-1){
-
-    priceBtn.textContent="ĐÃ TỐI ĐA";
-    priceBtn.disabled=true;
+      if(!build.topping){
+        score-=1;
+      }
+    }
 
   }else{
 
-    priceBtn.disabled=false;
+    if(build.base!==req.base){
+      score-=1;
+    }
 
-    priceBtn.textContent=
-      `NÂNG CẤP • ${money(getUpgradeCost("price"))}`;
+    const required=
+      [...req.flavors].sort();
+
+    const actual=
+      [...build.flavors].sort();
+
+    if(
+      required.length!==actual.length ||
+      required.some((x,i)=>x!==actual[i])
+    ){
+      score-=2;
+    }
+
+    if(build.topping!==req.topping){
+      score-=1;
+    }
   }
 
-  /* scoop */
+  return {
+    score:clamp(score,1,5)
+  };
+}
 
-  const scoop=state.upgrades.scoopSpeed;
+function consumeIngredients(){
 
-  $("scoopLevelText").textContent=
-    `Cấp ${scoop}`;
+  GAME.inventory[GAME.build.base]--;
 
-  $("scoopLevelFill").style.width=
-    `${Math.min(100,scoop*14)}%`;
+  GAME.build.flavors.forEach(id=>{
+    GAME.inventory[id]--;
+  });
 
-  $("scoopUpgradeBtn").textContent=
-    `NÂNG CẤP • ${money(getUpgradeCost("scoopSpeed"))}`;
-
-  /* freezer */
-
-  const freezer=state.upgrades.freezer;
-
-  $("freezerLevelText").textContent=
-    `Cấp ${freezer}`;
-
-  $("freezerCapacityText").textContent=
-    `${getCapacity()} / hũ`;
-
-  $("freezerLevelFill").style.width=
-    `${Math.min(100,freezer*14)}%`;
-
-  $("freezerUpgradeBtn").textContent=
-    `NÂNG CẤP • ${money(getUpgradeCost("freezer"))}`;
-
-  /* patience */
-
-  const patience=state.upgrades.patience;
-
-  $("patienceLevelText").textContent=
-    `Cấp ${patience}`;
-
-  $("patienceLevelFill").style.width=
-    `${Math.min(100,patience*14)}%`;
-
-  $("patienceUpgradeBtn").textContent=
-    `NÂNG CẤP • ${money(getUpgradeCost("patience"))}`;
-
+  if(GAME.build.topping){
+    GAME.inventory[GAME.build.topping]--;
+  }
 }
 
 /* =========================================================
-   STAR SVG
+   WALKOUT
 ========================================================= */
 
-function starSVG(){
+function customerWalkout(){
 
-  return `
-  <svg
-    class="star-svg"
-    viewBox="0 0 100 100"
-  >
-    <defs>
-      <linearGradient
-        id="starGradient${Math.random().toString(36).slice(2)}"
-        x1="0"
-        y1="0"
-        x2="1"
-        y2="1"
-      >
-        <stop offset="0%" stop-color="#fff4a8"/>
-        <stop offset="45%" stop-color="#ffd85e"/>
-        <stop offset="100%" stop-color="#e8a92e"/>
-      </linearGradient>
-    </defs>
+  if(!GAME.activeCustomer){
+    return;
+  }
 
-    <path
-      d="
-        M50 5
-        L61 36
-        L95 38
-        L68 58
-        L77 92
-        L50 72
-        L23 92
-        L32 58
-        L5 38
-        L39 36
-        Z
-      "
-      fill="url(#starGradient${arguments[0] || ""})"
-      stroke="#d99e35"
-      stroke-width="3"
-      stroke-linejoin="round"
-    />
-  </svg>
-  `;
+  const customer=GAME.activeCustomer;
 
+  GAME.dayWalkouts++;
+
+  createReview(
+    customer,
+    {score:1,walkout:true}
+  );
+
+  GAME.activeCustomer=null;
+
+  els.customerContent.style.display="none";
+  els.customerBottom.style.display="none";
+  els.customerLoading.style.display="flex";
+
+  resetBuild();
+
+  showToast("Khách đã hết kiên nhẫn và rời đi...");
+
+  setTimeout(()=>{
+    if(GAME.running && !GAME.activeCustomer){
+      spawnCustomer();
+    }
+  },600);
 }
 
 /* =========================================================
    REVIEWS
 ========================================================= */
 
+function createReview(customer,result){
+
+  const score=result.score;
+
+  const pool=
+    REVIEW_TEXTS[score] ||
+    REVIEW_TEXTS[3];
+
+  const text=random(pool);
+
+  const review={
+    id:Date.now()+Math.random(),
+    name:customer.name,
+    gender:customer.gender,
+    hair:customer.hair,
+    score,
+    text,
+    reply:""
+  };
+
+  GAME.reviews.unshift(review);
+
+  if(GAME.reviews.length>30){
+    GAME.reviews.pop();
+  }
+
+  renderReviews();
+}
+
+function stars(score){
+
+  let html="";
+
+  for(let i=1;i<=5;i++){
+    html+=`
+      <span class="star ${i<=score?"gold":"white"}">★</span>
+    `;
+  }
+
+  return html;
+}
+
 function renderReviews(){
 
-  const list=$("reviewList");
+  els.reviewCount.textContent=
+    GAME.reviews.length+" lượt";
 
-  list.innerHTML="";
+  if(!GAME.reviews.length){
 
-  if(state.reviews.length===0){
-
-    list.innerHTML=`
-      <div class="panel" style="text-align:center">
-        <div style="font-size:36px">🍨</div>
-        <strong>Chưa có đánh giá</strong>
-        <div style="
-          margin-top:5px;
-          font-size:9px;
-          color:#a5857e
-        ">
-          Hãy phục vụ khách để nhận đánh giá đầu tiên nhé!
+    els.reviewList.innerHTML=`
+      <div class="review-card" style="text-align:center">
+        <div style="font-size:28px">☆</div>
+        <div style="font-size:12px;font-weight:900;margin-top:5px">
+          Chưa có đánh giá
+        </div>
+        <div style="font-size:10px;color:#aa8273;margin-top:4px">
+          Hãy phục vụ khách đầu tiên nhé!
         </div>
       </div>
     `;
 
-  }else{
+    return;
+  }
 
-    state.reviews.forEach(review=>{
+  els.reviewList.innerHTML="";
 
-      const card=document.createElement("div");
+  GAME.reviews.forEach(review=>{
 
-      card.className="review-card";
+    const card=document.createElement("article");
+    card.className="review-card";
 
-      const stars=
-        "🌟".repeat(review.stars);
+    card.innerHTML=`
+      <div class="review-head">
 
-      card.innerHTML=`
-        <div class="review-head">
+        <div class="review-avatar">
+          ${
+            review.gender==="female"
+              ?femaleAvatar(review)
+              :maleAvatar(review)
+          }
+        </div>
 
-          <div class="review-avatar">
-            ${createCustomerSVG(review.avatar)}
-          </div>
-
-          <div class="review-meta">
-            <strong>${escapeHTML(review.name)}</strong>
-            <small>${review.time} • ${review.positive?"Đã phục vụ":"Khách rời tiệm"}</small>
-          </div>
+        <div class="review-person">
+          <strong>${escapeHTML(review.name)}</strong>
 
           <div class="review-stars">
-            ${stars}
+            ${stars(review.score)}
           </div>
-
         </div>
+      </div>
 
-        <div class="review-text">
-          ${escapeHTML(review.text)}
-        </div>
+      <p class="review-text">
+        “${escapeHTML(review.text)}”
+      </p>
 
-        ${
-          review.emotion
-            ? `<div class="review-emotion">${review.emotion}</div>`
-            : ""
-        }
+      ${
+        review.reply
+          ?`
+            <div class="reply-display">
+              <strong>Tiệm trả lời:</strong>
+              ${escapeHTML(review.reply)}
+            </div>
+          `
+          :""
+      }
 
-      `;
+      <button class="reply-toggle">
+        ${review.reply?"✎ Sửa trả lời":"↩ Trả lời đánh giá"}
+      </button>
 
-      list.appendChild(card);
+      <div class="reply-box">
+        <input
+          class="reply-input"
+          maxlength="120"
+          placeholder="Viết lời trả lời thật ngọt ngào..."
+          value="${escapeAttribute(review.reply)}"
+        >
+        <button class="reply-send">Gửi</button>
+      </div>
+    `;
 
+    const toggle=
+      card.querySelector(".reply-toggle");
+
+    const box=
+      card.querySelector(".reply-box");
+
+    const input=
+      card.querySelector(".reply-input");
+
+    const send=
+      card.querySelector(".reply-send");
+
+    toggle.addEventListener("click",()=>{
+      box.classList.toggle("show");
+
+      if(box.classList.contains("show")){
+        input.focus();
+      }
     });
 
-  }
+    send.addEventListener("click",()=>{
 
-  /* rating */
+      const value=input.value.trim();
 
-  if(state.reviews.length===0){
+      if(!value){
+        showToast("Hãy viết lời trả lời trước nhé!");
+        return;
+      }
 
-    $("ratingNumber").textContent="5.0";
+      review.reply=value;
 
-    $("ratingCount").textContent=
-      "Chưa có đánh giá";
+      renderReviews();
 
-  }else{
+      showToast("Đã gửi lời trả lời cho khách ♡");
+    });
 
-    const avg=
-      state.reviews.reduce(
-        (sum,r)=>sum+r.stars,
-        0
-      )/state.reviews.length;
-
-    $("ratingNumber").textContent=
-      avg.toFixed(1);
-
-    $("ratingCount").textContent=
-      `${state.reviews.length} đánh giá`;
-
-  }
-
-  const bigStars=$("bigStars");
-
-  bigStars.innerHTML="";
-
-  for(let i=0;i<5;i++){
-
-    bigStars.insertAdjacentHTML(
-      "beforeend",
-      starSVG()
-    );
-
-  }
-
+    els.reviewList.appendChild(card);
+  });
 }
 
-function escapeHTML(text){
-
-  return String(text)
+function escapeHTML(value){
+  return String(value)
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
+}
 
+function escapeAttribute(value){
+  return escapeHTML(value||"");
 }
 
 /* =========================================================
-   SCREEN NAVIGATION
+   INVENTORY
 ========================================================= */
 
-function showScreen(screen){
+function renderInventory(){
 
-  document.querySelectorAll(".screen").forEach(el=>{
-    el.classList.remove("active");
+  const data=[
+    ["cone","🍦","Ốc quế",16],
+    ["cup","🥤","Ly kem",16],
+    ["chocolate","🍫","Socola",12],
+    ["strawberry","🍓","Dâu",12],
+    ["vanilla","🍦","Vani",12],
+    ["matcha","🍵","Matcha",12],
+    ["butter","🧈","Bơ",12],
+    ["durian","🌼","Sầu riêng",12],
+    ["sprinkles","🌈","Cốm",10],
+    ["strawberrySauce","🍓","Sốt dâu",10],
+    ["cherry","🍒","Cherry",10],
+    ["cookie","🍪","Cookie",10]
+  ];
+
+  els.inventoryGrid.innerHTML="";
+
+  data.forEach(([id,emoji,name,maxDefault])=>{
+
+    const amount=GAME.inventory[id];
+
+    const max=20+GAME.upgrades.warehouse*5;
+
+    const ratio=clamp(amount/max,0,1)*100;
+
+    const card=document.createElement("div");
+    card.className="stock-card";
+
+    card.innerHTML=`
+      <div class="stock-icon">${emoji}</div>
+      <div class="stock-name">${name}</div>
+      <div class="stock-amount">
+        Còn ${amount} / ${max}
+      </div>
+
+      <div class="stock-bar">
+        <i style="width:${ratio}%"></i>
+      </div>
+
+      <button class="restock">
+        +5 · ${money(restockPrice(id))}
+      </button>
+    `;
+
+    card.querySelector(".restock")
+      .addEventListener("click",()=>{
+        restock(id,max);
+      });
+
+    els.inventoryGrid.appendChild(card);
   });
 
-  document.querySelectorAll(".nav-btn").forEach(el=>{
-    el.classList.remove("active");
-  });
+  const total=
+    Object.values(GAME.inventory)
+      .reduce((a,b)=>a+b,0);
 
-  const map={
-    shop:"shopScreen",
-    warehouse:"warehouseScreen",
-    upgrade:"upgradeScreen",
-    reviews:"reviewsScreen"
-  };
+  const capacity=warehouseCapacity();
 
-  const target=$(map[screen]);
+  els.capacityLabel.textContent=
+    total+" / "+capacity;
 
-  if(target){
-    target.classList.add("active");
+  els.warehouseCapacity.textContent=
+    total+" / "+capacity;
+
+  els.warehouseBar.style.width=
+    clamp(total/capacity,0,1)*100+"%";
+}
+
+function restockPrice(id){
+
+  const cheap=
+    ["cone","cup"].includes(id)
+      ?8000
+      :5000;
+
+  return cheap;
+}
+
+function restock(id,max){
+
+  const amount=GAME.inventory[id];
+
+  if(amount>=max){
+    showToast("Kho của nguyên liệu này đã đầy!");
+    return;
   }
 
-  const nav=document.querySelector(
-    `.nav-btn[data-screen="${screen}"]`
-  );
+  const price=restockPrice(id);
 
-  if(nav){
-    nav.classList.add("active");
+  if(GAME.cash<price){
+    showToast("Không đủ tiền nhập hàng!");
+    return;
   }
 
-  if(screen==="warehouse"){
+  const capacity=warehouseCapacity();
 
-    renderBuyList();
-    renderStock();
-    updateSummary();
+  const total=
+    Object.values(GAME.inventory)
+      .reduce((a,b)=>a+b,0);
 
+  if(total+5>capacity){
+    showToast("Kho không còn đủ chỗ!");
+    return;
   }
 
-  if(screen==="upgrade"){
-    renderUpgrades();
-  }
+  GAME.cash-=price;
+  GAME.dayCosts+=price;
 
-  if(screen==="reviews"){
-    renderReviews();
-  }
+  GAME.inventory[id]=Math.min(max,amount+5);
 
+  renderHeader();
+  renderInventory();
+
+  showToast("Đã nhập thêm nguyên liệu 📦");
 }
 
 /* =========================================================
-   UPDATE ALL
+   UPGRADES
 ========================================================= */
 
-function updateAll(){
+function renderUpgrades(){
 
-  moneyText.textContent=money(state.money);
+  const upgrades=[
+    {
+      id:"price",
+      icon:"💰",
+      name:"Nâng Giá Bán Kem",
+      desc:"Tăng số tiền thu về cho mỗi ly kem hoàn thành.",
+      levels:[
+        "10.000đ / ly",
+        "15.000đ / ly",
+        "25.000đ / ly",
+        "35.000đ / ly",
+        "50.000đ / ly",
+        "65.000đ / ly",
+        "85.000đ / ly"
+      ],
+      costs:[
+        0,
+        40000,
+        90000,
+        160000,
+        250000,
+        380000,
+        550000
+      ]
+    },
 
-  revenueText.textContent=
-    money(state.dayRevenue);
+    {
+      id:"scoop",
+      icon:"🍨",
+      name:"Kỹ Thuật Múc Kem",
+      desc:"Mở khóa số lượng viên kem có thể kết hợp.",
+      levels:[
+        "1 viên",
+        "2 viên",
+        "3 viên"
+      ],
+      costs:[
+        0,
+        60000,
+        140000
+      ]
+    },
 
-  clockText.textContent=
-    formatClock(state.minutes);
+    {
+      id:"patience",
+      icon:"🌷",
+      name:"Không Gian Chờ",
+      desc:"Khách kiên nhẫn hơn trước khi rời tiệm.",
+      levels:[
+        "70 giây",
+        "78 giây",
+        "86 giây",
+        "94 giây"
+      ],
+      costs:[
+        0,
+        70000,
+        150000,
+        280000
+      ]
+    },
 
-  renderJars();
-  renderBuild();
-  renderUpgrades();
-  renderReviews();
-  renderBuyList();
-  renderStock();
-  updateSummary();
-
-}
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-document.querySelectorAll("[data-base]").forEach(btn=>{
-
-  btn.addEventListener(
-    "click",
-    ()=>selectBase(btn.dataset.base)
-  );
-
-});
-
-document.querySelectorAll("[data-flavor]").forEach(btn=>{
-
-  btn.addEventListener(
-    "click",
-    ()=>selectFlavor(btn.dataset.flavor)
-  );
-
-});
-
-document.querySelectorAll("[data-topping]").forEach(btn=>{
-
-  btn.addEventListener(
-    "click",
-    ()=>selectTopping(btn.dataset.topping)
-  );
-
-});
-
-$("serveBtn").addEventListener(
-  "click",
-  serveCustomer
-);
-
-$("resetBtn").addEventListener(
-  "click",
-  resetBuild
-);
-
-$("closeStoreBtn").addEventListener(
-  "click",
-  ()=>closeStore(false)
-);
-
-$("nextDayBtn").addEventListener(
-  "click",
-  nextDay
-);
-
-/* upgrades */
-
-$("priceUpgradeBtn").addEventListener(
-  "click",
-  ()=>buyUpgrade("price")
-);
-
-$("scoopUpgradeBtn").addEventListener(
-  "click",
-  ()=>buyUpgrade("scoopSpeed")
-);
-
-$("freezerUpgradeBtn").addEventListener(
-  "click",
-  ()=>buyUpgrade("freezer")
-);
-
-$("patienceUpgradeBtn").addEventListener(
-  "click",
-  ()=>buyUpgrade("patience")
-);
-
-/* navigation */
-
-document.querySelectorAll(".nav-btn").forEach(btn=>{
-
-  btn.addEventListener(
-    "click",
-    ()=>{
-      showScreen(btn.dataset.screen);
+    {
+      id:"warehouse",
+      icon:"📦",
+      name:"Kho Hàng",
+      desc:"Tăng sức chứa và lượng nguyên liệu có thể lưu trữ.",
+      levels:[
+        "60 món",
+        "80 món",
+        "100 món",
+        "120 món"
+      ],
+      costs:[
+        0,
+        50000,
+        110000,
+        200000
+      ]
     }
-  );
+  ];
 
+  els.upgradeList.innerHTML="";
+
+  upgrades.forEach(up=>{
+
+    const level=GAME.upgrades[up.id];
+    const nextCost=up.costs[level+1];
+
+    const card=document.createElement("div");
+    card.className="upgrade-card";
+
+    card.innerHTML=`
+      <div class="upgrade-top">
+
+        <div class="upgrade-icon">
+          ${up.icon}
+        </div>
+
+        <div class="upgrade-main">
+          <div class="upgrade-name">
+            ${up.name}
+          </div>
+
+          <div class="upgrade-desc">
+            ${up.desc}
+          </div>
+
+          <div class="upgrade-level">
+            Cấp ${level} · ${up.levels[level]}
+          </div>
+        </div>
+
+      </div>
+
+      <button class="upgrade-btn"
+              ${nextCost===undefined?"disabled":""}>
+        ${
+          nextCost===undefined
+            ?"✦ ĐÃ TỐI ĐA"
+            :"NÂNG CẤP · "+money(nextCost)
+        }
+      </button>
+    `;
+
+    const button=
+      card.querySelector(".upgrade-btn");
+
+    if(nextCost!==undefined){
+
+      button.addEventListener("click",()=>{
+
+        if(GAME.cash<nextCost){
+          showToast("Chưa đủ tiền để nâng cấp!");
+          return;
+        }
+
+        GAME.cash-=nextCost;
+        GAME.upgrades[up.id]++;
+
+        renderHeader();
+        renderUpgrades();
+        renderInventory();
+
+        showToast(
+          "Đã nâng cấp "+up.name+" ✨"
+        );
+      });
+    }
+
+    els.upgradeList.appendChild(card);
+  });
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+function renderHeader(){
+
+  els.dayLabel.textContent=
+    `Ngày ${GAME.day} · ${formatTime(GAME.minutes)}`;
+
+  els.moneyLabel.textContent=
+    money(GAME.cash);
+
+  els.servedLabel.textContent=
+    GAME.dayServed+" khách đã phục vụ";
+}
+
+/* =========================================================
+   CLOSE SHOP
+========================================================= */
+
+function closeShop(){
+
+  if(!GAME.running){
+    return;
+  }
+
+  GAME.running=false;
+
+  /*
+   * Customer currently waiting is removed.
+   * The game immediately hides the sales screen
+   * and opens the day-summary screen.
+   */
+  GAME.activeCustomer=null;
+
+  const revenue=GAME.dayRevenue;
+  const costs=GAME.dayCosts;
+  const profit=revenue-costs;
+
+  els.summaryDay.textContent=
+    GAME.day;
+
+  els.summaryServed.textContent=
+    GAME.dayServed;
+
+  els.summaryRevenue.textContent=
+    money(revenue);
+
+  els.summaryCosts.textContent=
+    money(costs);
+
+  els.summaryWalkouts.textContent=
+    GAME.dayWalkouts;
+
+  els.summaryProfit.textContent=
+    money(profit);
+
+  els.summaryMoney.textContent="0đ";
+
+  els.summaryScreen.classList.add("show");
+
+  animateMoney(
+    els.summaryMoney,
+    0,
+    Math.max(0,profit),
+    1100
+  );
+}
+
+function animateMoney(el,start,end,duration){
+
+  const startTime=performance.now();
+
+  function frame(now){
+
+    const progress=
+      clamp(
+        (now-startTime)/duration,
+        0,
+        1
+      );
+
+    const eased=
+      1-Math.pow(1-progress,3);
+
+    const value=
+      start+(end-start)*eased;
+
+    el.textContent=money(value);
+
+    if(progress<1){
+      requestAnimationFrame(frame);
+    }
+  }
+
+  requestAnimationFrame(frame);
+}
+
+/* =========================================================
+   NEXT DAY
+========================================================= */
+
+els.nextDayBtn.addEventListener("click",()=>{
+
+  GAME.day++;
+  GAME.minutes=540;
+
+  GAME.dayRevenue=0;
+  GAME.dayCosts=0;
+  GAME.dayServed=0;
+  GAME.dayWalkouts=0;
+
+  GAME.activeCustomer=null;
+  GAME.lastGameTick=Date.now();
+
+  GAME.running=true;
+
+  els.summaryScreen.classList.remove("show");
+
+  switchScreen("shop");
+
+  renderHeader();
+  renderInventory();
+  resetBuild();
+
+  setTimeout(()=>{
+    spawnCustomer();
+  },400);
+
+  showToast(
+    "Ngày "+GAME.day+" bắt đầu! Chúc bạn bán thật nhiều kem ♡"
+  );
 });
 
 /* =========================================================
-   KEYBOARD SUPPORT
+   OPTIONAL MANUAL CLOSE BUTTON
+   A small close control is inserted in header.
 ========================================================= */
 
-document.addEventListener("keydown",e=>{
+function createCloseButton(){
 
-  if(e.key==="Escape"){
-    resetBuild();
-  }
+  const headerRow=document.querySelector(".header-row");
 
-});
+  const button=document.createElement("button");
+
+  button.type="button";
+  button.title="Đóng cửa";
+  button.textContent="ĐÓNG CỬA";
+  button.style.cssText=`
+    position:absolute;
+    left:10px;
+    top:39px;
+    transform:translateY(-50%);
+    min-height:24px;
+    padding:0 7px;
+    border-radius:8px;
+    background:#fff;
+    border:1px solid #ead8cf;
+    color:#b47767;
+    font-size:8px;
+    font-weight:900;
+    z-index:5;
+  `;
+
+  button.addEventListener("click",()=>{
+
+    if(!GAME.running){
+      return;
+    }
+
+    if(
+      confirm(
+        "Bạn muốn đóng cửa tiệm và tổng kết ngày hôm nay?"
+      )
+    ){
+      closeShop();
+    }
+  });
+
+  headerRow.style.position="relative";
+  headerRow.appendChild(button);
+}
 
 /* =========================================================
    INITIALIZATION
 ========================================================= */
 
-function init(){
+function renderAll(){
 
-  renderJars();
-
-  renderBuild();
-
+  renderHeader();
+  renderChoices();
+  renderInventory();
   renderUpgrades();
-
   renderReviews();
-
-  renderBuyList();
-
-  renderStock();
-
-  updateSummary();
-
-  moneyText.textContent=money(state.money);
-
-  revenueText.textContent=
-    money(state.dayRevenue);
-
-  clockText.textContent=
-    formatClock(state.minutes);
-
-  /* IMPORTANT:
-     Customer is spawned immediately.
-     No empty customer area. */
-  spawnCustomer();
-
-  startGameClock();
-
+  resetBuild();
+  createCloseButton();
 }
 
-init();
+renderAll();
+
+/* =========================================================
+   KEYBOARD SAFETY / VISIBILITY
+========================================================= */
+
+document.addEventListener("visibilitychange",()=>{
+
+  /*
+   * When returning to the game, refresh visual state.
+   * Patience itself uses performance timestamps, so it
+   * remains consistent instead of depending on frame count.
+   */
+  if(!document.hidden){
+    renderHeader();
+    renderInventory();
+  }
+});
 
 </script>
-
 </body>
 </html>
