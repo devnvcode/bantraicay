@@ -57,6 +57,7 @@ final class SettingsHomeViewController: UITableViewController {
             return count == 0 ? AppLanguage.choose("Install car, skin and script mods") : AppLanguage.interpolate(AppLanguage.choose("{arg0} mods on"), [String(count)])
         }, sections: [], page: { ModsViewController() }))
         list.append(Category(icon:"puzzlepiece.extension",title:"Plugin Menyoo",summary:{"Bật/tắt Menyoo tích hợp, hướng dẫn nút điều khiển"},sections:[],page:{BundledMenyooViewController()}))
+        list.append(Category(icon:"shield.lefthalf.filled",title:"Chế độ Cảnh sát LSPDFR",summary:{"Hệ thống cảnh sát phản ứng nhanh, nhiệm vụ & mod lcpdfr.com"},sections:[],page:{LSPDFRViewController()}))
         list.append(Category(icon:"flame",title:"Turbo và lửa bô (thử nghiệm)",summary:{"Turbo, boost theo số, anti-lag, âm thanh và đồng hồ"},sections:[],page:{TurboSettingsViewController()}))
         list.append(Category(icon:"memorychip",title:"RAM và quyền bộ nhớ",summary:{"Kiểm tra quyền tăng RAM, bỏ cap riêng và xuất entitlement"},sections:[],page:{MemoryAccessViewController(engineRunning:running)}))
         list.append(Category(icon: "iphone", title: AppLanguage.choose("This device"), summary: {
@@ -81,7 +82,6 @@ final class SettingsHomeViewController: UITableViewController {
         navigationItem.rightBarButtonItem?.tintColor = Theme.accent
         navigationItem.backButtonDisplayMode = .minimal
         Theme.styleSettingsTable(tableView)
-        // Automation: --settings-section opens that category's page.
         let arguments = ProcessInfo.processInfo.arguments
         if let i = arguments.firstIndex(of: "--settings-section"), i + 1 < arguments.count {
             let wanted: SettingsViewController.Section? = ["files": .files, "graphics": .graphics, "resolution": .graphics, "device": .device, "controls": .controls, "cheats": .cheats, "spawn": .cheats][arguments[i + 1]]
@@ -91,7 +91,6 @@ final class SettingsHomeViewController: UITableViewController {
         }
     }
 
-    // Titles can change with the language and the summaries with the settings.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         title = AppLanguage.choose("Settings")
