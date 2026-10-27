@@ -1,1 +1,51 @@
+name: Build IPA
 
+on:
+  workflow_dispatch:
+    inputs:
+      server:
+        description: "URL server chứa file game (https://...)"
+        required: true
+      lite:
+        description: "Bản Lite (iPhone ~4GB RAM)"
+        type: boolean
+        default: false
+      free:
+        description: "Tài khoản Apple miễn phí"
+        type: boolean
+        default: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cài xcodegen
+        run: brew install xcodegen
+
+      - name: Build IPA
+        env:
+          SERVER: ${{ inputs.server }}
+          LITE: ${{ inputs.lite }}
+          FREE: ${{ inputs.free }}
+        run: |
+          chmod +x build_ipa.sh
+          ARGS=""
+          if [ "$LITE" = "true" ]; then ARGS="$ARGS --lite"; fi
+          if [ "$FREE" = "true" ]; then ARGS="$ARGS --free"; fi
+          ./build_ipa.sh "$SERVER" $ARGS
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipa
+          path: "*.ipa"
+
+      - name: Upload log nếu lỗi
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: app/Build/xcodebuild.log
