@@ -20,6 +20,7 @@ import urllib.request
 from pathlib import Path
 
 NAME = 'pgmsl-macos-arm64.tar.gz'
+ALT_NAMES = ['pgmsl-macos-arm64_tar.gz']  # GitHub/iOS sometimes renames the dots
 SHA256 = 'c80005c5fe22653cc7b2dd10a8276202df8e8fbfcb6d6d1a3e6599c2240105a1'
 
 root = Path(__file__).resolve().parents[1]
@@ -41,7 +42,8 @@ def candidates():
         else:
             yield env, Path(env).expanduser()
     for folder in [root.parent / 'build-tools', root / 'build-tools', root / 'Tools', root.parent]:
-        yield str(folder / NAME), folder / NAME
+        for name in [NAME] + ALT_NAMES:
+            yield str(folder / name), folder / name
 
 
 def fetch(source):
