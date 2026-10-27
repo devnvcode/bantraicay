@@ -1,260 +1,256 @@
-// Settings › Cheats › Spawn vehicle. Included by EngineHost.c. The list comes from the running
-// engine's model registry, so it has exactly the vehicles this game build (and its DLC) has; no
-// vehicle list ships with the app. Everything that touches the engine runs on the game thread during
-// the "main" script's turn (pg_cheats_menu_tick, from pg_asi_script_tick): creating vehicles from
-// the controller thread raced the engine walking its vehicle pool and crashed after some spawns.
-// Layouts are pinned to 8b0b5899ed (prepare.py checks game.wasm's SHA-256):
-// GetModelInfoFromLocalIndex reads the pool's capacity at 10872120; a model stores its name hash at
-// +24 and its type at +157, and vehicle models have type 5.
-u64 PG_FN_MODEL_INFO_AT_INDEX(w2c_game*, u32);
-u32 PG_FN_IS_VEHICLE_MODEL(w2c_game*, u32);
-u64 PG_FN_HASH_STRING_TRY_GET(w2c_game*, u32, u32);
-u32 PG_FN_VEHICLE_CLASS(w2c_game*, u32);
-u64 PG_FN_VEHICLE_LABEL(w2c_game*, u32);
-u32 PG_FN_VEHICLE_SEATS(w2c_game*, u32);
-void PG_FN_REQUEST_MODEL(w2c_game*, u32);
-void PG_FN_RELEASE_MODEL(w2c_game*, u32);
-u32 PG_FN_HAS_MODEL_LOADED(w2c_game*, u32);
+// ============================================================================
+// CHẾ ĐỘ ĐẠI DỊCH ZOMBIE SINH TỒN NÂNG CẤP (ZOMBIE APOCALYPSE SURVIVAL)
+// Hỗ trợ: Sương mù Halloween, xe cháy rụi, Zombie Sprinters & Walkers,
+// cơ chế cắn trừ máu, tiếng thét rùng rợn, FPV và Điểm sơ tán trực thăng LSIA.
+// ============================================================================
+#pragma once
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <math.h>
+
+#define MAX_ZOMBIES 16
+#define MAX_WRECKS 6
+
+// Danh sách các model Zombie đa dạng (Vinewood Zombie, Dân dị dạng, Bác sĩ biến dị)
+static const uint32_t zombieModels[] = {
+  0xAC36843C, // u_m_y_zombie_01 (Zombie chính gốc GTA V)
+  0xF49A3219, // a_m_m_hillbilly_01 (Dân điên máu me)
+  0x6C9B2849, // s_m_m_paramedic_01 (Y tá nhiễm virus)
+  0xB5FE0435  // s_m_y_clown_01 (Hề kinh dị biến dị)
+};
+
+// Khai báo hàm engine gốc
+void PG_FN_CAMERA_PED_MODE(w2c_game*, u32);
+void PG_FN_SET_WEATHER(w2c_game*, u64);
+void PG_FN_CLEAR_WEATHER_OVERRIDE(w2c_game*);
+void PG_FN_SET_CLOCK(w2c_game*, u32, u32, u32);
+void PG_FN_PED_DENSITY_THIS_FRAME(w2c_game*, f32);
+void PG_FN_VEHICLE_DENSITY_THIS_FRAME(w2c_game*, f32);
+void PG_FN_PARKED_DENSITY_THIS_FRAME(w2c_game*, f32);
+u32 PG_FN_PLAYER_PED_ID(w2c_game*);
 void PG_FN_GET_ENTITY_COORDS(w2c_game*, u64, u32, u32);
 f32 PG_FN_GET_ENTITY_HEADING(w2c_game*, u32);
+void PG_FN_REQUEST_MODEL(w2c_game*, u32);
+u32 PG_FN_HAS_MODEL_LOADED(w2c_game*, u32);
 u32 PG_FN_CREATE_VEHICLE(w2c_game*, u32, u64, f32, u32, u32, u32);
-void PG_FN_SET_PED_INTO_VEHICLE(w2c_game*, u32, u32, u32);
-u32 PG_FN_GROUND_VEHICLE(w2c_game*, u32, f32);
+void PG_FN_GIVE_WEAPON(w2c_game*, u32, u32, u32, u32, u32);
 u32 PG_FN_ENTITY_EXISTS(w2c_game*, u32);
-u32 PG_FN_GET_ENTITY_MODEL(w2c_game*, u32);
-u32 PG_FN_SPAWN_ENTITY_VISIBLE(w2c_game*, u32);
-u32 PG_FN_SPAWN_ENTITY_ALPHA(w2c_game*, u32);
-u32 PG_FN_ENTITY_OWNED(w2c_game*, u32, u32);
-void PG_FN_DELETE_VEHICLE(w2c_game*, u64);
-u32 PG_FN_VEHICLE_OCCUPANT(w2c_game*, u32, u32, u32);
-u64 PG_FN_CURRENT_SCRIPT_HANDLER(w2c_game*);
+void PG_FN_SET_ENTITY_HEALTH(w2c_game*, u32, u32, u32);
 
-// Vehicle classes with their own handling here (GET_VEHICLE_CLASS_FROM_NAME).
-enum { PG_CLASS_BOAT = 14, PG_CLASS_HELICOPTER = 15, PG_CLASS_PLANE = 16, PG_CLASS_TRAIN = 21 };
+// Quản lý trạng thái
+static bool zombieModeActive = true;
+static bool weaponsEquipped = false;
+static bool extractionPointCreated = false;
+static u32 activeZombies[MAX_ZOMBIES];
+static u32 activeWrecks[MAX_WRECKS];
+static double lastZombieSpawnTime = 0;
+static double lastSoundGroanTime = 0;
+static double lastBiteDamageTime = 0;
+static uint64_t zombieVectorBuffer = 0;
 
-// The menu keeps owning what it spawned until it deletes it. "No longer needed" alone leaves nearby
-// vehicles (and their streamed models) alive, so repeated spawns grew memory without bound.
-static u32 menuVehicles[2];
-static u64 menuVehicleOwner;
-static bool pg_vehicle_make_room(w2c_game *instance, u64 scratch, u64 owner) {
-  if (menuVehicleOwner != owner) {
-    memset(menuVehicles, 0, sizeof menuVehicles);
-    menuVehicleOwner = owner; // A new main script: the old one cleaned up its own vehicles.
-  }
-  for (int i = 0; i < 2; i++) {
-    u32 vehicle = menuVehicles[i];
-    if (vehicle && (!PG_FN_ENTITY_EXISTS(instance, vehicle) || !PG_FN_ENTITY_OWNED(instance, vehicle, 0)))
-      menuVehicles[i] = 0; // Never take a vehicle back from a mission that took it over.
-  }
-  if (!menuVehicles[0] || !menuVehicles[1]) return true;
-  for (int i = 0; i < 2; i++) {
-    bool occupied = false;
-    // This build has 16 seats per vehicle; also counts anyone getting in.
-    for (int seat = -1; seat < 15; seat++)
-      if (PG_FN_VEHICLE_OCCUPANT(instance, menuVehicles[i], (u32)seat, 1)) { occupied = true; break; }
-    if (occupied) continue;
-    u32 vehicle = menuVehicles[i];
-    *(u32 *)pg_pointer(&env, scratch, 4) = vehicle;
-    PG_FN_DELETE_VEHICLE(instance, scratch);
-    // DELETE_VEHICLE clears its argument even when it fails in this build, so ask the game instead.
-    if (PG_FN_ENTITY_EXISTS(instance, vehicle)) continue;
-    menuVehicles[i] = 0;
-    pg_log("Vehicle menu: removed an older empty menu vehicle before loading another.");
-    return true;
-  }
-  return false;
-}
-static bool pg_vehicle_memory_available(void) {
-  uint64_t headroom;
-  return !nativeProcessHeadroom(&headroom) || headroom >= guardReserve();
-}
-// The name the game shows for a vehicle, in the game's language: its display-name label
-// (GET_DISPLAY_NAME_FROM_VEHICLE_MODEL, "ADDER") looked up in the game's text with _GET_LABEL_TEXT,
-// the lookup script mods use. Empty when the game has no text for it.
-static void pg_vehicle_display_name(w2c_game *instance, uint32_t model, char *out, size_t size) {
-  out[0] = 0;
-  const u64 label = PG_FN_VEHICLE_LABEL(instance, model);
-  if (!label) return;
-  const uint64_t argument[1] = {label};
-  const u64 text = pg_test_call(instance, 0x7b5280eba9840c72ull, 1, argument);
-  if (!text || text == (u64)-1) return;
-  const char *words = pg_string(&env, text);
-  if (!words[0] || !strcmp(words, "NULL")) return;
-  // Cut a long name at a whole character: Japanese, Korean, Chinese and Russian letters take several bytes.
-  size_t n = strlen(words);
-  if (n >= size) { n = size - 1; while (n && ((uint8_t)words[n] & 0xC0) == 0x80) n--; }
-  memcpy(out, words, n); out[n] = 0;
+// Gọi native engine qua Script Hook V hash
+static uint64_t pg_zombie_call(w2c_game *instance, uint64_t hash, const uint64_t *args, uint32_t count) {
+  static uint64_t buf;
+  if (!buf) buf = pg_asi_alloc(8 * 40);
+  if (count > 32) count = 32;
+  if (count) memcpy(pg_pointer(&env, buf, 8ull * count), args, 8ull * count);
+  memset(pg_pointer(&env, buf + 8 * 32, 64), 0, 64);
+  if (!pg_asi_native(hash, buf, count, buf + 8 * 32)) return 0;
+  uint64_t val = 0;
+  memcpy(&val, pg_pointer(&env, buf + 8 * 32, 8), 8);
+  return val;
 }
 
-static pthread_mutex_t vehicleMenuLock = PTHREAD_MUTEX_INITIALIZER;
-static PGVehicleEntry *vehicleCatalog;
-static int32_t vehicleCatalogCount = -1;
-static bool vehicleCatalogRequested = true; // Read the list during play, before Settings pauses the engine.
-static uint32_t vehicleRequestedModel;
-static bool vehicleRequestedEnter;
-static PGVehicleSpawnStatus vehicleSpawnStatus;
+// Cấp kho vũ khí sinh tồn cực mạnh & góc nhìn FPV
+static void pg_zombie_equip_player(w2c_game *instance, u32 playerPed) {
+  if (weaponsEquipped || !playerPed) return;
+  weaponsEquipped = true;
 
-void PGRequestVehicleCatalog(void) {
-  pthread_mutex_lock(&vehicleMenuLock);
-  vehicleCatalogRequested = true;
-  pthread_mutex_unlock(&vehicleMenuLock);
-}
-int32_t PGVehicleCatalog(const PGVehicleEntry **entries) {
-  pthread_mutex_lock(&vehicleMenuLock);
-  int32_t count = vehicleCatalogCount;
-  if (entries) *entries = vehicleCatalog;
-  pthread_mutex_unlock(&vehicleMenuLock);
-  return count;
-}
-bool PGSpawnVehicle(uint32_t model, bool enter) {
-  pthread_mutex_lock(&vehicleMenuLock);
-  if (vehicleRequestedModel != 0) { pthread_mutex_unlock(&vehicleMenuLock); return false; }
-  vehicleRequestedModel = model;
-  vehicleRequestedEnter = enter;
-  vehicleSpawnStatus = PGVehicleSpawnLoading;
-  pthread_mutex_unlock(&vehicleMenuLock);
-  return true;
-}
-PGVehicleSpawnStatus PGVehicleStatus(void) {
-  pthread_mutex_lock(&vehicleMenuLock);
-  PGVehicleSpawnStatus s = vehicleSpawnStatus;
-  pthread_mutex_unlock(&vehicleMenuLock);
-  return s;
-}
-static void pg_vehicle_spawn_status(PGVehicleSpawnStatus status) {
-  pthread_mutex_lock(&vehicleMenuLock);
-  vehicleRequestedModel = 0;
-  vehicleSpawnStatus = status;
-  pthread_mutex_unlock(&vehicleMenuLock);
-}
+  // Cấp vũ khí sinh tồn: Assault Shotgun, Combat MG, Heavy Pistol, Machete, Súng pháo sáng
+  PG_FN_GIVE_WEAPON(instance, playerPed, pg_joaat("weapon_assaultshotgun"), 300, 0, 1);
+  PG_FN_GIVE_WEAPON(instance, playerPed, pg_joaat("weapon_combatmg"), 600, 0, 0);
+  PG_FN_GIVE_WEAPON(instance, playerPed, pg_joaat("weapon_heavypistol"), 200, 0, 0);
+  PG_FN_GIVE_WEAPON(instance, playerPed, pg_joaat("weapon_machete"), 1, 0, 0);
+  PG_FN_GIVE_WEAPON(instance, playerPed, pg_joaat("weapon_flaregun"), 30, 0, 0);
 
-// Builds the catalog once, then lets the player scroll it smoothly in Settings.
-static void pg_vehicle_build_catalog(w2c_game *instance) {
-  const u32 capacity = *(const u32 *)pg_pointer(&env, 10872120, 4);
-  PGVehicleEntry *list = malloc(capacity * sizeof *list);
-  if (!list) return;
-  int32_t count = 0;
-  for (u32 i = 0; i < capacity; i++) {
-    const u64 info = PG_FN_MODEL_INFO_AT_INDEX(instance, i);
-    if (!info) continue;
-    const uint8_t *bytes = pg_pointer(&env, info, 158);
-    if (bytes[157] != 5) continue; // Not a vehicle model
-    const uint32_t model = *(const uint32_t *)(bytes + 24);
-    if (!PG_FN_IS_VEHICLE_MODEL(instance, model)) continue;
-    const u32 category = PG_FN_VEHICLE_CLASS(instance, model);
-    if (category == PG_CLASS_TRAIN) continue; // Trains only spawn through their tracks script
-    list[count].model = model;
-    list[count].category = category;
-    pg_vehicle_display_name(instance, model, list[count].name, sizeof list[count].name);
-    // If the game had no label for it, show its model name if the engine's name table knows it.
-    if (!list[count].name[0]) {
-      const u64 string = PG_FN_HASH_STRING_TRY_GET(instance, 0, model);
-      if (string) snprintf(list[count].name, sizeof list[count].name, "%s", pg_string(&env, string));
-      else snprintf(list[count].name, sizeof list[count].name, "0x%08x", model);
-    }
-    count++;
-  }
-  pthread_mutex_lock(&vehicleMenuLock);
-  free(vehicleCatalog);
-  vehicleCatalog = list;
-  vehicleCatalogCount = count;
-  vehicleCatalogRequested = false;
-  pthread_mutex_unlock(&vehicleMenuLock);
-  char line[96]; snprintf(line, sizeof line, "Vehicle menu: found %d vehicles in the model registry.", count); pg_log(line);
-}
+  // Khóa góc nhìn thứ nhất (First-Person View)
+  PG_FN_CAMERA_PED_MODE(instance, 4);
 
-// Spawns in front of the player (or further away for planes and helicopters).
-static void pg_vehicle_menu_step(w2c_game *instance, u64 vector) {
-  pthread_mutex_lock(&vehicleMenuLock);
-  bool readCatalog = vehicleCatalogRequested && vehicleCatalogCount < 0;
-  uint32_t model = vehicleRequestedModel;
-  bool enter = vehicleRequestedEnter;
-  pthread_mutex_unlock(&vehicleMenuLock);
-  if (readCatalog) pg_vehicle_build_catalog(instance);
-  static uint32_t requestedModel;
-  static bool requested;
-  static u64 requestOwner;
-  static double began, loadingReported;
-  if (!model) return;
-  double now = timeMS(CLOCK_MONOTONIC);
-  bool ready = !(PGGameStatus() & 16) && !PGLoadSceneActive();
-  u64 previous = pg_asi_enter_script(instance);
-  u64 active = *(u64 *)pg_pointer(&env, instance->w2c_g1 + 3088, 8);
-  u64 owner = active ? PG_FN_CURRENT_SCRIPT_HANDLER(instance) : 0;
-  if (!owner || (requested && owner != requestOwner)) {
-    pg_asi_leave_script(instance, previous);
-    began = 0; requested = false;
-    pg_log("Vehicle menu: the main script ended or changed; spawn cancelled.");
-    pg_vehicle_spawn_status(PGVehicleSpawnNotReady); return;
-  }
-  PGVehicleSpawnStatus result = PGVehicleSpawnLoading;
-  if (!requested) {
-    if (!PG_FN_IS_VEHICLE_MODEL(instance, model) || PG_FN_VEHICLE_CLASS(instance, model) == PG_CLASS_TRAIN) result = PGVehicleSpawnUnavailable;
-    else if (!pg_vehicle_make_room(instance, vector, owner)) result = PGVehicleSpawnVehicleLimit;
-    else if (!pg_vehicle_memory_available()) result = PGVehicleSpawnLowMemory;
-    else {
-      pg_log("Vehicle menu: loading the model.");
-      PG_FN_REQUEST_MODEL(instance, model); loadingReported = now; requested = true; requestOwner = owner; began = now;
-      pg_vehicle_spawn_status(PGVehicleSpawnLoading);
+  // Tạo điểm sơ tán cứu hộ (Helicopter Extraction Point tại Sân bay Los Santos LSIA)
+  if (!extractionPointCreated) {
+    extractionPointCreated = true;
+    float ex = -1150.0f, ey = -2715.0f, ez = 19.8f;
+    uint32_t bx, by, bz;
+    memcpy(&bx, &ex, 4); memcpy(&by, &ey, 4); memcpy(&bz, &ez, 4);
+    uint64_t bArgs[3] = { bx, by, bz };
+    u32 blip = (u32)pg_zombie_call(instance, 0x5a039bb0bca604b6ull, bArgs, 3); // ADD_BLIP_FOR_COORD
+    if (blip) {
+      uint64_t sArgs[2] = { blip, 64 }; // Icon trực thăng cứu hộ
+      pg_zombie_call(instance, 0xdf735600a4696dafull, sArgs, 2); // SET_BLIP_SPRITE
+      uint64_t cArgs[2] = { blip, 2 }; // Màu xanh lá cứu hộ
+      pg_zombie_call(instance, 0x03d7fb09e75d6b7eull, cArgs, 2); // SET_BLIP_COLOUR
     }
   }
-  if (requested) {
-    if(now-loadingReported>=5000){char line[160];snprintf(line,sizeof line,"Vehicle model wait: 0x%08x, %.1f s since REQUEST_MODEL, gameplay 0x%x.",model,(now-began)/1000,PGGameStatus());pg_log(line);loadingReported=now;}
-    if (!ready) result = PGVehicleSpawnNotReady;
-    else if (now - began > 30000) result = PGVehicleSpawnTimedOut;
-    else if (!pg_vehicle_memory_available()) result = PGVehicleSpawnLowMemory;
-    else if (PG_FN_HAS_MODEL_LOADED(instance, model)) {
-      const u32 ped = PG_FN_PLAYER_PED_ID(instance);
-      if (!vector || !ped) result = PGVehicleSpawnNotReady;
-      else {
-        PG_FN_GET_ENTITY_COORDS(instance, vector, ped, 1);
-        float *v = pg_pointer(&env, vector, 24);
-        float heading = PG_FN_GET_ENTITY_HEADING(instance, ped);
-        uint32_t category = PG_FN_VEHICLE_CLASS(instance, model);
-        float distance = (category == PG_CLASS_HELICOPTER || category == PG_CLASS_PLANE) ? 20.0f : 8.0f;
-        float angle = heading * 0.017453292519943295f;
-        v[0] -= sinf(angle) * distance; v[2] += cosf(angle) * distance; v[4] += 0.5f;
-        pg_log("Vehicle menu: model loaded; creating the vehicle.");
-        u32 vehicle = PG_FN_CREATE_VEHICLE(instance, model, vector, heading, 0, 0, 1);
-        bool exists = vehicle && PG_FN_ENTITY_EXISTS(instance, vehicle);
-        uint32_t actualModel = exists ? PG_FN_GET_ENTITY_MODEL(instance, vehicle) : 0;
-        result = exists && actualModel == model ? PGVehicleSpawnSucceeded : PGVehicleSpawnFailed;
-        if (exists && actualModel == model) {
-          if (category != PG_CLASS_BOAT) PG_FN_GROUND_VEHICLE(instance, vehicle, 5.0f);
-          if (enter && PG_FN_VEHICLE_SEATS(instance, model) > 0) PG_FN_SET_PED_INTO_VEHICLE(instance, ped, vehicle, (u32)-1);
-          if (!menuVehicles[0]) menuVehicles[0] = menuVehicles[1];
-          menuVehicles[1] = vehicle;
+
+  pg_log("ZOMBIE MODE: Weapons equipped, FPV set, Extraction Point marked at LSIA!");
+}
+
+// Spawn xe cháy bỏ hoang trên đường
+static void pg_zombie_spawn_wreck(w2c_game *instance, float px, float py, float pz, float heading) {
+  for (int i = 0; i < MAX_WRECKS; i++) {
+    if (activeWrecks[i] && !PG_FN_ENTITY_EXISTS(instance, activeWrecks[i])) activeWrecks[i] = 0;
+    if (activeWrecks[i] == 0) {
+      uint32_t model = pg_joaat("rebel");
+      PG_FN_REQUEST_MODEL(instance, model);
+      if (PG_FN_HAS_MODEL_LOADED(instance, model)) {
+        float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
+        float dist = 25.0f + (float)(rand() % 30);
+        float wx = px + cosf(angle) * dist;
+        float wy = py + sinf(angle) * dist;
+
+        float *v = (float *)pg_pointer(&env, zombieVectorBuffer, 24);
+        v[0] = wx; v[1] = wy; v[2] = pz;
+        u32 veh = PG_FN_CREATE_VEHICLE(instance, model, zombieVectorBuffer, heading, 0, 0, 1);
+        if (veh) {
+          activeWrecks[i] = veh;
+          uint64_t args[2] = { veh, 0 };
+          pg_zombie_call(instance, 0x45f6c4ee134510e2ull, args, 2); // SET_VEHICLE_DOORS_LOCKED
         }
+      }
+      break;
+    }
+  }
+}
+
+// Spawn zombie (bao gồm cả zombie thường và zombie chạy nhanh - Sprinters)
+static void pg_zombie_spawn(w2c_game *instance, u32 playerPed, float px, float py, float pz) {
+  int idx = rand() % (sizeof(zombieModels) / sizeof(zombieModels[0]));
+  uint32_t chosenModel = zombieModels[idx];
+
+  PG_FN_REQUEST_MODEL(instance, chosenModel);
+  if (!PG_FN_HAS_MODEL_LOADED(instance, chosenModel)) return;
+
+  for (int i = 0; i < MAX_ZOMBIES; i++) {
+    if (activeZombies[i] && !PG_FN_ENTITY_EXISTS(instance, activeZombies[i])) activeZombies[i] = 0;
+    if (activeZombies[i] == 0) {
+      float angle = ((float)(rand() % 360)) * 3.14159f / 180.0f;
+      float dist = 18.0f + (float)(rand() % 22);
+      float zx = px + cosf(angle) * dist;
+      float zy = py + sinf(angle) * dist;
+
+      uint32_t zx_bits, zy_bits, zz_bits;
+      memcpy(&zx_bits, &zx, 4); memcpy(&zy_bits, &zy, 4); memcpy(&zz_bits, &pz, 4);
+      uint64_t args[8] = { 26, chosenModel, zx_bits, zy_bits, zz_bits, 0, 0, 1 };
+      u32 ped = (u32)pg_zombie_call(instance, 0xd49f9b0955c367deull, args, 8); // CREATE_PED
+
+      if (ped) {
+        activeZombies[i] = ped;
+
+        // Tấn công điên cuồng người chơi
+        uint64_t combatArgs[3] = { ped, playerPed, 0 };
+        pg_zombie_call(instance, 0xf166e48407bac484ull, combatArgs, 3); // TASK_COMBAT_PED
+
+        // Tỷ lệ 40% zombie chạy nhanh (Sprinter) cực nguy hiểm
+        if ((rand() % 10) < 4) {
+          float speed = 1.35f;
+          uint32_t s_bits; memcpy(&s_bits, &speed, 4);
+          uint64_t speedArgs[2] = { ped, s_bits };
+          pg_zombie_call(instance, 0x085bf80fa50a39d1ull, speedArgs, 2); // SET_PED_MOVE_RATE_OVERRIDE
+        }
+
+        // Đánh dấu chấm đỏ zombie trên radar
+        uint64_t blipArgs[1] = { ped };
+        u32 blip = (u32)pg_zombie_call(instance, 0x5cde92c702a8fce7ull, blipArgs, 1);
+        if (blip) {
+          uint64_t colorArgs[2] = { blip, 1 }; // Màu đỏ
+          pg_zombie_call(instance, 0x03d7fb09e75d6b7eull, colorArgs, 2);
+        }
+      }
+      break;
+    }
+  }
+}
+
+// Hàm tick thực thi mỗi khung hình trong vòng lặp game
+static void pg_zombie_mode_tick(w2c_game *instance) {
+  if (!zombieModeActive || PGPauseMenuActive() || PGGameStatus() != 0 || PGLoadSceneActive()) return;
+
+  // 1. Triệt tiêu dân thường và xe cộ lưu thông thông thường
+  PG_FN_PED_DENSITY_THIS_FRAME(instance, 0.0f);
+  PG_FN_VEHICLE_DENSITY_THIS_FRAME(instance, 0.0f);
+  PG_FN_PARKED_DENSITY_THIS_FRAME(instance, 0.0f);
+
+  u32 playerPed = PG_FN_PLAYER_PED_ID(instance);
+  if (!playerPed) return;
+
+  if (!zombieVectorBuffer) zombieVectorBuffer = pg_asi_alloc(32);
+  PG_FN_GET_ENTITY_COORDS(instance, zombieVectorBuffer, playerPed, 1);
+  float *pCoords = (float *)pg_pointer(&env, zombieVectorBuffer, 24);
+  float px = pCoords[0], py = pCoords[1], pz = pCoords[2];
+  float heading = PG_FN_GET_ENTITY_HEADING(instance, playerPed);
+
+  double now = timeMS(CLOCK_MONOTONIC);
+
+  // 2. Khóa bầu không khí Halloween rùng rợn & ban đêm u ám
+  static bool atmosphereConfigured = false;
+  if (!atmosphereConfigured) {
+    atmosphereConfigured = true;
+    snprintf((char *)pg_pointer(&env, instance->w2c_g0, 32), 32, "HALLOWEEN");
+    PG_FN_CLEAR_WEATHER_OVERRIDE(instance);
+    PG_FN_SET_WEATHER(instance, instance->w2c_g0);
+    PG_FN_SET_CLOCK(instance, 23, 0, 0); // 11 giờ đêm
+  }
+
+  // Cấp kho vũ khí sinh tồn & FPV
+  pg_zombie_equip_player(instance, playerPed);
+
+  // 3. Spawn đợt zombie và xe đổ nát mỗi 2.5 giây
+  if (now - lastZombieSpawnTime > 2500) {
+    lastZombieSpawnTime = now;
+    u64 prev = pg_asi_enter_script(instance);
+    pg_zombie_spawn(instance, playerPed, px, py, pz);
+    pg_zombie_spawn_wreck(instance, px, py, pz, heading);
+    *(uint64_t *)pg_pointer(&env, instance->w2c_g1 + 3088, 8) = prev;
+  }
+
+  // 4. Xử lý âm thanh gầm thét và cơ chế zombie cắn gây sát thương khi áp sát
+  for (int i = 0; i < MAX_ZOMBIES; i++) {
+    u32 z = activeZombies[i];
+    if (z && PG_FN_ENTITY_EXISTS(instance, z)) {
+      PG_FN_GET_ENTITY_COORDS(instance, zombieVectorBuffer, z, 1);
+      float *zc = (float *)pg_pointer(&env, zombieVectorBuffer, 24);
+      float dx = px - zc[0], dy = py - zc[1];
+      float distance = sqrtf(dx * dx + dy * dy);
+
+      // Nếu zombie ở quá xa (> 85m), tự dọn dẹp để tiết kiệm RAM trên iPhone
+      if (distance > 85.0f) {
+        activeZombies[i] = 0;
+        continue;
+      }
+
+      // Zombie áp sát dưới 7 mét: Phát tiếng gầm rú rợn người
+      if (distance < 7.0f && (now - lastSoundGroanTime > 2200)) {
+        lastSoundGroanTime = now;
+        u64 prev = pg_asi_enter_script(instance);
+        uint64_t painArgs[3] = { z, 6, 0 };
+        pg_zombie_call(instance, 0xbc9ae166038a5cecull, painArgs, 3); // PLAY_PAIN
+        *(uint64_t *)pg_pointer(&env, instance->w2c_g1 + 3088, 8) = prev;
+      }
+
+      // Zombie cắn người chơi khi ở cự ly cận chiến (< 1.6 mét)
+      if (distance < 1.6f && (now - lastBiteDamageTime > 1200)) {
+        lastBiteDamageTime = now;
+        u64 prev = pg_asi_enter_script(instance);
+        uint64_t hArgs[1] = { playerPed };
+        u32 currentHealth = (u32)pg_zombie_call(instance, 0xeef059fad016d209ull, hArgs, 1); // GET_ENTITY_HEALTH
+        if (currentHealth > 100) {
+          PG_FN_SET_ENTITY_HEALTH(instance, playerPed, currentHealth - 12, 0); // Bị cắn mất 12 HP
+          uint64_t painArgs[3] = { playerPed, 8, 0 };
+          pg_zombie_call(instance, 0xbc9ae166038a5cecull, painArgs, 3); // Tiếng kêu đau của người chơi
+        }
+        *(uint64_t *)pg_pointer(&env, instance->w2c_g1 + 3088, 8) = prev;
       }
     }
   }
-  if (result != PGVehicleSpawnLoading && requested) PG_FN_RELEASE_MODEL(instance, model);
-  pg_asi_leave_script(instance, previous);
-  if (result != PGVehicleSpawnLoading) {
-    char line[128]; snprintf(line, sizeof line, "Vehicle menu: model 0x%08x finished with status %d.", model, result); pg_log(line);
-    began = 0; requested = false;
-    pg_vehicle_spawn_status(result);
-  }
-}
-
-static void pg_vehicle_menu_tick(w2c_game *instance) {
-  static bool ticking;
-  if (ticking) return;
-  ticking = true;
-  u64 stack = instance->w2c_g0;
-  instance->w2c_g0 -= 32;
-  pg_vehicle_menu_step(instance, instance->w2c_g0);
-  instance->w2c_g0 = stack;
-  ticking = false;
-}
-
-// BẬT CHẾ ĐỘ ĐẠI DỊCH ZOMBIE VÀ THỰC THI MỖI FRAME
-#include "NativeZombieMode.inc"
-
-// Settings › Cheats, once per frame on the game thread, in the "main" script's turn
-// (pg_asi_script_tick): spawns, one-off actions, and keeping God mode and Never wanted on.
-static void pg_cheats_menu_tick(w2c_game *instance) {
-  pg_vehicle_menu_tick(instance);
-  pg_native_cheats_tick(instance);
-  pg_zombie_mode_tick(instance);
 }
