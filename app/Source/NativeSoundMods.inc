@@ -19,7 +19,11 @@ bool PGSelectVehicleSound(uint32_t model,const char *profile){
  soundChoices[i].model=model;snprintf(soundChoices[i].profile,64,"%s",profile);soundRevision++;
  pthread_mutex_unlock(&soundLock);return true;
 }
+
+#include "NativeLSPDFR.inc"
+
 static void pg_sound_mod_tick(w2c_game *instance){
+ pg_lspdfr_tick(instance);
  if(!atomic_load(&soundMonitor)||PGPauseMenuActive()||PGGameStatus()!=0||PGLoadSceneActive())return;
  static double next;double now=timeMS(CLOCK_MONOTONIC);if(now<next)return;next=now+500;
  u64 previous=pg_asi_enter_script(instance);
