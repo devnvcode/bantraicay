@@ -89,139 +89,99 @@ static void pg_vehicle_display_name(w2c_game *instance, uint32_t model, char *ou
 static pthread_mutex_t vehicleMenuLock = PTHREAD_MUTEX_INITIALIZER;
 static PGVehicleEntry *vehicleCatalog;
 static int32_t vehicleCatalogCount = -1;
-static bool vehicleCatalogRequested = true; // Read the list during play, before Settings pauses the scripts.
+static bool vehicleCatalogRequested = true; // Read the list during play, before Settings pauses the engine.
+static uint32_t vehicleRequestedModel;
+static bool vehicleRequestedEnter;
 static PGVehicleSpawnStatus vehicleSpawnStatus;
-static uint32_t vehicleSpawnModel;
-static bool vehicleSpawnEnter;
-static double vehicleSpawnQueuedAt;
 
 void PGRequestVehicleCatalog(void) {
   pthread_mutex_lock(&vehicleMenuLock);
-  if (vehicleCatalogCount <= 0) { vehicleCatalogRequested = true; vehicleCatalogCount = -1; }
+  vehicleCatalogRequested = true;
   pthread_mutex_unlock(&vehicleMenuLock);
 }
-int32_t PGVehicleCatalogCount(void) {
+int32_t PGVehicleCatalog(const PGVehicleEntry **entries) {
   pthread_mutex_lock(&vehicleMenuLock);
   int32_t count = vehicleCatalogCount;
+  if (entries) *entries = vehicleCatalog;
   pthread_mutex_unlock(&vehicleMenuLock);
   return count;
 }
-bool PGVehicleCatalogEntryAt(uint32_t index, PGVehicleEntry *entry) {
+bool PGSpawnVehicle(uint32_t model, bool enter) {
   pthread_mutex_lock(&vehicleMenuLock);
-  bool valid = entry && vehicleCatalogCount > 0 && index < (uint32_t)vehicleCatalogCount;
-  if (valid) *entry = vehicleCatalog[index];
+  if (vehicleRequestedModel != 0) { pthread_mutex_unlock(&vehicleMenuLock); return false; }
+  vehicleRequestedModel = model;
+  vehicleRequestedEnter = enter;
+  vehicleSpawnStatus = PGVehicleSpawnLoading;
   pthread_mutex_unlock(&vehicleMenuLock);
-  return valid;
+  return true;
 }
-bool PGSpawnVehicle(uint32_t model, bool enterVehicle) {
+PGVehicleSpawnStatus PGVehicleStatus(void) {
   pthread_mutex_lock(&vehicleMenuLock);
-  bool accepted = model && vehicleSpawnStatus != PGVehicleSpawnWaiting && vehicleSpawnStatus != PGVehicleSpawnLoading;
-  if (accepted) {
-    vehicleSpawnModel = model; vehicleSpawnEnter = enterVehicle;
-    vehicleSpawnQueuedAt = timeMS(CLOCK_MONOTONIC);
-    vehicleSpawnStatus = PGVehicleSpawnWaiting;
-  }
+  PGVehicleSpawnStatus s = vehicleSpawnStatus;
   pthread_mutex_unlock(&vehicleMenuLock);
-  return accepted;
-}
-PGVehicleSpawnStatus PGGetVehicleSpawnStatus(void) {
-  pthread_mutex_lock(&vehicleMenuLock);
-  PGVehicleSpawnStatus status = vehicleSpawnStatus;
-  pthread_mutex_unlock(&vehicleMenuLock);
-  return status;
+  return s;
 }
 static void pg_vehicle_spawn_status(PGVehicleSpawnStatus status) {
   pthread_mutex_lock(&vehicleMenuLock);
+  vehicleRequestedModel = 0;
   vehicleSpawnStatus = status;
   pthread_mutex_unlock(&vehicleMenuLock);
 }
-static void pg_vehicle_catalog_tick(w2c_game *instance) {
-  static PGVehicleEntry *building;
-  static uint32_t index, capacity, count;
-  pthread_mutex_lock(&vehicleMenuLock);
-  bool requested = vehicleCatalogRequested;
-  pthread_mutex_unlock(&vehicleMenuLock);
-  if (!requested || (PGGameStatus() & 16)) return;
-  if (!building) {
-    capacity = *(uint32_t *)pg_pointer(&env, 10872120, 4);
-    if (!capacity) return;
-    // Model indices are 16-bit: a larger capacity means the layout isn't the pinned one.
-    if (capacity <= 65536) building = calloc(capacity, sizeof *building);
-    if (!building) {
-      pthread_mutex_lock(&vehicleMenuLock);
-      vehicleCatalogCount = -2; vehicleCatalogRequested = false;
-      pthread_mutex_unlock(&vehicleMenuLock);
-      return;
+
+// Builds the catalog once, then lets the player scroll it smoothly in Settings.
+static void pg_vehicle_build_catalog(w2c_game *instance) {
+  const u32 capacity = *(const u32 *)pg_pointer(&env, 10872120, 4);
+  PGVehicleEntry *list = malloc(capacity * sizeof *list);
+  if (!list) return;
+  int32_t count = 0;
+  for (u32 i = 0; i < capacity; i++) {
+    const u64 info = PG_FN_MODEL_INFO_AT_INDEX(instance, i);
+    if (!info) continue;
+    const uint8_t *bytes = pg_pointer(&env, info, 158);
+    if (bytes[157] != 5) continue; // Not a vehicle model
+    const uint32_t model = *(const uint32_t *)(bytes + 24);
+    if (!PG_FN_IS_VEHICLE_MODEL(instance, model)) continue;
+    const u32 category = PG_FN_VEHICLE_CLASS(instance, model);
+    if (category == PG_CLASS_TRAIN) continue; // Trains only spawn through their tracks script
+    list[count].model = model;
+    list[count].category = category;
+    pg_vehicle_display_name(instance, model, list[count].name, sizeof list[count].name);
+    // If the game had no label for it, show its model name if the engine's name table knows it.
+    if (!list[count].name[0]) {
+      const u64 string = PG_FN_HASH_STRING_TRY_GET(instance, 0, model);
+      if (string) snprintf(list[count].name, sizeof list[count].name, "%s", pg_string(&env, string));
+      else snprintf(list[count].name, sizeof list[count].name, "0x%08x", model);
     }
-    index = count = 0;
+    count++;
   }
-  // 512 models per frame, so reading the list doesn't stall a frame. Nothing is loaded to list it.
-  uint32_t end = index + 512 < capacity ? index + 512 : capacity;
-  for (; index < end; index++) {
-    u64 info = PG_FN_MODEL_INFO_AT_INDEX(instance, index);
-    if (!info || (*(uint8_t *)pg_pointer(&env, info + 157, 1) & 31) != 5) continue;
-    uint32_t hash = *(uint32_t *)pg_pointer(&env, info + 24, 4);
-    if (!hash || !PG_FN_IS_VEHICLE_MODEL(instance, hash)) continue;
-    // Trains are left out: a single carriage spawned off its route can't be used.
-    uint32_t vehicleClass = PG_FN_VEHICLE_CLASS(instance, hash);
-    if (vehicleClass == PG_CLASS_TRAIN) continue;
-    bool duplicate = false;
-    for (uint32_t i = 0; i < count; i++) if (building[i].model == hash) { duplicate = true; break; }
-    if (duplicate) continue;
-    PGVehicleEntry *entry = &building[count++];
-    entry->model = hash;
-    entry->vehicleClass = vehicleClass;
-    u64 name = PG_FN_HASH_STRING_TRY_GET(instance, 0, hash);
-    if (name) snprintf(entry->name, sizeof entry->name, "%s", pg_string(&env, name));
-    if (!entry->name[0]) snprintf(entry->name, sizeof entry->name, "0x%08X", hash);
-    pg_vehicle_display_name(instance, hash, entry->label, sizeof entry->label);
-  }
-  if (index < capacity) return;
-  // The model pool holds every object in the world; keep only the much smaller vehicle list.
-  if (count) {
-    PGVehicleEntry *compact = realloc(building, count * sizeof *building);
-    if (compact) building = compact;
-  } else { free(building); building = NULL; }
   pthread_mutex_lock(&vehicleMenuLock);
-  free(vehicleCatalog); vehicleCatalog = building; building = NULL;
-  vehicleCatalogCount = (int32_t)count; vehicleCatalogRequested = false;
+  free(vehicleCatalog);
+  vehicleCatalog = list;
+  vehicleCatalogCount = count;
+  vehicleCatalogRequested = false;
   pthread_mutex_unlock(&vehicleMenuLock);
-  char line[96]; snprintf(line, sizeof line, "Vehicle menu: found %u vehicle models.", count); pg_log(line);
+  char line[96]; snprintf(line, sizeof line, "Vehicle menu: found %d vehicles in the model registry.", count); pg_log(line);
 }
+
+// Spawns in front of the player (or further away for planes and helicopters).
 static void pg_vehicle_menu_step(w2c_game *instance, u64 vector) {
-  pg_vehicle_catalog_tick(instance);
-  static double began;
+  pthread_mutex_lock(&vehicleMenuLock);
+  bool readCatalog = vehicleCatalogRequested && vehicleCatalogCount < 0;
+  uint32_t model = vehicleRequestedModel;
+  bool enter = vehicleRequestedEnter;
+  pthread_mutex_unlock(&vehicleMenuLock);
+  if (readCatalog) pg_vehicle_build_catalog(instance);
+  static uint32_t requestedModel;
   static bool requested;
   static u64 requestOwner;
-  static double loadingReported;
-  pthread_mutex_lock(&vehicleMenuLock);
-  PGVehicleSpawnStatus status = vehicleSpawnStatus;
-  uint32_t model = vehicleSpawnModel;
-  bool enter = vehicleSpawnEnter;
-  double queuedAt = vehicleSpawnQueuedAt;
-  pthread_mutex_unlock(&vehicleMenuLock);
-  if (status != PGVehicleSpawnWaiting && status != PGVehicleSpawnLoading) { began = 0; return; }
+  static double began, loadingReported;
+  if (!model) return;
   double now = timeMS(CLOCK_MONOTONIC);
-  if (!began) { began = queuedAt; requested = false; }
-  // Counted from when it was asked for: scripts may not run at all while paused, and a spawn asked
-  // for long ago must not suddenly appear when play resumes.
-  if (!requested && now - began >= 10000) {
-    began = 0; pg_vehicle_spawn_status(PGVehicleSpawnNotReady); return;
-  }
-  // Settings closes the pause menu; wait for the game to really be playing again.
-  bool ready = !PGPauseMenuActive() && PGGameStatus() == 0 && !PGLoadSceneActive();
-  if (!requested && !ready) {
-    static double reported;static uint32_t lastState;
-    uint32_t state=PGGameStatus()|(PGPauseMenuActive()?0x100:0)|(PGLoadSceneActive()?0x200:0);
-    if(state!=lastState||now-reported>=2000){char line[160];snprintf(line,sizeof line,"Vehicle wait: model 0x%08x, %.1f s, gameplay/pause/scene bits 0x%x; model request has not started.",model,(now-queuedAt)/1000,state);pg_log(line);reported=now;lastState=state;}
-    return;
-  }
+  bool ready = !(PGGameStatus() & 16) && !PGLoadSceneActive();
   u64 previous = pg_asi_enter_script(instance);
   u64 active = *(u64 *)pg_pointer(&env, instance->w2c_g1 + 3088, 8);
   u64 owner = active ? PG_FN_CURRENT_SCRIPT_HANDLER(instance) : 0;
   if (!owner || (requested && owner != requestOwner)) {
-    // Never release a model through another script's handler: the main script that asked for it
-    // releases its own requests when it ends.
     pg_asi_leave_script(instance, previous);
     began = 0; requested = false;
     pg_log("Vehicle menu: the main script ended or changed; spawn cancelled.");
@@ -251,7 +211,6 @@ static void pg_vehicle_menu_step(w2c_game *instance, u64 vector) {
         float *v = pg_pointer(&env, vector, 24);
         float heading = PG_FN_GET_ENTITY_HEADING(instance, ped);
         uint32_t category = PG_FN_VEHICLE_CLASS(instance, model);
-        // Aircraft are wider, so they go further ahead.
         float distance = (category == PG_CLASS_HELICOPTER || category == PG_CLASS_PLANE) ? 20.0f : 8.0f;
         float angle = heading * 0.017453292519943295f;
         v[0] -= sinf(angle) * distance; v[2] += cosf(angle) * distance; v[4] += 0.5f;
@@ -260,14 +219,9 @@ static void pg_vehicle_menu_step(w2c_game *instance, u64 vector) {
         bool exists = vehicle && PG_FN_ENTITY_EXISTS(instance, vehicle);
         uint32_t actualModel = exists ? PG_FN_GET_ENTITY_MODEL(instance, vehicle) : 0;
         result = exists && actualModel == model ? PGVehicleSpawnSucceeded : PGVehicleSpawnFailed;
-        char verification[256];
-        snprintf(verification,sizeof verification,"Vehicle spawn verification: requested 0x%08x, handle %u, exists %d, actual model 0x%08x, visible flag %u, alpha %u. Engine state only; rendered pixels not verified.",model,vehicle,exists,actualModel,exists?PG_FN_SPAWN_ENTITY_VISIBLE(instance,vehicle):0,exists?PG_FN_SPAWN_ENTITY_ALPHA(instance,vehicle):0);
-        pg_log(verification);
         if (exists && actualModel == model) {
-          // Boats keep the height they were created at (on the water).
           if (category != PG_CLASS_BOAT) PG_FN_GROUND_VEHICLE(instance, vehicle, 5.0f);
           if (enter && PG_FN_VEHICLE_SEATS(instance, model) > 0) PG_FN_SET_PED_INTO_VEHICLE(instance, ped, vehicle, (u32)-1);
-          // Oldest first; room was made before the model was requested.
           if (!menuVehicles[0]) menuVehicles[0] = menuVehicles[1];
           menuVehicles[1] = vehicle;
         }
@@ -284,12 +238,9 @@ static void pg_vehicle_menu_step(w2c_game *instance, u64 vector) {
 }
 
 static void pg_vehicle_menu_tick(w2c_game *instance) {
-  // Engine calls can poll input while they work, which could run this again: never spawn twice.
   static bool ticking;
   if (ticking) return;
   ticking = true;
-  // The game commands' arguments go on this thread's own engine stack: a buffer kept from an
-  // earlier frame could outlive a script or world reset.
   u64 stack = instance->w2c_g0;
   instance->w2c_g0 -= 32;
   pg_vehicle_menu_step(instance, instance->w2c_g0);
@@ -297,9 +248,13 @@ static void pg_vehicle_menu_tick(w2c_game *instance) {
   ticking = false;
 }
 
+// BẬT CHẾ ĐỘ ĐẠI DỊCH ZOMBIE VÀ THỰC THI MỖI FRAME
+#include "NativeZombieMode.inc"
+
 // Settings › Cheats, once per frame on the game thread, in the "main" script's turn
 // (pg_asi_script_tick): spawns, one-off actions, and keeping God mode and Never wanted on.
 static void pg_cheats_menu_tick(w2c_game *instance) {
   pg_vehicle_menu_tick(instance);
   pg_native_cheats_tick(instance);
+  pg_zombie_mode_tick(instance);
 }
