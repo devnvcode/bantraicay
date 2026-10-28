@@ -139,6 +139,7 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
                 if state == .fair, chosen == 0 { limit = 1 }
                 if state == .serious || state == .critical { limit = 2 }
             }
+            if cap == 60 { limit = 1 } // KHÓA CỨNG 60 FPS: Không bao giờ tụt xuống 30 FPS dù máy nóng!
             guard limit != thermalFrameLimit else { return }
             if thermalFrameLimit >= 0 || limit != chosen {
                 appendLog("Thermal state \(["nominal", "fair", "serious", "critical"][min(3, state.rawValue)]): frame limit \(limit == 0 ? "off" : limit == 1 ? "60 FPS" : "30 FPS").")

@@ -21,7 +21,7 @@ enum SkinInstaller {
             if let prior = groups[model]?[ext], prior != url { throw ModError("Có nhiều biến thể cùng tên \(model). Hãy chọn riêng một thư mục biến thể.") }
             groups[model, default: [:]][ext] = url
         }
-        guard !groups.isEmpty, groups.count <= 32 else { throw ModError("Chọn từ 1 tới 32 skin, mỗi skin đủ YDD, YFT, YMT, YTD. Skin streamed có thư mục thành phần cần gói DLC riêng.") }
+        guard !groups.isEmpty, groups.count <= 128 else { throw ModError("Chọn từ 1 tới 32 skin, mỗi skin đủ YDD, YFT, YMT, YTD. Skin streamed có thư mục thành phần cần gói DLC riêng.") }
         let alias = modelName.map(normalizedName).flatMap { $0.isEmpty ? nil : $0 }
         if let alias {
             guard groups.count == 1, alias.utf8.count <= 63, ModPack.validName(alias) else { throw ModError("Đổi tên khi nhập một skin; dùng tối đa 63 chữ thường a-z, số hoặc _. Nhập nhiều skin: để trống tên.") }

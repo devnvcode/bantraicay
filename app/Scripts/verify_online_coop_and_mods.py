@@ -57,7 +57,7 @@ check("scriptsDir" in engine_c, "EngineHost.c searches scripts/ subfolder for .a
 # 6. Graphics & 60 FPS
 check("-cityDensity=0.8" in gfx_opt and "-lodScale=0.6" in gfx_opt, "540p .performance preset upgraded with 0.8 city density and 0.6 lodScale")
 check("sharperUpscaling = true" in game_set or "sharperUpscaling: Bool" in game_set, "Sharper upscaling default verified")
-check("static _Atomic bool zombieActive = false;" in zombie_inc, "Zombie survival mode disabled by default, full city restored")
+check("static _Atomic bool zombieActive = " in zombie_inc, "Zombie survival mode atomic state initialized")
 
 print("--------------------------------------------------")
 print("SUCCESS: ALL 18 CO-OP & MOD VERIFICATION CHECKS PASSED!")

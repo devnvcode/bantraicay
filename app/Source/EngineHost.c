@@ -2270,7 +2270,11 @@ static void pg_asi_frame(w2c_game *instance) {
       DIR *dir = opendir(places[place]);
       while (dir && (entry = readdir(dir))) {
         size_t n = strlen(entry->d_name);
-        if (n < 5 || strcasecmp(entry->d_name + n - 4, ".asi")) continue;
+        bool isScript = (n >= 4 && !strcasecmp(entry->d_name + n - 4, ".asi")) ||
+                        (n >= 4 && !strcasecmp(entry->d_name + n - 4, ".dll"));
+        if (!isScript) continue;
+        if (!strcasecmp(entry->d_name, "scripthookv.dll") || !strcasecmp(entry->d_name, "dinput8.dll") ||
+            !strcasecmp(entry->d_name, "version.dll") || !strcasecmp(entry->d_name, "OpenIV.asi")) continue;
         // ScriptHookVDotNet's loader runs C# scripts on Windows .NET, and OpenIV's is for the PC: neither can run here.
         if (!strncasecmp(entry->d_name, "ScriptHookVDotNet", 17) || !strcasecmp(entry->d_name, "OpenIV.asi")) {
           char line[PATH_MAX + 96]; snprintf(line, sizeof line, "Script mods: %s needs Windows (ScriptHookVDotNet or OpenIV); not loaded.", entry->d_name); pg_log(line); continue;
@@ -2288,7 +2292,11 @@ static void pg_asi_frame(w2c_game *instance) {
       DIR *sdir = opendir(scriptsDir);
       while (sdir && (entry = readdir(sdir))) {
         size_t n = strlen(entry->d_name);
-        if (n < 5 || strcasecmp(entry->d_name + n - 4, ".asi")) continue;
+        bool isScript = (n >= 4 && !strcasecmp(entry->d_name + n - 4, ".asi")) ||
+                        (n >= 4 && !strcasecmp(entry->d_name + n - 4, ".dll"));
+        if (!isScript) continue;
+        if (!strcasecmp(entry->d_name, "scripthookv.dll") || !strcasecmp(entry->d_name, "dinput8.dll") ||
+            !strcasecmp(entry->d_name, "version.dll") || !strcasecmp(entry->d_name, "OpenIV.asi")) continue;
         if (!strncasecmp(entry->d_name, "ScriptHookVDotNet", 17) || !strcasecmp(entry->d_name, "OpenIV.asi")) continue;
         if (!loaded && !pg_asi_init(&host)) { pg_log("Script mods: the interpreter could not start."); break; }
         char spath[PATH_MAX]; snprintf(spath, sizeof spath, "%s/%s", scriptsDir, entry->d_name);

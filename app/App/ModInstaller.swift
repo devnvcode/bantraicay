@@ -146,7 +146,7 @@ enum ModInstaller {
         if name.hasPrefix("rageplugin") || name == "lspdfr.dll" || (ext == "dll" && lower.split(separator: "/").contains("plugins")) {
             return AppLanguage.choose("RAGE Plugin Hook plugin (like LSPDFR): not supported")
         }
-        if ext == "dll" { return AppLanguage.choose("C# script (ScriptHookVDotNet): not supported") }
+        // ext == dll allowed for script mods
         return nil
     }
     /// A model, texture or add-on pack made for GTA V Enhanced (the 2025 PC edition): the game here stops on it.
@@ -216,7 +216,7 @@ enum ModInstaller {
             plan.kinds.insert("oiv")
         }
         // Script Hook V scripts: the .asi with its settings next to it, at the mod's top level.
-        for file in files where file.url.pathExtension.lowercased() == "asi" && !done.contains(file.rel) {
+        for file in files where ["asi", "dll"].contains(file.url.pathExtension.lowercased()) && !done.contains(file.rel) {
             let lower = file.url.lastPathComponent.lowercased()
             if let reason = unsupportedReason(file.rel) { plan.leaveOut(file.rel, unsupported: reason); done.insert(file.rel); continue }
             if loaderFiles.contains(lower) { plan.skipped.append((file.rel, AppLanguage.choose("not needed on iPhone"))); done.insert(file.rel); continue }
@@ -236,7 +236,7 @@ enum ModInstaller {
                     let prefix = (dir.isEmpty ? "" : dir + "/") + top + "/"
                     if gameAnchor(inner) != nil || files.contains(where: { $0.rel.hasPrefix(prefix) && assetTypes.contains($0.url.pathExtension.lowercased()) }) { continue }
                     // Everything in it is the script's data (Menyoo reads PedAnimList.txt from there), except Windows programs.
-                    if ["dll", "exe"].contains(ext) { continue }
+                    if ["exe"].contains(ext) { continue }
                 }
                 plan.items.append(Item(source: other.url, target: inner, note: other.rel == file.rel ? AppLanguage.choose("script") : AppLanguage.choose("script settings")))
                 done.insert(other.rel)

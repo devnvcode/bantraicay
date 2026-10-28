@@ -123,6 +123,8 @@ struct DeviceTier {
     /// The Metal renderer needs about 700 MB less than the old renderer did: a 6 GB phone on a
     /// free Apple ID (about 3 GB limit) runs Battery with room to spare.
     var recommended: GraphicsPreset {
+        // iPhone 16 Pro / iPhone 16 Pro Max (A18 Pro): Optimal locked 60 FPS performance preset
+        if model.hasPrefix("iPhone17") { return .performance }
         GraphicsPreset.liteAvailable && memoryLimitMB < 2600 ? .lite : memoryLimitMB < 3400 ? .battery : memoryLimitMB < 4600 ? .performance : memoryLimitMB < 6000 ? .balanced : memoryLimitMB < 8000 ? .quality : .ultra
     }
     /// Every preset can be chosen; those above the recommended one show a warning.

@@ -193,10 +193,10 @@ final class ZombieSettingsViewController: UITableViewController {
                 cell.detailTextLabel?.text = "\(activeW)/5 xe"
                 cell.detailTextLabel?.textColor = .label
             case 5:
-                cell.textLabel?.text = "Người bạn đồng hành"
-                let alive = PGZombieCompanionAlive()
-                cell.detailTextLabel?.text = alive ? "Đang chiến đấu cùng bạn" : "Đang chờ hồi sinh/tiếp viện..."
-                cell.detailTextLabel?.textColor = alive ? .systemGreen : .systemOrange
+                cell.textLabel?.text = "Đồng đội tác chiến (Marine + SWAT)"
+                let compCount = PGZombieGetCompanionCount()
+                cell.detailTextLabel?.text = compCount > 0 ? "\(compCount)/2 đang yểm trợ" : "Đang chờ tiếp viện..."
+                cell.detailTextLabel?.textColor = compCount > 0 ? .systemGreen : .systemOrange
             case 6:
                 cell.textLabel?.text = "Tình hình chiến dịch"
                 var buf = [CChar](repeating: 0, count: 160)
