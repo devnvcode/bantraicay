@@ -6,7 +6,14 @@ final class LSPDFRViewController: UITableViewController {
     private var timer: Timer?
 
     private enum Section: Int, CaseIterable {
-        case status, agency, vehicles, callouts, backup, fieldActions, lcpdfrInfo
+        case status
+        case agency
+        case vehicles
+        case callouts
+        case backup
+        case fieldActions
+        case lcpdfrInfo
+
         var title: String {
             switch self {
             case .status: return "TRẠNG THÁI CA TRỰC (DUTY STATUS)"
@@ -95,7 +102,9 @@ final class LSPDFRViewController: UITableViewController {
         timer = nil
     }
 
-    override func numberOfSections(in tableView: UITableView) -> Int { Section.allCases.count }
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        Section.allCases.count
+    }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let s = Section(rawValue: section) else { return 0 }
@@ -136,74 +145,100 @@ final class LSPDFRViewController: UITableViewController {
                 }, for: .valueChanged)
                 cell.accessoryView = toggle
             } else {
-                var buf = [CChar](<repeating: 0, count: 128>)
+                var buf = Array(repeating: CChar(0), count: 128)
                 PGLSPDFRGetStatus(&buf, 128)
                 let statusStr = String(cString: buf)
                 cell.textLabel?.text = "Bản tin bộ đàm / Radar"
                 cell.detailTextLabel?.text = statusStr.isEmpty ? "Hệ thống sẵn sàng" : statusStr
                 cell.detailTextLabel?.textColor = Theme.accent
             }
+
         case .agency:
             let item = agencies[indexPath.row]
             cell.textLabel?.text = item.0
             cell.detailTextLabel?.text = item.1
-            cell.accessoryType = (PGLSPDFRGetAgency() == item.2) ? .checkmark : .none
+            let current = PGLSPDFRGetAgency()
+            cell.accessoryType = (current == item.2) ? .checkmark : .none
+
         case .vehicles:
             let item = vehicles[indexPath.row]
             cell.textLabel?.text = item.0
             cell.detailTextLabel?.text = "Model: \(item.1) (Hỗ trợ mod xe thay thế & Addon)"
             cell.accessoryType = .disclosureIndicator
+
         case .callouts:
             let item = callouts[indexPath.row]
             cell.textLabel?.text = item.0
             cell.detailTextLabel?.text = item.1
             cell.accessoryType = .disclosureIndicator
+
         case .backup:
             let item = backups[indexPath.row]
             cell.textLabel?.text = item.0
             cell.detailTextLabel?.text = item.1
             cell.accessoryType = .disclosureIndicator
+
         case .fieldActions:
             let item = actions[indexPath.row]
             cell.textLabel?.text = item.0
             cell.detailTextLabel?.text = item.1
-            cell.accessoryType = (indexPath.row == 3) ? (PGLSPDFRIsRadarActive() ? .checkmark : .none) : .disclosureIndicator
+            if indexPath.row == 3 {
+                cell.accessoryType = PGLSPDFRIsRadarActive() ? .checkmark : .none
+            } else {
+                cell.accessoryType = .disclosureIndicator
+            }
+
         case .lcpdfrInfo:
             cell.textLabel?.text = "Cách cài Mod từ LCPDFR.com"
             cell.detailTextLabel?.text = "Tải file .oiv, zip xe cảnh sát, âm thanh còi hú -> Bỏ vào thư mục Mods trên máy -> Hệ thống tự động nhận diện 100%!"
             cell.detailTextLabel?.numberOfLines = 0
             cell.accessoryType = .none
         }
+
         return cell
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         guard let s = Section(rawValue: indexPath.section) else { return }
+
         switch s {
-        case .status: break
+        case .status:
+            break
+
         case .agency:
-            PGLSPDFRSetAgency(Int32(agencies[indexPath.row].2))
+            let selectedAgency = agencies[indexPath.row].2
+            PGLSPDFRSetAgency(Int32(selectedAgency))
             if !PGLSPDFRIsOnDuty() { PGLSPDFRSetDuty(true) }
             tableView.reloadSections(IndexSet(integer: Section.agency.rawValue), with: .none)
             dismiss(animated: true)
+
         case .vehicles:
+            let vehIndex = vehicles[indexPath.row].2
             if !PGLSPDFRIsOnDuty() { PGLSPDFRSetDuty(true) }
-            PGLSPDFRSpawnVehicle(Int32(vehicles[indexPath.row].2))
+            PGLSPDFRSpawnVehicle(Int32(vehIndex))
             dismiss(animated: true)
+
         case .callouts:
+            let calloutType = callouts[indexPath.row].2
             if !PGLSPDFRIsOnDuty() { PGLSPDFRSetDuty(true) }
-            PGLSPDFRTriggerCallout(Int32(callouts[indexPath.row].2))
+            PGLSPDFRTriggerCallout(Int32(calloutType))
             dismiss(animated: true)
+
         case .backup:
+            let backupType = backups[indexPath.row].2
             if !PGLSPDFRIsOnDuty() { PGLSPDFRSetDuty(true) }
-            PGLSPDFRRequestBackup(Int32(backups[indexPath.row].2))
+            PGLSPDFRRequestBackup(Int32(backupType))
             dismiss(animated: true)
+
         case .fieldActions:
             switch indexPath.row {
-            case 0: PGLSPDFRTrafficStop()
-            case 1: PGLSPDFRArrestNearby()
-            case 2: PGLSPDFRCallTransport()
+            case 0:
+                PGLSPDFRTrafficStop()
+            case 1:
+                PGLSPDFRArrestNearby()
+            case 2:
+                PGLSPDFRCallTransport()
             case 3:
                 PGLSPDFRToggleRadar()
                 tableView.reloadRows(at: [indexPath], with: .none)
@@ -211,7 +246,9 @@ final class LSPDFRViewController: UITableViewController {
             default: break
             }
             dismiss(animated: true)
-        case .lcpdfrInfo: break
+
+        case .lcpdfrInfo:
+            break
         }
     }
 }
