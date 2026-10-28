@@ -197,9 +197,8 @@ final class ZombieSettingsViewController: UITableViewController {
     }
 
     private func showZombieLogViewer() {
-        let modsPath = String(cString: pg_mods_folder_path())
-        let logPath = (modsPath as NSString).appendingPathComponent("zombie_survival.log")
-        let content = (try? String(contentsOfFile: logPath, encoding: .utf8)) ?? "(Chưa có dữ liệu nhật ký hoặc file chưa được tạo)"
+        let logURL = ModInstaller.modsFolder.appendingPathComponent("zombie_survival.log")
+        let content = (try? String(contentsOf: logURL, encoding: .utf8)) ?? "(Chưa có dữ liệu nhật ký hoặc file chưa được tạo)"
 
         let textVC = UIViewController()
         textVC.title = "Nhật ký Zombie Survival"
