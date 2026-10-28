@@ -33,7 +33,7 @@ final class ZombieSettingsViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 1
-        case 1: return 4
+        case 1: return 5
         case 2: return 1
         default: return 0
         }
@@ -42,7 +42,7 @@ final class ZombieSettingsViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0: return "Trạng thái chế độ"
-        case 1: return "Thông số chiến dịch sinh tồn"
+        case 1: return "Nhiệm vụ: Thoát khỏi thành phố"
         case 2: return "Thao tác"
         default: return nil
         }
@@ -69,44 +69,61 @@ final class ZombieSettingsViewController: UITableViewController {
             cell.selectionStyle = .none
             let kills = PGZombieGetKills()
             let tier = PGZombieGetTier()
+            let dist = PGZombieGetEscapeDistance()
+            let escaped = PGZombieIsEscaped()
 
             switch indexPath.row {
             case 0:
+                cell.textLabel?.text = "Điểm sơ tán (Trực thăng Del Perro)"
+                if escaped {
+                    cell.detailTextLabel?.text = "ĐÃ THOÁT HIỂM THÀNH CÔNG!"
+                    cell.detailTextLabel?.textColor = .systemGreen
+                    cell.detailTextLabel?.font = .boldSystemFont(ofSize: 14)
+                } else if dist < 45.0 {
+                    cell.detailTextLabel?.text = "Đang trong Vùng Cố thủ!"
+                    cell.detailTextLabel?.textColor = .systemRed
+                    cell.detailTextLabel?.font = .boldSystemFont(ofSize: 14)
+                } else {
+                    cell.detailTextLabel?.text = String(format: "%.0f mét (Chấm xanh lá)", dist)
+                    cell.detailTextLabel?.textColor = Theme.accent
+                    cell.detailTextLabel?.font = .boldSystemFont(ofSize: 14)
+                }
+            case 1:
                 cell.textLabel?.text = "Zombie đã tiêu diệt"
                 cell.detailTextLabel?.text = "\(kills) con"
                 cell.detailTextLabel?.textColor = Theme.accent
                 cell.detailTextLabel?.font = .boldSystemFont(ofSize: 16)
-            case 1:
+            case 2:
                 cell.textLabel?.text = "Cấp độ trang bị vũ khí"
                 let names = [
-                    "Cấp 0 (Chỉ Cận chiến)",
-                    "Cấp 1 (Súng lục Combat Pistol)",
-                    "Cấp 2 (Pump Shotgun)",
-                    "Cấp 3 (Micro SMG)",
-                    "Cấp 4 (Carbine Rifle)",
-                    "Cấp 5 (Combat MG & Shotgun)"
+                    "Cấp 0 (Cận chiến)",
+                    "Cấp 1 (Súng lục - 5 kills)",
+                    "Cấp 2 (Shotgun - 15 kills)",
+                    "Cấp 3 (Micro SMG - 30 kills)",
+                    "Cấp 4 (Carbine Rifle - 50 kills)",
+                    "Cấp 5 (Combat MG & Shotgun - 75 kills)"
                 ]
                 cell.detailTextLabel?.text = (tier >= 0 && Int(tier) < names.count) ? names[Int(tier)] : "Cấp \(tier)"
                 cell.detailTextLabel?.textColor = .label
-            case 2:
+            case 3:
                 cell.textLabel?.text = "Người bạn đồng hành"
                 let alive = PGZombieCompanionAlive()
-                cell.detailTextLabel?.text = alive ? "Đang yểm trợ chiến đấu" : "Đang chờ hồi sinh/tiếp viện..."
+                cell.detailTextLabel?.text = alive ? "Đang chiến đấu cùng bạn" : "Đang chờ hồi sinh/tiếp viện..."
                 cell.detailTextLabel?.textColor = alive ? .systemGreen : .systemOrange
-            case 3:
-                cell.textLabel?.text = "Trạng thái tình huống"
+            case 4:
+                cell.textLabel?.text = "Tình hình chiến dịch"
                 var buf = [CChar](repeating: 0, count: 160)
                 PGZombieGetStatus(&buf, buf.count)
                 let statusStr = String(cString: buf)
-                cell.detailTextLabel?.text = statusStr.isEmpty ? "Bình thường" : statusStr
-                cell.detailTextLabel?.font = .systemFont(ofSize: 13)
+                cell.detailTextLabel?.text = statusStr.isEmpty ? "Đang tiến hành" : statusStr
+                cell.detailTextLabel?.font = .systemFont(ofSize: 12)
             default: break
             }
             return cell
         }
 
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-        cell.textLabel?.text = "Bắt đầu lại ván sinh tồn (Reset vũ khí & kill)"
+        cell.textLabel?.text = "Bắt đầu lại ván sinh tồn (Reset vũ khí & vị trí)"
         cell.textLabel?.textColor = .systemRed
         cell.textLabel?.textAlignment = .center
         return cell
@@ -115,7 +132,7 @@ final class ZombieSettingsViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.section == 2 && indexPath.row == 0 {
-            let alert = UIAlertController(title: "Bắt đầu lại", message: "Khởi động lại toàn bộ tiến trình sinh tồn, tước hết súng về chỉ dùng cận chiến?", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Bắt đầu lại", message: "Khởi động lại toàn bộ chiến dịch sinh tồn và tước súng về cận chiến?", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Hủy", style: .cancel))
             alert.addAction(UIAlertAction(title: "Đồng ý", style: .destructive, handler: { _ in
                 PGZombieResetSurvival()
@@ -126,10 +143,10 @@ final class ZombieSettingsViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == 0 {
-            return "Thế giới hoang tàn, sương mù bao phủ ban ngày, xe cộ vứt bỏ ngổn ngang. Toàn bộ người đi bộ và cảnh sát biến mất, chỉ còn thây ma và người bạn đồng hành sống sót."
+            return "Thế giới hoang tàn giữa ban ngày (12h trưa), bầu trời u ám không còn sương mù dày đặc. Toàn bộ xe cộ trên đường đều tắt máy bỏ hoang, người dân biến thành xác sống hung hãn."
         }
         if section == 2 {
-            return "HƯỚNG DẪN SINH TỒN:\n• Khởi đầu chỉ có vũ khí cận chiến (dao, mã tấu, xà beng). Tiêu diệt đủ mốc zombie để tự động nhận thêm súng và đạn dược.\n• Người bạn đồng hành được trang bị súng và sẽ tự động bắn zombie giải vây khi bị áp sát.\n• Zombie có chấm đỏ trên radar; đồng đội có chấm xanh dương."
+            return "HƯỚNG DẪN CHIẾN DỊCH:\n• Tất cả zombie trên bản đồ đều hiển thị chấm đỏ (kể cả ở xa).\n• Điểm sơ tán thoát khỏi thành phố nằm ở cuối Bến tàu Del Perro (Biểu tượng Trực thăng màu xanh lá trên bản đồ).\n• Chiến đấu mở khóa súng qua từng mốc kill và mở đường đến điểm sơ tán. Khi đến nơi, hãy cố thủ 45 giây trước làn sóng zombie dữ dội để trực thăng cứu hộ giải cứu thành công!"
         }
         return nil
     }
