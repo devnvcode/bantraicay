@@ -12,7 +12,7 @@ on:
         required: false
         default: ""
   push:
-    branches: [main]
+    branches: [main, "feature/**"]
 
 env:
   # Link server của bạn khi chạy tự động (push). Sửa dòng này thành link thật.

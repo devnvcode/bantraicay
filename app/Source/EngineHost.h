@@ -198,3 +198,12 @@ bool PGSelectVehicleSound(uint32_t model,const char *profile);
 
 // Bounded diagnostic called alongside the 10-second health sample.
 void PGLogStreamingPolicy(void);
+
+// Native Zombie Apocalypse Survival Mode
+bool PGZombieIsActive(void);
+void PGZombieSetActive(bool active);
+int PGZombieGetKills(void);
+int PGZombieGetTier(void);
+bool PGZombieCompanionAlive(void);
+void PGZombieResetSurvival(void);
+void PGZombieGetStatus(char *buffer, size_t maxLen);

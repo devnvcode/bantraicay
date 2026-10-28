@@ -57,6 +57,7 @@ final class SettingsHomeViewController: UITableViewController {
             return count == 0 ? AppLanguage.choose("Install car, skin and script mods") : AppLanguage.interpolate(AppLanguage.choose("{arg0} mods on"), [String(count)])
         }, sections: [], page: { ModsViewController() }))
         list.append(Category(icon:"puzzlepiece.extension",title:"Plugin Menyoo",summary:{"Bật/tắt Menyoo tích hợp, hướng dẫn nút điều khiển"},sections:[],page:{BundledMenyooViewController()}))
+        list.append(Category(icon: "cross.vial", title: "Đại dịch Zombie Sinh tồn", summary: { let kills = PGZombieGetKills(); return PGZombieIsActive() ? (kills == 0 ? "Chế độ đang bật: Sẵn sàng sinh tồn" : "Đã diệt \(kills) zombie - Cấp vũ khí \(PGZombieGetTier())") : "Đang tắt" }, sections: [], page: { ZombieSettingsViewController() }}))
         list.append(Category(icon:"flame",title:"Turbo và lửa bô (thử nghiệm)",summary:{"Turbo, boost theo số, anti-lag, âm thanh và đồng hồ"},sections:[],page:{TurboSettingsViewController()}))
         list.append(Category(icon:"memorychip",title:"RAM và quyền bộ nhớ",summary:{"Kiểm tra quyền tăng RAM, bỏ cap riêng và xuất entitlement"},sections:[],page:{MemoryAccessViewController(engineRunning:running)}))
         list.append(Category(icon: "iphone", title: AppLanguage.choose("This device"), summary: {

@@ -1889,6 +1889,7 @@ static void pg_asi_leave_script(w2c_game *instance, uint64_t previous) {
 #include "NativeCheats.inc"
 #include "NativeVehicleSpawn.inc"
 #include "NativeSoundMods.inc"
+#include "NativeZombie.inc"
 // Keys for mods: the Mod keys pad (and a hardware keyboard) set them from the main thread; mods read
 // them on the game thread, and keyboard handlers get each change there.
 static _Atomic uint8_t pg_asi_keys[256];
@@ -2441,6 +2442,7 @@ void pg_asi_script_tick(w2c_game *instance, u64 thread) {
   pg_sound_mod_tick(instance);
   pg_turbo_tick(instance);
   pg_trackify_tick(instance);
+  pg_zombie_tick(instance);
 #if TARGET_OS_SIMULATOR
   pg_debug_tick(instance, true);
   pg_test_spawn();
