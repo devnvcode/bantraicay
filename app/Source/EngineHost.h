@@ -198,19 +198,3 @@ bool PGSelectVehicleSound(uint32_t model,const char *profile);
 
 // Bounded diagnostic called alongside the 10-second health sample.
 void PGLogStreamingPolicy(void);
-
-// Native LSPDFR (First Response Police System & LCPDFR Mod Suite)
-bool PGLSPDFRIsOnDuty(void);
-void PGLSPDFRSetDuty(bool onDuty);
-void PGLSPDFRSetAgency(int agency);
-int PGLSPDFRGetAgency(void);
-void PGLSPDFRSpawnVehicle(int index);
-void PGLSPDFRSpawnCustomVehicle(uint32_t modelHash);
-void PGLSPDFRTriggerCallout(int calloutType);
-void PGLSPDFRRequestBackup(int backupType);
-void PGLSPDFRTrafficStop(void);
-void PGLSPDFRArrestNearby(void);
-void PGLSPDFRCallTransport(void);
-void PGLSPDFRToggleRadar(void);
-bool PGLSPDFRIsRadarActive(void);
-void PGLSPDFRGetStatus(char *buffer, size_t maxLen);
