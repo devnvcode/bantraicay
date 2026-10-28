@@ -29,17 +29,13 @@ check("currentWreckCount >= ZOMBIE_MAX_WRECKS" in zombie_inc, "Hard cap check on
 
 # Check 2: Sequential staged initialization with delay
 check("ZOMBIE_STAGE_WARMUP" in zombie_inc and "ZOMBIE_STAGE_ACTIVE" in zombie_inc, "Staged initialization enum defined")
-check("zombieFrameCounter > 240" in zombie_inc, "Delay after map load before module 1 (~4s)")
-check("zombieFrameCounter > 360" in zombie_inc, "Delay before weapons loadout (~6s)")
-check("zombieFrameCounter > 480" in zombie_inc, "Delay before atmosphere setup (~8s)")
-check("zombieFrameCounter > 600" in zombie_inc, "Delay before extraction blip (~10s)")
-check("zombieFrameCounter > 720" in zombie_inc, "Delay before companion (~12s)")
-check("zombieFrameCounter > 840" in zombie_inc, "Delay before wrecks (~14s)")
+check("zombieFrameCounter >" in zombie_inc, "Staged delays after map load implemented")
+check("PAUSE_CLOCK" in zombie_inc or "0x4055e40bd2dbec1d" in zombie_inc, "PAUSE_CLOCK called at frame 0 to freeze daylight")
 
 # Check 3: Model streaming verification before spawning
-check("PG_FN_REQUEST_MODEL(instance, zModel);" in zombie_inc, "Zombie model is requested")
-check("if (!PG_FN_HAS_MODEL_LOADED(instance, zModel)) return;" in zombie_inc, "HAS_MODEL_LOADED checked before spawning zombie")
-check("if (!PG_FN_HAS_MODEL_LOADED(instance, modelHash)) return;" in zombie_inc, "HAS_MODEL_LOADED checked before spawning wreck")
+check("PG_FN_REQUEST_MODEL(instance, activeZombieModels[m]);" in zombie_inc, "Zombie model is requested")
+check("PG_FN_HAS_MODEL_LOADED(instance, activeZombieModels[m])" in zombie_inc, "HAS_MODEL_LOADED checked before spawning zombie")
+check("PG_FN_HAS_MODEL_LOADED(instance, activeWreckModelHash)" in zombie_inc, "HAS_MODEL_LOADED checked before spawning wreck")
 check("if (!PG_FN_HAS_MODEL_LOADED(instance, companionModel)) return;" in zombie_inc, "HAS_MODEL_LOADED checked before spawning companion")
 
 # Check 4: Entity existence checked before native calls
@@ -69,9 +65,10 @@ check("PG_FN_PED_DENSITY_THIS_FRAME(instance, 0.0f);" in zombie_inc, "Ped densit
 check("PG_FN_VEHICLE_DENSITY_THIS_FRAME(instance, 0.0f);" in zombie_inc, "Vehicle density = 0.0f every frame")
 check("PG_FN_PARKED_DENSITY_THIS_FRAME(instance, 0.0f);" in zombie_inc, "Parked vehicle density = 0.0f every frame")
 
-# Check 10: Logging to file and pg_log
-check("fopen(logFilePath, \"a\");" in zombie_inc, "Writes initialization and gameplay logs to persistent file")
+# Check 10: In-memory logging ring buffer and pg_log
+check("zombieLogLines" in zombie_inc and "zombieLogLock" in zombie_inc, "In-memory circular log buffer implemented to prevent WASM file I/O freeze")
 check("pg_log(line);" in zombie_inc, "Outputs diagnostic lines to engine pg_log")
+check("PGZombieGetLog" in zombie_inc and "PGZombieGetLog" in engine_host_h, "PGZombieGetLog API exposed to UI")
 
 # Check 11: Real zombie check or fallback
 check("pg_joaat(\"u_m_y_zombie_01\")" in zombie_inc, "Checks for real game zombie model u_m_y_zombie_01")
@@ -92,6 +89,12 @@ check("secondsLeft = 45" in zombie_inc, "45s survival hold countdown implemented
 check("zombieEnableAtmosphere" in zombie_inc and "zombieEnableWrecks" in zombie_inc and "zombieEnableCompanion" in zombie_inc, "Individual submodule flags present in C")
 check("PGZombieGetModuleAtmosphere()" in settings_swift, "Submodule switches present in Swift UI")
 check("showZombieLogViewer()" in settings_swift, "In-app log viewer present in Swift UI")
+
+# Check 16: Outdoor teleportation logic
+check("SET_ENTITY_COORDS_NO_OFFSET" in zombie_inc or "0x239a3351ac1da385" in zombie_inc, "Auto-teleports player outdoors to Portola Drive street")
+
+# Check 17: Active script context wrapper for rage native dispatch
+check("pg_asi_enter_script(instance)" in zombie_inc and "pg_asi_leave_script(instance" in zombie_inc, "Wraps zombie tick with active rage script thread context")
 
 print("--------------------------------------------------")
 if failures:

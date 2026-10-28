@@ -207,6 +207,7 @@ int PGZombieGetTier(void);
 bool PGZombieCompanionAlive(void);
 void PGZombieResetSurvival(void);
 void PGZombieGetStatus(char *buffer, size_t maxLen);
+void PGZombieGetLog(char *buffer, size_t maxLen);
 float PGZombieGetEscapeDistance(void);
 bool PGZombieIsEscaped(void);
 int PGZombieGetActiveCount(void);

@@ -197,8 +197,24 @@ final class ZombieSettingsViewController: UITableViewController {
     }
 
     private func showZombieLogViewer() {
+        var memLog = ""
+        var buf = [CChar](repeating: 0, count: 4096)
+        PGZombieGetLog(&buf, buf.count)
+        if buf[0] != 0 {
+            memLog = String(cString: buf)
+        }
+
         let logURL = ModInstaller.modsFolder.appendingPathComponent("zombie_survival.log")
-        let content = (try? String(contentsOf: logURL, encoding: .utf8)) ?? "(Chưa có dữ liệu nhật ký hoặc file chưa được tạo)"
+        let fileLog = (try? String(contentsOf: logURL, encoding: .utf8)) ?? ""
+
+        let content: String
+        if !memLog.isEmpty {
+            content = memLog + (fileLog.isEmpty ? "" : "\n--- File Log ---\n" + fileLog)
+        } else if !fileLog.isEmpty {
+            content = fileLog
+        } else {
+            content = "(Chưa có dữ liệu nhật ký hoặc file chưa được tạo)"
+        }
 
         let textVC = UIViewController()
         textVC.title = "Nhật ký Zombie Survival"
