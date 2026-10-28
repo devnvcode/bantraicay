@@ -42,6 +42,7 @@
 // --- Cấu hình giới hạn thực thể tập trung tại một nơi (iOS Hardware Guard) ---
 #define ZOMBIE_MAX_ACTIVE       14
 #define ZOMBIE_TARGET_ACTIVE    10
+#define ZOMBIE_MIN_ACTIVE       8
 #define ZOMBIE_MAX_WRECKS       5
 #define ZOMBIE_MAX_CORPSES      10
 #define ZOMBIE_MAX_LOG_LINES    80
@@ -59,17 +60,17 @@ void PG_FN_SET_TIMECYCLE_MODIFIER(w2c_game*, u64);
 void PG_FN_SET_TIMECYCLE_MODIFIER_STRENGTH(w2c_game*, float);
 u32  PG_FN_PLAYER_PED_ID(w2c_game*);
 u32  PG_FN_PLAYER_ID(w2c_game*);
-bool PG_FN_ENTITY_EXISTS(w2c_game*, u32);
+u32  PG_FN_ENTITY_EXISTS(w2c_game*, u32);
 void PG_FN_GET_ENTITY_COORDS(w2c_game*, u64, u32, u32);
 void PG_FN_SET_MAX_WANTED(w2c_game*, u32);
 u32  PG_FN_GET_WANTED(w2c_game*, u32);
 void PG_FN_CLEAR_WANTED(w2c_game*, u32);
 void PG_FN_GIVE_WEAPON(w2c_game*, u32, u32, u32, u32, u32);
 void PG_FN_REQUEST_MODEL(w2c_game*, u32);
-bool PG_FN_HAS_MODEL_LOADED(w2c_game*, u32);
+u32  PG_FN_HAS_MODEL_LOADED(w2c_game*, u32);
 void PG_FN_RELEASE_MODEL(w2c_game*, u32);
 u32  PG_FN_CREATE_VEHICLE(w2c_game*, u32, u64, float, u32, u32, u32);
-void PG_FN_GROUND_VEHICLE(w2c_game*, u32, float);
+u32  PG_FN_GROUND_VEHICLE(w2c_game*, u32, f32);
 void PG_FN_VEHICLE_DIRT(w2c_game*, u32, float);
 void PG_FN_VEHICLE_ENGINE_HEALTH(w2c_game*, u32, float);
 void PG_FN_DELETE_VEHICLE(w2c_game*, u64);
@@ -349,7 +350,7 @@ static void pg_zombie_teleport_outdoors(w2c_game *instance, u32 playerPed) {
     PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, playerPed, zombieCoordVector, 0, 0, 0);
     // 0x07503f7948f491a7: REQUEST_COLLISION_AT_COORD
     pg_test_call(instance, 0x07503f7948f491a7ull, 3, (uint64_t[]){ pg_zf32(-840.0f), pg_zf32(148.0f), pg_zf32(66.0f) });
-    pg_zombie_log("[Zombie] Da dua nguoi choi ra mat duong Portola Drive ngoai troi (-840, 148, 66).");
+    pg_zombie_log("[Zombie] Da dua nguoi choi tu (%.0f, %.0f, %.0f) ra mat duong Portola Drive ngoai troi (-840, 148, 66).", px, py, pz);
   }
 }
 
