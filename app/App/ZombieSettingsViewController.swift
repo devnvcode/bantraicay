@@ -32,7 +32,7 @@ final class ZombieSettingsViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 5 // Master toggle + 4 submodule toggles
+        case 0: return 10 // Master toggle + 9 submodule toggles
         case 1: return 7 // Stats: Evac, Kills, Weapon Tier, Active Zombies, Wrecks, Companion, Status
         case 2: return 2 // Reset button + View Log button
         default: return 0
@@ -94,6 +94,46 @@ final class ZombieSettingsViewController: UITableViewController {
                 toggle.addAction(UIAction { action in
                     guard let sw = action.sender as? UISwitch else { return }
                     PGZombieSetModuleExtraction(sw.isOn)
+                }, for: .valueChanged)
+            case 5:
+                cell.textLabel?.text = "Sát thương cắn của Zombie"
+                cell.textLabel?.font = .systemFont(ofSize: 15)
+                toggle.isOn = PGZombieGetModuleBiteDamage()
+                toggle.addAction(UIAction { action in
+                    guard let sw = action.sender as? UISwitch else { return }
+                    PGZombieSetModuleBiteDamage(sw.isOn)
+                }, for: .valueChanged)
+            case 6:
+                cell.textLabel?.text = "Phản ứng trúng đòn Ragdoll"
+                cell.textLabel?.font = .systemFont(ofSize: 15)
+                toggle.isOn = PGZombieGetModuleRagdoll()
+                toggle.addAction(UIAction { action in
+                    guard let sw = action.sender as? UISwitch else { return }
+                    PGZombieSetModuleRagdoll(sw.isOn)
+                }, for: .valueChanged)
+            case 7:
+                cell.textLabel?.text = "Hiệu ứng máu me rùng rợn"
+                cell.textLabel?.font = .systemFont(ofSize: 15)
+                toggle.isOn = PGZombieGetModuleBlood()
+                toggle.addAction(UIAction { action in
+                    guard let sw = action.sender as? UISwitch else { return }
+                    PGZombieSetModuleBlood(sw.isOn)
+                }, for: .valueChanged)
+            case 8:
+                cell.textLabel?.text = "Âm thanh tiếng rên Zombie"
+                cell.textLabel?.font = .systemFont(ofSize: 15)
+                toggle.isOn = PGZombieGetModuleAudio()
+                toggle.addAction(UIAction { action in
+                    guard let sw = action.sender as? UISwitch else { return }
+                    PGZombieSetModuleAudio(sw.isOn)
+                }, for: .valueChanged)
+            case 9:
+                cell.textLabel?.text = "Mở khóa vũ khí theo mốc kill"
+                cell.textLabel?.font = .systemFont(ofSize: 15)
+                toggle.isOn = PGZombieGetModuleWeaponUnlocks()
+                toggle.addAction(UIAction { action in
+                    guard let sw = action.sender as? UISwitch else { return }
+                    PGZombieSetModuleWeaponUnlocks(sw.isOn)
                 }, for: .valueChanged)
             default: break
             }

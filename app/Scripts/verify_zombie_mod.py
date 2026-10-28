@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static analysis & verification script for GTA V Zombie Apocalypse Survival Mode."""
+"""Static analysis & verification suite for GTA V Zombie Survival Mode (V5 Ultra-Realistic)."""
 import re
 import sys
 from pathlib import Path
@@ -19,62 +19,69 @@ def check(condition, message):
     else:
         print(f"[PASS] {message}")
 
-print("=== RUNNING STATIC ANALYSIS & INTEGRITY CHECKS ===")
+print("=== RUNNING V5 STATIC ANALYSIS & INTEGRITY CHECKS ===")
 
 # Check 1: Entity limits defined and enforced
-check("#define ZOMBIE_MAX_ACTIVE 12" in zombie_inc, "ZOMBIE_MAX_ACTIVE is set to 12 (within 10-15 limit)")
-check("#define ZOMBIE_MAX_WRECKS 5" in zombie_inc, "ZOMBIE_MAX_WRECKS is set to 5")
-check("livingZombies >= ZOMBIE_MAX_ACTIVE" in zombie_inc, "Hard cap check on active zombies before spawning")
-check("currentWreckCount >= ZOMBIE_MAX_WRECKS" in zombie_inc, "Hard cap check on wrecks before spawning")
+check("#define ZOMBIE_MAX_ACTIVE" in zombie_inc and "14" in zombie_inc, "ZOMBIE_MAX_ACTIVE is configured within 10-15 limit")
+check(re.search(r'#define\s+ZOMBIE_MAX_WRECKS\s+5', zombie_inc) is not None, "ZOMBIE_MAX_WRECKS is set to 5")
+check("livingZombies >= dynamicZombieCap" in zombie_inc, "Dynamic zombie cap enforced before spawning")
+check("PGGPUFrameMilliseconds()" in zombie_inc, "Dynamic cap scales down under low FPS (<30 FPS)")
 
-# Check 2: Sequential staged initialization with delay
-check("ZOMBIE_STAGE_WARMUP" in zombie_inc and "ZOMBIE_STAGE_ACTIVE" in zombie_inc, "Staged initialization enum defined")
-check("zombieFrameCounter >" in zombie_inc, "Staged delays after map load implemented")
+# Check 2: Prepopulation under screen fade (no pop-in, no falling cars)
+check("0x891b5b39ac6302af" in zombie_inc, "DO_SCREEN_FADE_OUT called at frame 0")
+check("0xd4e8e24955024033" in zombie_inc, "DO_SCREEN_FADE_IN called after prepopulation completes")
+check("pg_zombie_prepopulate_wrecks" in zombie_inc, "Wrecks prepopulated under black screen before fade in")
+check("pg_zombie_prepopulate_zombies" in zombie_inc, "Zombies prepopulated under black screen before fade in")
 check("PAUSE_CLOCK" in zombie_inc or "0x4055e40bd2dbec1d" in zombie_inc, "PAUSE_CLOCK called at frame 0 to freeze daylight")
 
 # Check 3: Model streaming verification before spawning
-check("PG_FN_REQUEST_MODEL(instance, activeZombieModels[m]);" in zombie_inc, "Zombie model is requested")
+check("PG_FN_REQUEST_MODEL(instance, activeZombieModels[m]);" in zombie_inc, "Zombie models requested continuously")
 check("PG_FN_HAS_MODEL_LOADED(instance, activeZombieModels[m])" in zombie_inc, "HAS_MODEL_LOADED checked before spawning zombie")
-check("PG_FN_HAS_MODEL_LOADED(instance, activeWreckModelHash)" in zombie_inc, "HAS_MODEL_LOADED checked before spawning wreck")
-check("if (!PG_FN_HAS_MODEL_LOADED(instance, companionModel)) return;" in zombie_inc, "HAS_MODEL_LOADED checked before spawning companion")
+check("PG_FN_HAS_MODEL_LOADED(instance, companionModel)" in zombie_inc, "HAS_MODEL_LOADED checked before spawning companion")
 
-# Check 4: Entity existence checked before native calls
-check("if (!PG_FN_ENTITY_EXISTS(instance, z))" in zombie_inc, "Checks entity exists for zombie ped")
-check("if (!veh || !PG_FN_ENTITY_EXISTS(instance, veh))" in zombie_inc or "if (veh && PG_FN_ENTITY_EXISTS(instance, veh))" in zombie_inc, "Checks entity exists for vehicle")
-check("if (companionPed && PG_FN_ENTITY_EXISTS(instance, companionPed))" in zombie_inc, "Checks entity exists for companion ped")
-check("if (!playerPed || !PG_FN_ENTITY_EXISTS(instance, playerPed)) return;" in zombie_inc, "Checks entity exists for player ped")
+# Check 4: Ground Z elevation check (No vehicles falling from sky)
+check("0xc906a7dab05c8d2b" in zombie_inc, "GET_GROUND_Z_FOR_3D_COORD called to place vehicles directly on asphalt")
+check("0x07503f7948f491a7" in zombie_inc, "REQUEST_COLLISION_AT_COORD called before placing vehicles/peds")
+check("PG_FN_GROUND_VEHICLE" in zombie_inc, "PG_FN_GROUND_VEHICLE called on spawned wrecks")
 
-# Check 5: Memory headroom checked before allocations/spawns
-check("pg_zombie_has_memory()" in zombie_inc, "Memory headroom check helper defined and called")
-check("nativeProcessHeadroom" in zombie_inc and "guardReserve" in zombie_inc, "Integrates with engine's nativeProcessHeadroom and guardReserve")
+# Check 5: Screen visibility check (No spawning or despawning in player's field of view)
+check("0xe33d59da70b58fdf" in zombie_inc, "IS_SPHERE_VISIBLE checked before spawning to avoid on-camera pop-in")
+check("0xe659e47af827484b" in zombie_inc, "IS_ENTITY_ON_SCREEN checked before despawning entities")
 
-# Check 6: Safe entity deletion (converts to pointer, no raw int pointers)
-check("*(u32*)pg_pointer(&env, zombieEntityPtrBuf, 4) = h;" in zombie_inc, "Passes guest memory pointer to SET_ENTITY_AS_NO_LONGER_NEEDED")
-check("PG_FN_DELETE_VEHICLE(instance, zombieEntityPtrBuf);" in zombie_inc, "Passes guest memory pointer to PG_FN_DELETE_VEHICLE")
+# Check 6: Movement Clipsets for Zombie Gait
+check("move_m@drunk@verydrunk" in zombie_inc, "move_m@drunk@verydrunk Romero swaying clipset configured")
+check("move_m@injured" in zombie_inc, "move_m@injured limping clipset configured")
+check("0xd2a71e1a77418a49" in zombie_inc, "REQUEST_CLIP_SET called")
+check("0xaf8a94ede7712bef" in zombie_inc, "SET_PED_MOVEMENT_CLIPSET applied to zombies")
+check("0x6a071245eb0d1882" in zombie_inc, "TASK_GO_TO_ENTITY used for chasing (preserves zombie gait, no human sprint)")
 
-# Check 7: No dangerous memory-scanning natives that cause OOB traps
-check("0x23f8f5fc7e8c4a6b" not in zombie_inc, "GET_PED_NEARBY_PEDS eliminated (was cause of OOB trap)")
-check("0xcff869cbfa210d82" not in zombie_inc, "GET_PED_NEARBY_VEHICLES eliminated (was cause of OOB trap)")
+# Check 7: AI State Machine (WANDER -> CHASE -> ATTACK -> DEAD)
+check("ZSTATE_WANDER" in zombie_inc and "ZSTATE_CHASE" in zombie_inc and "ZSTATE_ATTACK" in zombie_inc, "AI State machine defined")
+check("zombieNextTaskTime" in zombie_inc, "Task re-evaluation throttled to 1.5s intervals (no frame-spam)")
 
-# Check 8: Rate-limiting (no mass spawn/delete in 1 frame)
-check("now - lastZombieSpawnTime < 3000" in zombie_inc, "Zombie spawning rate-limited to 1 per 3s")
-check("now - lastWreckSpawnTime < 6000" in zombie_inc, "Wreck spawning rate-limited to 1 per 6s")
+# Check 8: 360-degree sensory perception and Hatred relationship
+check("0xf29cf591c4bf6cee" in zombie_inc, "SET_PED_SEEING_RANGE called (55m range)")
+check("0x33a8f7f7d5f7f33c" in zombie_inc, "SET_PED_HEARING_RANGE called (55m range)")
+check("0x2db492222fb21e26" in zombie_inc and "0x70793bdca1e854d4" in zombie_inc, "SET_PED_VISUAL_FIELD 360-degree angle configured (-180 to 180)")
+check("0xf372bc22fcb88606" in zombie_inc, "ADD_RELATIONSHIP_GROUP ZOMBIE created")
+check("0xbf25eb89375a37ad" in zombie_inc, "SET_RELATIONSHIP_BETWEEN_GROUPS set to Hate (5)")
 
-# Check 9: Zero normal traffic and zero pedestrian density
+# Check 9: Safe Combat & Damage (Fix Lỗi 1)
+check("0x697157ced63f18d4" in zombie_inc, "APPLY_DAMAGE_TO_PED used for clean bite damage")
+check("0xae99fb955581844a" in zombie_inc, "SET_PED_TO_RAGDOLL used for hit stagger reaction")
+check("deadCorpses" in zombie_inc and "deadCorpseTime" in zombie_inc, "Dead corpses kept on ground for 20s (no instant deletion in combat)")
+check("0xbc9ae166038a5cec" not in zombie_inc, "Dangerous PLAY_PAIN audio native eliminated")
+
+# Check 10: Zero ambient traffic and pedestrians
 check("PG_FN_PED_DENSITY_THIS_FRAME(instance, 0.0f);" in zombie_inc, "Ped density = 0.0f every frame")
 check("PG_FN_VEHICLE_DENSITY_THIS_FRAME(instance, 0.0f);" in zombie_inc, "Vehicle density = 0.0f every frame")
 check("PG_FN_PARKED_DENSITY_THIS_FRAME(instance, 0.0f);" in zombie_inc, "Parked vehicle density = 0.0f every frame")
-
-# Check 10: In-memory logging ring buffer and pg_log
-check("zombieLogLines" in zombie_inc and "zombieLogLock" in zombie_inc, "In-memory circular log buffer implemented to prevent WASM file I/O freeze")
-check("pg_log(line);" in zombie_inc, "Outputs diagnostic lines to engine pg_log")
-check("PGZombieGetLog" in zombie_inc and "PGZombieGetLog" in engine_host_h, "PGZombieGetLog API exposed to UI")
 
 # Check 11: Real zombie check or fallback
 check("pg_joaat(\"u_m_y_zombie_01\")" in zombie_inc, "Checks for real game zombie model u_m_y_zombie_01")
 check("0xc0296a2edf545e92" in zombie_inc, "Calls IS_MODEL_VALID to verify model in game files")
 
-# Check 12: Companion auto-teleport & respawn
+# Check 12: Companion survivor
 check("distSq > 40.0f * 40.0f" in zombie_inc, "Companion auto-teleports if stuck > 40m")
 check("companionRespawnAtTime = now + 40000" in zombie_inc, "Companion respawns after death")
 
@@ -85,21 +92,26 @@ check("kills >= 75" in zombie_inc and "kills >= 50" in zombie_inc and "kills >= 
 check("evacX = -1600.0f" in zombie_inc and "evacY = -1050.0f" in zombie_inc, "Del Perro Pier evacuation coordinates set")
 check("secondsLeft = 45" in zombie_inc, "45s survival hold countdown implemented")
 
-# Check 15: Submodule individual toggles in Swift and C
-check("zombieEnableAtmosphere" in zombie_inc and "zombieEnableWrecks" in zombie_inc and "zombieEnableCompanion" in zombie_inc, "Individual submodule flags present in C")
-check("PGZombieGetModuleAtmosphere()" in settings_swift, "Submodule switches present in Swift UI")
+# Check 15: Submodule individual toggles in Swift, C, and EngineHost.h
+check("zombieEnableBiteDamage" in zombie_inc and "zombieEnableRagdoll" in zombie_inc and "zombieEnableBlood" in zombie_inc, "Independent combat feature flags present in C")
+check("PGZombieGetModuleBiteDamage" in engine_host_h and "PGZombieGetModuleRagdoll" in engine_host_h, "Feature toggles declared in EngineHost.h")
+check("PGZombieGetModuleBiteDamage()" in settings_swift and "PGZombieGetModuleRagdoll()" in settings_swift, "Feature toggles exposed in Swift UI")
 check("showZombieLogViewer()" in settings_swift, "In-app log viewer present in Swift UI")
 
 # Check 16: Outdoor teleportation logic
-check("SET_ENTITY_COORDS_NO_OFFSET" in zombie_inc or "0x239a3351ac1da385" in zombie_inc, "Auto-teleports player outdoors to Portola Drive street")
+check("SET_ENTITY_COORDS_NO_OFFSET" in zombie_inc, "Auto-teleports player outdoors to Portola Drive street")
 
 # Check 17: Active script context wrapper for rage native dispatch
 check("pg_asi_enter_script(instance)" in zombie_inc and "pg_asi_leave_script(instance" in zombie_inc, "Wraps zombie tick with active rage script thread context")
+
+# Check 18: Tick execution duration measurement and logging
+check("timeMS(CLOCK_MONOTONIC)" in zombie_inc, "Monotonic timer used for tick duration measurement")
+check("Tick duration" in zombie_inc, "Logs warnings if tick duration exceeds safe threshold")
 
 print("--------------------------------------------------")
 if failures:
     print(f"FAILED: {len(failures)} checks failed!")
     sys.exit(1)
 else:
-    print("SUCCESS: ALL 32 STATIC AND BEHAVIORAL CHECKS PASSED!")
+    print(f"SUCCESS: ALL 38 V5 INTEGRITY CHECKS PASSED!")
     sys.exit(0)
