@@ -86,7 +86,7 @@ final class ZombieSettingsViewController: UITableViewController {
                     "Cấp 4 (Carbine Rifle)",
                     "Cấp 5 (Combat MG & Shotgun)"
                 ]
-                cell.detailTextLabel?.text = (tier >= 0 && tier < names.count) ? names[tier] : "Cấp \(tier)"
+                cell.detailTextLabel?.text = (tier >= 0 && Int(tier) < names.count) ? names[Int(tier)] : "Cấp \(tier)"
                 cell.detailTextLabel?.textColor = .label
             case 2:
                 cell.textLabel?.text = "Người bạn đồng hành"
