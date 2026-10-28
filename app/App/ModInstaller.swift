@@ -276,6 +276,11 @@ enum ModInstaller {
                 plan.kinds.insert("replace"); continue
             }
             if usable.isEmpty {
+                if ["yft", "ytd"].contains(ext) {
+                    let targetPath = "x64e.rpf/levels/gta5/vehicles.rpf/" + file.url.lastPathComponent
+                    plan.items.append(Item(source: file.url, target: targetPath, note: AppLanguage.choose("replaces the game's file")))
+                    plan.kinds.insert("replace"); continue
+                }
                 let reason = !all.isEmpty ? AppLanguage.choose("it's inside a DLC pack; changing those isn't supported yet")
                     : !hasGameIndex ? AppLanguage.choose("unknown until the game has run once; start the game, then install again")
                     : (lower.contains("+hi") || lower.contains("_hi.")) ? AppLanguage.choose("this game version has no high-detail file for it (the normal one is used)")

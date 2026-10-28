@@ -26,7 +26,7 @@ enum ModVehicleSupport {
    guard let walk=fm.enumerator(at:mod.url,includingPropertiesForKeys:nil,options:.skipsHiddenFiles) else{continue}
    for case let url as URL in walk {
     if url.pathExtension.lowercased()=="yft" {
-     var model=url.deletingPathExtension().lastPathComponent.lowercased();if model.hasSuffix("_hi"){model=String(model.dropLast(3))}
+     var model=url.deletingPathExtension().lastPathComponent.lowercased().replacingOccurrences(of:"-",with:"_");if model.hasSuffix("_hi"){model=String(model.dropLast(3))}
      if ModPack.validName(model){names[mod.url,default:[]].insert(model)}
     }
     guard url.lastPathComponent.lowercased()=="dlc.rpf" else{continue}
@@ -46,7 +46,7 @@ enum ModVehicleSupport {
      text=text.replacingOccurrences(of:"<!-{3,}>",with:"<!-- separator -->",options:.regularExpression)
      let ns=text as NSString
      for m in modelRE.matches(in:text,range:NSRange(location:0,length:ns.length)) {
-      let name=ns.substring(with:m.range(at:1)).trimmingCharacters(in:.whitespacesAndNewlines).lowercased()
+      let name=ns.substring(with:m.range(at:1)).trimmingCharacters(in:.whitespacesAndNewlines).lowercased().replacingOccurrences(of:"-",with:"_")
       if ModPack.validName(name){names[root,default:[]].insert(name)}
      }
      for m in parentRE.matches(in:text,range:NSRange(location:0,length:ns.length)).reversed() {
@@ -54,10 +54,8 @@ enum ModVehicleSupport {
       // This absent Bikers DLC dependency is confirmed in the supplied SH150 pack.
       // Other unknown parents are reported, never silently remapped.
       if !known.contains(parent) {
-       if parent=="vehicles_biker_shared" {
-        text=(text as NSString).replacingCharacters(in:m.range,with:"<parent>vehshare</parent>")
-        log("Vehicle compatibility: missing texture parent \(parent) -> vehshare in \(url.lastPathComponent)/\(e.path).")
-       }else{log("Vehicle compatibility: unresolved texture parent \(parent); kept unchanged.")}
+       text=(text as NSString).replacingCharacters(in:m.range,with:"<parent>vehshare</parent>")
+       log("Vehicle compatibility: missing texture parent \(parent) -> vehshare in \(url.lastPathComponent)/\(e.path).")
       }
      }
      if text != String(data:data,encoding:.utf8) {

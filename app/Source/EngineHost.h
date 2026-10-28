@@ -230,3 +230,15 @@ bool PGZombieGetModuleAudio(void);
 void PGZombieSetModuleAudio(bool enabled);
 bool PGZombieGetModuleWeaponUnlocks(void);
 void PGZombieSetModuleWeaponUnlocks(bool enabled);
+// Native GTA Online / Co-op Multiplayer Mode
+bool PGCoopIsActive(void);
+void PGCoopSetActive(bool active);
+void PGCoopSetServer(const char *ip, int port);
+void PGCoopSetPlayerName(const char *name);
+void PGCoopSetHostMode(bool host);
+void PGCoopGetServerIP(char *buffer, size_t maxLen);
+int  PGCoopGetServerPort(void);
+void PGCoopGetPlayerName(char *buffer, size_t maxLen);
+int  PGCoopGetPlayerCount(void);
+void PGCoopGetStatus(char *buffer, size_t maxLen);
+bool PGCoopIsConnected(void);

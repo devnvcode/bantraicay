@@ -169,7 +169,12 @@ enum VehicleInstaller {
         return out
     }
 }
-struct ModPack {static func validName(_ n:String)->Bool {!n.isEmpty && n.utf8.count<=63 && n.utf8.allSatisfy{(97...122).contains($0)||(48...57).contains($0)||$0==95}}}
+struct ModPack {
+    static func validName(_ n: String) -> Bool {
+        let t = n.trimmingCharacters(in: .whitespacesAndNewlines)
+        return !t.isEmpty && t.utf8.count <= 63 && t.utf8.allSatisfy { (97...122).contains($0) || (65...90).contains($0) || (48...57).contains($0) || $0 == 95 || $0 == 45 }
+    }
+}
 enum ModAudio {
     static func nativeSoundData(_ b:Data) throws -> Data {
         func u(_ at:Int) throws -> Int {guard at>=0,at<=b.count-4 else {throw ModError("REL54 bị cắt.")};return Int(VehicleInstaller.word(b,at))}

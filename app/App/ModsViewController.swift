@@ -170,7 +170,13 @@ final class ModsViewController: UITableViewController, UIDocumentPickerDelegate 
                     else if SoundInstaller.isSoundOnly(folder) {
                         guard !ModInstaller.gameRunning else { throw ModError("Nhập audio trước khi vào game; hãy tắt hẳn và mở lại app.") }
                         plan = try SoundInstaller.build(folder).0
-                    } else { plan = ModInstaller.plan(folder:folder,name:name,index:index) }
+                    } else {
+                        var p = ModInstaller.plan(folder:folder,name:name,index:index)
+                        if p.items.isEmpty, let skinPlan = try? SkinInstaller.plan(folder:folder,name:name) {
+                            p = skinPlan
+                        }
+                        plan = p
+                    }
                 }
                 catch { try? FileManager.default.removeItem(at:folder); throw error }
                 return (plan, folder)

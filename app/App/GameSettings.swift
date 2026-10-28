@@ -221,7 +221,7 @@ final class GameSettings {
     }
     /// Graphics › Sharper upscaling (MetalFX), off by default: it costs some GPU time.
     var sharperUpscaling: Bool {
-        get { defaults.bool(forKey: "sharperUpscaling") }
+        get { defaults.object(forKey: "sharperUpscaling") as? Bool ?? true }
         set { defaults.set(newValue, forKey: "sharperUpscaling"); PGSetSharperUpscaling(newValue ? 1 : 0) }
     }
     /// This device › Experimental (v1.4.3, on by default): improvements that player logs still have to confirm,

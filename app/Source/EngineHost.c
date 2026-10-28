@@ -1890,6 +1890,7 @@ static void pg_asi_leave_script(w2c_game *instance, uint64_t previous) {
 #include "NativeVehicleSpawn.inc"
 #include "NativeSoundMods.inc"
 #include "NativeZombie.inc"
+#include "NativeCoopOnline.inc"
 // Keys for mods: the Mod keys pad (and a hardware keyboard) set them from the main thread; mods read
 // them on the game thread, and keyboard handlers get each change there.
 static _Atomic uint8_t pg_asi_keys[256];
@@ -2283,6 +2284,21 @@ static void pg_asi_frame(w2c_game *instance) {
         free(bytes); fclose(file);
       }
       if (dir) closedir(dir);
+      char scriptsDir[PATH_MAX]; snprintf(scriptsDir, sizeof scriptsDir, "%s/scripts", places[place]);
+      DIR *sdir = opendir(scriptsDir);
+      while (sdir && (entry = readdir(sdir))) {
+        size_t n = strlen(entry->d_name);
+        if (n < 5 || strcasecmp(entry->d_name + n - 4, ".asi")) continue;
+        if (!strncasecmp(entry->d_name, "ScriptHookVDotNet", 17) || !strcasecmp(entry->d_name, "OpenIV.asi")) continue;
+        if (!loaded && !pg_asi_init(&host)) { pg_log("Script mods: the interpreter could not start."); break; }
+        char spath[PATH_MAX]; snprintf(spath, sizeof spath, "%s/%s", scriptsDir, entry->d_name);
+        FILE *sfile = fopen(spath, "rb"); if (!sfile) continue;
+        fseek(sfile, 0, SEEK_END); long ssize = ftell(sfile); rewind(sfile);
+        uint8_t *sbytes = ssize > 0 && ssize < (256l << 20) ? malloc((size_t)ssize) : 0;
+        if (sbytes && fread(sbytes, 1, (size_t)ssize, sfile) == (size_t)ssize && pg_asi_load(entry->d_name, scriptsDir, sbytes, (uint64_t)ssize)) loaded++;
+        free(sbytes); fclose(sfile);
+      }
+      if (sdir) closedir(sdir);
     }
     if (loaded) { state = 1; char line[96]; snprintf(line, sizeof line, "Script mods active: %d .asi file%s (Script Hook V layer).", loaded, loaded == 1 ? "" : "s"); pg_log(line); }
   }
@@ -2443,6 +2459,7 @@ void pg_asi_script_tick(w2c_game *instance, u64 thread) {
   pg_turbo_tick(instance);
   pg_trackify_tick(instance);
   pg_zombie_tick(instance);
+  pg_coop_online_tick(instance);
 #if TARGET_OS_SIMULATOR
   pg_debug_tick(instance, true);
   pg_test_spawn();

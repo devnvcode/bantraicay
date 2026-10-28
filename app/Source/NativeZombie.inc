@@ -104,7 +104,7 @@ static const char *const zombieMovementClipsets[2] = {
 };
 
 // --- Module Feature Flags ---
-static _Atomic bool zombieActive = true;
+static _Atomic bool zombieActive = false; // Mac dinh TAT zombie, tra lai Los Santos nguyen ban
 static _Atomic bool zombieEnableAtmosphere = true;
 static _Atomic bool zombieEnableTraffic = true;
 static _Atomic bool zombieEnableWrecks = true;
@@ -1115,7 +1115,14 @@ static void pg_zombie_cleanup_all(w2c_game *instance) {
 // MAIN SCRIPT TICK LOOP (Lightweight, < 0.05ms per tick)
 // ============================================================================
 static void pg_zombie_tick(w2c_game *instance) {
-  if (!atomic_load(&zombieActive)) return;
+  if (!atomic_load(&zombieActive)) {
+    static bool cleanedUp = false;
+    if (!cleanedUp) {
+      cleanedUp = true;
+      pg_zombie_cleanup_all(instance);
+    }
+    return;
+  }
   if (PGPauseMenuActive() || PGLoadSceneActive() || (PGGameStatus() & 16)) return;
 
   u32 playerPed = PG_FN_PLAYER_PED_ID(instance);

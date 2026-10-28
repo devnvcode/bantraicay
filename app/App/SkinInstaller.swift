@@ -4,7 +4,7 @@ import Foundation
 /// A complete quartet distinguishes a ped from a loose replacement vehicle.
 enum SkinInstaller {
     static func normalizedName(_ value: String) -> String {
-        value.folding(options:[.diacriticInsensitive,.caseInsensitive],locale:Locale(identifier:"vi_VN")).lowercased().replacingOccurrences(of:"đ",with:"d").filter { !$0.isWhitespace }
+        value.folding(options:[.diacriticInsensitive,.caseInsensitive],locale:Locale(identifier:"vi_VN")).lowercased().replacingOccurrences(of:"đ",with:"d").replacingOccurrences(of:"-",with:"_").filter { !$0.isWhitespace }
     }
     static let extensions: Set<String> = ["ydd", "yft", "ymt", "ytd"]
     static func plan(folder: URL, name: String, female: Bool = true, modelName: String? = nil) throws -> ModInstaller.Plan {
@@ -16,7 +16,7 @@ enum SkinInstaller {
             guard info.isSymbolicLink != true else { throw ModError("Không nhập symlink.") }
             let ext = url.pathExtension.lowercased()
             guard info.isRegularFile == true, extensions.contains(ext) else { continue }
-            let model = url.deletingPathExtension().lastPathComponent.lowercased()
+            let model = url.deletingPathExtension().lastPathComponent.lowercased().replacingOccurrences(of: "-", with: "_")
             guard ModPack.validName(model) || modelName.map(normalizedName).map({ !$0.isEmpty }) == true else { throw ModError("Tên model skin chỉ được có chữ, số và dấu gạch dưới: \(model)") }
             if let prior = groups[model]?[ext], prior != url { throw ModError("Có nhiều biến thể cùng tên \(model). Hãy chọn riêng một thư mục biến thể.") }
             groups[model, default: [:]][ext] = url
