@@ -34,7 +34,7 @@ void PG_FN_RELEASE_MODEL(w2c_game*, u32);
 u32 PG_FN_CREATE_VEHICLE(w2c_game*, u32, u64, f32, u32, u32, u32);
 void PG_FN_VEHICLE_ENGINE_HEALTH(w2c_game*, u32, f32);
 void PG_FN_VEHICLE_DIRT(w2c_game*, u32, f32);
-void PG_FN_GROUND_VEHICLE(w2c_game*, u32, f32);
+u32 PG_FN_GROUND_VEHICLE(w2c_game*, u32, f32);
 void PG_FN_GIVE_WEAPON(w2c_game*, u32, u32, u32, u32, u32);
 u32 PG_FN_ENTITY_EXISTS(w2c_game*, u32);
 void PG_FN_SET_ENTITY_HEALTH(w2c_game*, u32, u32, u32);
