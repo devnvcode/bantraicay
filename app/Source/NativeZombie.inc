@@ -56,8 +56,6 @@ void PG_FN_REDUCE_VEHICLE_MODEL_BUDGET(w2c_game*, u32);
 void PG_FN_SET_CLOCK(w2c_game*, u32, u32, u32);
 void PG_FN_SET_WEATHER(w2c_game*, u64);
 void PG_FN_CLEAR_WEATHER_OVERRIDE(w2c_game*);
-void PG_FN_SET_TIMECYCLE_MODIFIER(w2c_game*, u64);
-void PG_FN_SET_TIMECYCLE_MODIFIER_STRENGTH(w2c_game*, float);
 u32  PG_FN_PLAYER_PED_ID(w2c_game*);
 u32  PG_FN_PLAYER_ID(w2c_game*);
 u32  PG_FN_ENTITY_EXISTS(w2c_game*, u32);
@@ -390,8 +388,10 @@ static void pg_zombie_apply_atmosphere_immediate(w2c_game *instance) {
 
   uint64_t tStr = pg_zstr(&zombieStrTimecycle, "prologue_shootout");
   if (tStr) {
-    PG_FN_SET_TIMECYCLE_MODIFIER(instance, tStr);
-    PG_FN_SET_TIMECYCLE_MODIFIER_STRENGTH(instance, 0.35f);
+    // 0x2c933abf17a1df41: SET_TIMECYCLE_MODIFIER
+    pg_test_call(instance, 0x2c933abf17a1df41ull, 1, (uint64_t[]){ tStr });
+    // 0x82e7ffcd5b2326b3: SET_TIMECYCLE_MODIFIER_STRENGTH
+    pg_test_call(instance, 0x82e7ffcd5b2326b3ull, 1, (uint64_t[]){ pg_zf32(0.35f) });
   }
 }
 
