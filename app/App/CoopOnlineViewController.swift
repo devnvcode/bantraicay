@@ -67,8 +67,6 @@ final class CoopOnlineViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-            cell.backgroundColor = Theme.groupedCell
-            cell.textLabel?.textColor = Theme.text
 
             switch indexPath.row {
             case 0:
@@ -92,8 +90,6 @@ final class CoopOnlineViewController: UITableViewController {
 
             case 2:
                 let cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
-                cell.backgroundColor = Theme.groupedCell
-                cell.textLabel?.textColor = Theme.text
                 cell.textLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
                 cell.textLabel?.text = "Tình trạng đường truyền"
                 cell.detailTextLabel?.textColor = PGCoopIsActive() ? UIColor.systemGreen : UIColor.systemGray
@@ -112,8 +108,6 @@ final class CoopOnlineViewController: UITableViewController {
 
         if indexPath.section == 1 {
             let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-            cell.backgroundColor = Theme.groupedCell
-            cell.textLabel?.textColor = Theme.text
             cell.accessoryType = .disclosureIndicator
 
             switch indexPath.row {
@@ -146,8 +140,6 @@ final class CoopOnlineViewController: UITableViewController {
 
         if indexPath.section == 2 {
             let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-            cell.backgroundColor = Theme.groupedCell
-            cell.textLabel?.textColor = Theme.text
             cell.selectionStyle = .none
 
             switch indexPath.row {
@@ -164,7 +156,7 @@ final class CoopOnlineViewController: UITableViewController {
             case 2:
                 cell.textLabel?.text = "Đồng bộ xe, di chuyển & FPS"
                 cell.detailTextLabel?.text = "Khóa cứng 60 FPS"
-                cell.detailTextLabel?.textColor = UIColor.systemOrange
+                cell.detailTextLabel?.textColor = Theme.accent
 
             default: break
             }
@@ -173,14 +165,13 @@ final class CoopOnlineViewController: UITableViewController {
 
         if indexPath.section == 3 {
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-            cell.backgroundColor = Theme.groupedCell
             cell.textLabel?.textAlignment = .center
             cell.textLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
 
             switch indexPath.row {
             case 0:
                 cell.textLabel?.text = "Lưu thiết lập & Kết nối lại"
-                cell.textLabel?.textColor = Theme.tintColor
+                cell.textLabel?.textColor = Theme.accent
             case 1:
                 cell.textLabel?.text = "Đặt lại địa chỉ mặc định"
                 cell.textLabel?.textColor = .systemRed
