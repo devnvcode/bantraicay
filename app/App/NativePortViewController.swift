@@ -135,7 +135,7 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
             let chosen: Int32 = cap == 0 ? 0 : cap == 60 ? 1 : 2
             let state = ProcessInfo.processInfo.thermalState
             var limit = chosen
-            if GameSettings.shared.steadyWhenHot {
+            if GameSettings.shared.steadyWhenHot && cap != 60 {
                 if state == .fair, chosen == 0 { limit = 1 }
                 if state == .serious || state == .critical { limit = 2 }
             }
@@ -389,7 +389,7 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
             displayLink?.preferredFrameRateRange = CAFrameRateRange(minimum: min(60, top), maximum: top, preferred: top)
         } else {
             // HUD/input polling need not run at 120 Hz for a 60/30 FPS game.
-            displayLink?.preferredFrameRateRange = CAFrameRateRange(minimum:30,maximum:60,preferred:60)
+            displayLink?.preferredFrameRateRange = CAFrameRateRange(minimum: 60, maximum: 60, preferred: 60)
         }
         displayLink?.add(to: .main, forMode: .common)
         #if targetEnvironment(simulator)

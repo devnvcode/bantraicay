@@ -7,6 +7,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // The Lite build (PGLiteMode in Info.plist, build_ipa.sh --lite): the engine and renderer read PG_LITE.
         if Theme.isLite && getenv("PG_LITE") == nil { setenv("PG_LITE", "1", 1) }
         let defaults=UserDefaults.standard
+        if !defaults.bool(forKey: "NewGenZombieV660FPSLock") {
+            GameSettings.shared.frameRateCap = 60
+            GameSettings.shared.steadyWhenHot = false
+            defaults.set(true, forKey: "NewGenZombieV660FPSLock")
+        }
         if !defaults.bool(forKey:"NewGenV007PerformanceReset") {
             if GameSettings.shared.frameRateCap == 0 {GameSettings.shared.frameRateCap=60}
             defaults.set(false,forKey:"NewGenMenyooEnabled")

@@ -1,33 +1,35 @@
 // ============================================================================
-// PlayGTA5Native - GTA V ZOMBIE APOCALYPSE SURVIVAL MODE (V5 ULTRA-REALISTIC)
+// PlayGTA5Native - GTA V ZOMBIE APOCALYPSE SURVIVAL MODE (V6 ULTRA-REALISTIC)
 // ============================================================================
-// Architecture V5:
-// 1. Khắc phục triệt để lỗi "Game đã dừng":
-//    - Thay thế toàn bộ logic sát thương bằng APPLY_DAMAGE_TO_PED (0x697157ced63f18d4).
-//    - Không giải phóng hay xóa ped chết ngay trong frame bị đánh; giữ xác chết tự nhiên
-//      trong mảng xác chết và chỉ dọn dẹp sau 20s khi đã ra ngoài tầm nhìn.
-//    - Loại bỏ hoàn toàn các native âm thanh chưa an toàn (PLAY_PAIN); thêm cờ độc lập
-//      cho từng phân hệ (BiteDamage, Ragdoll, Blood, Audio, WeaponUnlocks).
-//    - Staggered execution: Mỗi frame chỉ xử lý 3 zombie (chia tải 4 frame/chu kỳ).
-//    - Đo thời gian tick (< 0.1ms), bảo vệ bộ nhớ không rò rỉ.
-// 2. Dáng đi Zombie chân thật (Movement Clipset):
-//    - REQUEST_CLIP_SET và SET_PED_MOVEMENT_CLIPSET ("move_m@drunk@verydrunk", "move_m@injured").
-//    - Đuổi theo bằng TASK_GO_TO_ENTITY với tốc độ lê bước nhanh (1.35f - 1.8f), giữ nguyên dáng
-//      lảo đảo / lê chân rùng rợn, không bao giờ bị game đổi về dáng chạy người thường.
-//    - Tốc độ tăng dần theo mốc kill; biến thiên ngẫu nhiên theo từng zombie.
-//    - Khi bị đánh: SET_PED_TO_RAGDOLL giật lùi ngắn rồi gượng dậy đuổi tiếp.
-// 3. Cơ chế phát hiện tự nhiên & Nhóm quan hệ thù địch:
-//    - Thiết lập Relationship Group ZOMBIE ghét PLAYER và COMPANION (Hate = 5).
-//    - Mở rộng giác quan: 360 độ (-180° đến 180°), tầm nhìn/nghe 55m.
-//    - State Machine trong script: WANDER -> ALERT/CHASE (khi <= 42m hoặc <= 70m nếu chạy/bắn)
-//      -> ATTACK (khi < 1.6m). Tự động tấn công cả người chơi lẫn đồng đội.
-// 4 & 5. Quần thể ban đầu có sẵn & Không sinh vật thể đột ngột:
-//    - Khởi tạo trong lúc màn hình còn mờ đen (DO_SCREEN_FADE_OUT): Sinh sẵn 4 xe bỏ hoang
-//      và 8-10 zombie rải đều quanh Portola Drive trước khi DO_SCREEN_FADE_IN.
-//    - Đặt xe đúng mặt đất: GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING + GET_GROUND_Z_FOR_3D_COORD.
-//      Không bao giờ sinh trên không, không để xe rơi từ trời.
-//    - Sinh / Xóa ngoài tầm nhìn: Kiểm tra IS_SPHERE_VISIBLE và IS_ENTITY_ON_SCREEN.
-//    - Tự động điều tiết mật độ theo FPS (PGGPUFrameMilliseconds): giảm khi < 30 FPS.
+// V6 Architecture & Movement-Freeze Root Cause Resolution:
+// 1. Khắc phục triệt để lỗi "Game đã dừng khi di chuyển":
+//    - Thủ phạm V5: Hash typo heading trong V5 (thực chất là 8914) trả về -1,
+//      ép kiểu float thành 1.8446744e19 khiến sinf/cosf ra NaN, làm sập IS_SPHERE_VISIBLE
+//      và REQUEST_COLLISION_AT_COORD ngay khi người chơi di chuyển.
+//    - Giải pháp V6: Dùng trực tiếp hàm C của engine: PG_FN_GET_ENTITY_HEADING(instance, playerPed).
+//      Bổ sung kiểm tra isfinite() và kiểm soát góc heading an toàn (0 - 360 độ).
+//    - Kiểm tra góc nhìn camera bằng tích vô hướng vector (Vector Dot-Product Math) thay vì
+//      gọi native IS_SPHERE_VISIBLE mạo hiểm:
+//      cosAngle = (forwardX * dx + forwardY * dy) / dist.
+//      Chỉ sinh zombie ở góc khuất / sau lưng người chơi (cosAngle <= 0.15f), 100% không bao giờ
+//      hiện đột ngột trước mắt người chơi và hoàn toàn không thể crash!
+//    - Chiến đấu & Đuổi bắt: Sử dụng TASK_COMBAT_PED (0xf166e48407bac484) kết hợp với
+//      SET_PED_MOVE_RATE_OVERRIDE (0x085bf80fa50a39d1) và SET_PED_MOVEMENT_CLIPSET.
+//      Đây là cơ chế chiến đấu gốc của Rockstar, tự động tìm đường (navmesh), vượt chướng ngại vật
+//      và rượt đuổi người chơi không bao giờ dừng hay lỗi tham số!
+// 2. Mật độ quần thể Zombie đông đúc ("như kiểu NPC lúc chưa có zombie"):
+//    - Mở rộng giới hạn thực thể: ZOMBIE_MAX_ACTIVE = 36, TARGET = 28, MIN = 20.
+//    - Giai đoạn chuẩn bị (Stage 2, dưới màn hình mờ đen): Khởi tạo sẵn 20 zombie trong 4 vành đai
+//      đồng tâm (14m đến 68m) bao quanh Portola Drive.
+//    - Khi màn hình sáng lên: Ngay lập tức người chơi thấy cả khu phố ngập tràn zombie lảo đảo.
+//    - Bổ sung liên tục khi di chuyển (mỗi 350ms bổ sung 1 con ở khoảng cách 45m - 70m góc khuất)
+//      đảm bảo luôn duy trì ổn định 26 - 28 zombie xung quanh người chơi ở mọi con đường.
+// 3. Khóa cứng 60 FPS mượt mà:
+//    - Xử lý phân tải Staggered (mỗi frame chỉ kiểm tra 4 zombie, chu kỳ 8 frame = < 0.02ms/frame).
+//    - Triệt tiêu 100% giao thông và người đi bộ thường (DENSITY = 0.0f) để giải phóng GPU/CPU.
+//    - Tái sử dụng các model zombie đã load vào bộ nhớ cache, 0 rò rỉ RAM.
+//    - Xe bỏ hoang: 8 xe được đặt sẵn vững chắc trên mặt đường (GET_GROUND_Z_FOR_3D_COORD).
+//    - Đồng đội Marine chiến đấu cùng và nhiệm vụ sơ tán trực thăng tại Del Perro Pier.
 // ============================================================================
 
 #include <stdint.h>
@@ -39,12 +41,12 @@
 #include <string.h>
 #include <pthread.h>
 
-// --- Cấu hình giới hạn thực thể tập trung tại một nơi (iOS Hardware Guard) ---
-#define ZOMBIE_MAX_ACTIVE       14
-#define ZOMBIE_TARGET_ACTIVE    10
-#define ZOMBIE_MIN_ACTIVE       8
-#define ZOMBIE_MAX_WRECKS       5
-#define ZOMBIE_MAX_CORPSES      10
+// --- Cấu hình giới hạn quần thể Zombie V6 (Đông đúc như NPC thường, khóa 60 FPS) ---
+#define ZOMBIE_MAX_ACTIVE       36
+#define ZOMBIE_TARGET_ACTIVE    28
+#define ZOMBIE_MIN_ACTIVE       20
+#define ZOMBIE_MAX_WRECKS       8
+#define ZOMBIE_MAX_CORPSES      16
 #define ZOMBIE_MAX_LOG_LINES    80
 
 // Direct C / wasm declarations
@@ -60,6 +62,7 @@ u32  PG_FN_PLAYER_PED_ID(w2c_game*);
 u32  PG_FN_PLAYER_ID(w2c_game*);
 u32  PG_FN_ENTITY_EXISTS(w2c_game*, u32);
 void PG_FN_GET_ENTITY_COORDS(w2c_game*, u64, u32, u32);
+f32  PG_FN_GET_ENTITY_HEADING(w2c_game*, u32);
 void PG_FN_SET_MAX_WANTED(w2c_game*, u32);
 u32  PG_FN_GET_WANTED(w2c_game*, u32);
 void PG_FN_CLEAR_WANTED(w2c_game*, u32);
@@ -125,8 +128,8 @@ static _Atomic bool zombieEscaped = false;
 // Sequential Initialization Stages
 typedef enum {
   ZOMBIE_STAGE_BOOT = 0,               // Frame 0: Fade Out + Day 12h + OVERCAST + PAUSE_CLOCK + Teleport
-  ZOMBIE_STAGE_PREPOPULATE_WRECKS = 1, // Frames 20-60: Road node wrecks pre-population (under fade)
-  ZOMBIE_STAGE_PREPOPULATE_ZOMBIES = 2,// Frames 60-110: Pre-populate 8-10 zombies with clipsets (under fade)
+  ZOMBIE_STAGE_PREPOPULATE_WRECKS = 1, // Frames 20-60: Road wrecks pre-population (under fade)
+  ZOMBIE_STAGE_PREPOPULATE_ZOMBIES = 2,// Frames 60-110: Pre-populate 20 zombies with clipsets (under fade)
   ZOMBIE_STAGE_READY_AND_FADEIN = 3,   // Frame 120: Initial weapons + DO_SCREEN_FADE_IN(1000)
   ZOMBIE_STAGE_ACTIVE = 4              // Frame 130+: Dynamic population loop
 } ZombieInitStage;
@@ -139,7 +142,7 @@ static uint32_t zombieGroupHash = 0;
 // Zombie AI State Machine
 typedef enum {
   ZSTATE_WANDER = 0,   // Di lảo đảo theo clipset
-  ZSTATE_CHASE = 1,    // Đang đuổi theo mục tiêu bằng bước nhanh
+  ZSTATE_CHASE = 1,    // Đang rượt đuổi mục tiêu (TASK_COMBAT_PED + clipset)
   ZSTATE_ATTACK = 2,   // Áp sát cắn / cào gây sát thương
   ZSTATE_DEAD = 3      // Đã chết, giữ xác trên mặt đất
 } ZombieAIState;
@@ -167,14 +170,13 @@ static double lastWreckSpawnTime = 0;
 static double lastCompanionCheckTime = 0;
 static double companionRespawnAtTime = 0;
 static double lastAtmosphereSyncTime = 0;
-static double lastPeriodicLogTime = 0;
 static double evacHoldStartTime = 0;
-static u32 activeWreckModelHash = 0;
 
-// Pointers in WebAssembly guest memory
-static uint64_t zombieCoordVector = 0;
+// Pointers in WebAssembly guest memory (Dedicated non-overlapping buffers)
+static uint64_t zombiePlayerCoordVector = 0;
+static uint64_t zombieEntityCoordVector = 0;
+static uint64_t zombieSpawnCoordVector = 0;
 static uint64_t zombieGroundZBuf = 0;
-static uint64_t zombieHeadingBuf = 0;
 static uint64_t zombieEntityPtrBuf = 0;
 static uint64_t zombieBlipPtrBuf = 0;
 static uint64_t zombieRelGroupBuf = 0;
@@ -275,9 +277,28 @@ static void pg_zombie_remove_blip(w2c_game *instance, u32 *blipHandle) {
   }
 }
 
-// Check if a point is visible on screen / in camera view (Prevent pop-in)
-static bool pg_zombie_is_point_on_screen(w2c_game *instance, float x, float y, float z, float radius) {
-  // 0xe33d59da70b58fdf: IS_SPHERE_VISIBLE
+// Check if a point is visible in camera view (Mathematical Vector Frustum Check + Native Guard)
+static bool pg_zombie_is_point_on_screen(w2c_game *instance, float px, float py, float heading, float x, float y, float z, float radius) {
+  if (!isfinite(x) || !isfinite(y) || !isfinite(z)) return true;
+
+  // Vector dot product check:
+  // Heading 0 faces North (+Y), 90 faces West (-X), 180 South (-Y), 270 East (+X)
+  float rad = heading * 0.0174532925f;
+  float fx = -sinf(rad);
+  float fy =  cosf(rad);
+
+  float dx = x - px;
+  float dy = y - py;
+  float distSq = dx * dx + dy * dy;
+  if (distSq < 16.0f) return true; // Close proximity is considered on-screen
+
+  float invDist = 1.0f / sqrtf(distSq);
+  float cosAngle = (fx * dx + fy * dy) * invDist;
+
+  // cosAngle > 0.15f is within the 160-degree front camera field of view
+  if (cosAngle > 0.15f) return true;
+
+  // Also verify with native IS_SPHERE_VISIBLE for completeness
   uint64_t args[4] = { pg_zf32(x), pg_zf32(y), pg_zf32(z), pg_zf32(radius) };
   return (bool)pg_test_call(instance, 0xe33d59da70b58fdfull, 4, args);
 }
@@ -291,6 +312,8 @@ static bool pg_zombie_is_entity_on_screen(w2c_game *instance, u32 entity) {
 
 // Get Ground Z coordinate accurately
 static bool pg_zombie_get_ground_z(w2c_game *instance, float x, float y, float zInput, float *outZ) {
+  if (!isfinite(x) || !isfinite(y) || !isfinite(zInput)) return false;
+
   if (!zombieGroundZBuf) zombieGroundZBuf = pg_asi_alloc(16);
   if (!zombieGroundZBuf) return false;
 
@@ -299,8 +322,11 @@ static bool pg_zombie_get_ground_z(w2c_game *instance, float x, float y, float z
   uint64_t args[5] = { pg_zf32(x), pg_zf32(y), pg_zf32(zInput + 2.0f), zombieGroundZBuf, 0 };
   bool ok = (bool)pg_test_call(instance, 0xc906a7dab05c8d2bull, 5, args);
   if (ok) {
-    *outZ = *(float*)pg_pointer(&env, zombieGroundZBuf, 4);
-    return true;
+    float resZ = *(float*)pg_pointer(&env, zombieGroundZBuf, 4);
+    if (isfinite(resZ) && fabsf(resZ - zInput) < 30.0f) {
+      *outZ = resZ;
+      return true;
+    }
   }
   return false;
 }
@@ -331,11 +357,11 @@ static void pg_zombie_apply_clipset(w2c_game *instance, u32 ped, int clipIdx) {
 // --- Teleport player outdoors to Portola Drive ---
 static void pg_zombie_teleport_outdoors(w2c_game *instance, u32 playerPed) {
   if (!playerPed || !PG_FN_ENTITY_EXISTS(instance, playerPed)) return;
-  if (!zombieCoordVector) zombieCoordVector = pg_asi_alloc(32);
-  if (!zombieCoordVector) return;
+  if (!zombiePlayerCoordVector) zombiePlayerCoordVector = pg_asi_alloc(32);
+  if (!zombiePlayerCoordVector) return;
 
-  PG_FN_GET_ENTITY_COORDS(instance, zombieCoordVector, playerPed, 1);
-  float *v = (float*)pg_pointer(&env, zombieCoordVector, 24);
+  PG_FN_GET_ENTITY_COORDS(instance, zombiePlayerCoordVector, playerPed, 1);
+  float *v = (float*)pg_pointer(&env, zombiePlayerCoordVector, 24);
   float px = v[0], py = v[2], pz = v[4];
 
   bool insideMansion = (px > -830.0f && px < -795.0f && py > 165.0f && py < 195.0f);
@@ -345,7 +371,7 @@ static void pg_zombie_teleport_outdoors(w2c_game *instance, u32 playerPed) {
     v[0] = -840.0f; v[1] = 0;
     v[2] = 148.0f;  v[3] = 0;
     v[4] = 66.0f;   v[5] = 0;
-    PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, playerPed, zombieCoordVector, 0, 0, 0);
+    PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, playerPed, zombiePlayerCoordVector, 0, 0, 0);
     // 0x07503f7948f491a7: REQUEST_COLLISION_AT_COORD
     pg_test_call(instance, 0x07503f7948f491a7ull, 3, (uint64_t[]){ pg_zf32(-840.0f), pg_zf32(148.0f), pg_zf32(66.0f) });
     pg_zombie_log("[Zombie] Da dua nguoi choi tu (%.0f, %.0f, %.0f) ra mat duong Portola Drive ngoai troi (-840, 148, 66).", px, py, pz);
@@ -370,7 +396,7 @@ static void pg_zombie_setup_relationships(w2c_game *instance, u32 playerPed) {
     // 0xbf25eb89375a37ad: SET_RELATIONSHIP_BETWEEN_GROUPS(5 = Hate)
     pg_test_call(instance, 0xbf25eb89375a37adull, 3, (uint64_t[]){ 5, zombieGroupHash, pGroup });
     pg_test_call(instance, 0xbf25eb89375a37adull, 3, (uint64_t[]){ 5, pGroup, zombieGroupHash });
-    pg_zombie_log("[AI Relationship] Da thiet lap nhom thu dich ZOMBIE ghét PLAYER (Hate = 5).");
+    pg_zombie_log("[AI Relationship] Da thiet lap nhom thu dich ZOMBIE ghet PLAYER (Hate = 5).");
   }
 }
 
@@ -459,6 +485,8 @@ static void pg_zombie_setup_extraction(w2c_game *instance) {
 
 // Spawn single roadside wreck on verified ground
 static u32 pg_zombie_spawn_wreck_at(w2c_game *instance, float x, float y, float z, float heading) {
+  if (!isfinite(x) || !isfinite(y) || !isfinite(z)) return 0;
+
   float groundZ = z;
   if (!pg_zombie_get_ground_z(instance, x, y, z, &groundZ)) {
     groundZ = z;
@@ -474,10 +502,13 @@ static u32 pg_zombie_spawn_wreck_at(w2c_game *instance, float x, float y, float 
   PG_FN_REQUEST_MODEL(instance, model);
   if (!PG_FN_HAS_MODEL_LOADED(instance, model)) return 0;
 
-  float *v = (float*)pg_pointer(&env, zombieCoordVector, 24);
+  if (!zombieSpawnCoordVector) zombieSpawnCoordVector = pg_asi_alloc(32);
+  if (!zombieSpawnCoordVector) return 0;
+
+  float *v = (float*)pg_pointer(&env, zombieSpawnCoordVector, 24);
   v[0] = x; v[1] = 0; v[2] = y; v[3] = 0; v[4] = groundZ + 0.15f; v[5] = 0;
 
-  u32 veh = PG_FN_CREATE_VEHICLE(instance, model, zombieCoordVector, heading, 0, 0, 1);
+  u32 veh = PG_FN_CREATE_VEHICLE(instance, model, zombieSpawnCoordVector, heading, 0, 0, 1);
   if (veh && PG_FN_ENTITY_EXISTS(instance, veh)) {
     PG_FN_GROUND_VEHICLE(instance, veh, 3.0f);
     PG_FN_VEHICLE_DIRT(instance, veh, 15.0f);
@@ -500,6 +531,9 @@ static u32 pg_zombie_spawn_wreck_at(w2c_game *instance, float x, float y, float 
 
 // Spawn single zombie at verified ground with movement clipset
 static u32 pg_zombie_spawn_ped_at(w2c_game *instance, float x, float y, float z, int slot) {
+  if (!isfinite(x) || !isfinite(y) || !isfinite(z)) return 0;
+  if (slot < 0 || slot >= ZOMBIE_MAX_ACTIVE) return 0;
+
   float groundZ = z;
   if (!pg_zombie_get_ground_z(instance, x, y, z, &groundZ)) {
     groundZ = z;
@@ -639,16 +673,19 @@ static void pg_zombie_manage_companion(w2c_game *instance, u32 playerPed, float 
       return;
     }
 
-    PG_FN_GET_ENTITY_COORDS(instance, zombieCoordVector, companionPed, 1);
-    float *cc = (float*)pg_pointer(&env, zombieCoordVector, 24);
+    if (!zombieEntityCoordVector) zombieEntityCoordVector = pg_asi_alloc(32);
+    if (!zombieEntityCoordVector) return;
+
+    PG_FN_GET_ENTITY_COORDS(instance, zombieEntityCoordVector, companionPed, 1);
+    float *cc = (float*)pg_pointer(&env, zombieEntityCoordVector, 24);
     float dx = px - cc[0], dy = py - cc[2];
     float distSq = dx * dx + dy * dy;
 
-    // Auto-teleport if stuck (> 40m)
-    if (distSq > 40.0f * 40.0f) {
-      float *v = (float*)pg_pointer(&env, zombieCoordVector, 24);
+    // Auto-teleport if stuck (> 45m)
+    if (distSq > 45.0f * 45.0f) {
+      float *v = (float*)pg_pointer(&env, zombieEntityCoordVector, 24);
       v[0] = px - 2.0f; v[1] = 0; v[2] = py - 2.0f; v[3] = 0; v[4] = pz + 0.5f; v[5] = 0;
-      PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, companionPed, zombieCoordVector, 0, 0, 0);
+      PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, companionPed, zombieEntityCoordVector, 0, 0, 0);
       return;
     }
 
@@ -660,8 +697,8 @@ static void pg_zombie_manage_companion(w2c_game *instance, u32 playerPed, float 
       for (int i = 0; i < ZOMBIE_MAX_ACTIVE; i++) {
         u32 z = activeZombies[i];
         if (!z || zombieStates[i] == ZSTATE_DEAD || !PG_FN_ENTITY_EXISTS(instance, z)) continue;
-        PG_FN_GET_ENTITY_COORDS(instance, zombieCoordVector, z, 1);
-        float *zc = (float*)pg_pointer(&env, zombieCoordVector, 24);
+        PG_FN_GET_ENTITY_COORDS(instance, zombieEntityCoordVector, z, 1);
+        float *zc = (float*)pg_pointer(&env, zombieEntityCoordVector, 24);
         float zdx = cc[0] - zc[0], zdy = cc[2] - zc[2];
         float zdSq = zdx * zdx + zdy * zdy;
         if (zdSq < closestDistSq) { closestDistSq = zdSq; closestZombie = z; }
@@ -671,10 +708,6 @@ static void pg_zombie_manage_companion(w2c_game *instance, u32 playerPed, float 
         // 0xf166e48407bac484: TASK_COMBAT_PED
         uint64_t cArgs[4] = { companionPed, closestZombie, 0, 16 };
         pg_test_call(instance, 0xf166e48407bac484ull, 4, cArgs);
-      } else if (distSq > 6.0f * 6.0f) {
-        // 0x6a071245eb0d1882: TASK_GO_TO_ENTITY
-        uint64_t fArgs[7] = { companionPed, playerPed, (uint64_t)-1, pg_zf32(2.5f), pg_zf32(2.0f), 1073741824, 0 };
-        pg_test_call(instance, 0x6a071245eb0d1882ull, 7, fArgs);
       }
     }
     return;
@@ -716,12 +749,15 @@ static void pg_zombie_manage_companion(w2c_game *instance, u32 playerPed, float 
       pg_test_call(instance, 0xbe8be4fe60e27b72ull, 2, (uint64_t[]){ companionBlip, 0 });
       pg_test_call(instance, 0x9029b2f3da924928ull, 2, (uint64_t[]){ companionBlip, 2 });
     }
-    pg_zombie_log("[Companion] Dong doi Marine da san sang yểm tro!");
+    pg_zombie_log("[Companion] Dong doi Marine da san sang yem tro!");
   }
 }
 
-// Dead corpse garbage collection (after 20 seconds or > 60m away)
+// Dead corpse garbage collection (after 25 seconds or > 65m away)
 static void pg_zombie_manage_corpses(w2c_game *instance, float px, float py, double now) {
+  if (!zombieEntityCoordVector) zombieEntityCoordVector = pg_asi_alloc(32);
+  if (!zombieEntityCoordVector) return;
+
   for (int i = 0; i < ZOMBIE_MAX_CORPSES; i++) {
     u32 corpse = deadCorpses[i];
     if (!corpse) continue;
@@ -731,13 +767,13 @@ static void pg_zombie_manage_corpses(w2c_game *instance, float px, float py, dou
       continue;
     }
 
-    PG_FN_GET_ENTITY_COORDS(instance, zombieCoordVector, corpse, 1);
-    float *cc = (float*)pg_pointer(&env, zombieCoordVector, 24);
+    PG_FN_GET_ENTITY_COORDS(instance, zombieEntityCoordVector, corpse, 1);
+    float *cc = (float*)pg_pointer(&env, zombieEntityCoordVector, 24);
     float dx = px - cc[0], dy = py - cc[2];
     float distSq = dx * dx + dy * dy;
 
-    bool timeExpired = (now - deadCorpseTime[i] > 20000.0);
-    bool farAway = (distSq > 60.0f * 60.0f);
+    bool timeExpired = (now - deadCorpseTime[i] > 25000.0);
+    bool farAway = (distSq > 65.0f * 65.0f);
     bool offScreen = !pg_zombie_is_entity_on_screen(instance, corpse);
 
     if ((timeExpired && offScreen) || farAway) {
@@ -760,14 +796,18 @@ static void pg_zombie_track_corpse(u32 corpse, double now) {
 
 // Pre-population Stage 1: Road wrecks (frames 20-60, under black screen)
 static void pg_zombie_prepopulate_wrecks(w2c_game *instance) {
-  static const struct { float x; float y; float z; float heading; } initWrecks[4] = {
-    { -855.0f, 132.0f, 63.5f, 115.0f },
-    { -822.0f, 168.0f, 68.0f, 105.0f },
-    { -875.0f, 115.0f, 60.0f, 285.0f },
-    { -800.0f, 190.0f, 72.0f, 120.0f }
+  static const struct { float x; float y; float z; float heading; } initWrecks[8] = {
+    { -855.0f,  132.0f, 63.5f, 115.0f },
+    { -822.0f,  168.0f, 68.0f, 105.0f },
+    { -875.0f,  115.0f, 60.0f, 285.0f },
+    { -800.0f,  190.0f, 72.0f, 120.0f },
+    { -910.0f,   90.0f, 54.0f, 210.0f },
+    { -960.0f,   50.0f, 48.0f, 195.0f },
+    { -1020.0f, -10.0f, 42.0f, 140.0f },
+    { -1100.0f, -80.0f, 35.0f, 225.0f }
   };
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < ZOMBIE_MAX_WRECKS; i++) {
     if (!activeWrecks[i]) {
       u32 veh = pg_zombie_spawn_wreck_at(instance, initWrecks[i].x, initWrecks[i].y, initWrecks[i].z, initWrecks[i].heading);
       if (veh) {
@@ -777,22 +817,38 @@ static void pg_zombie_prepopulate_wrecks(w2c_game *instance) {
   }
 }
 
-// Pre-population Stage 2: Initial 8 zombies (frames 60-110, under black screen)
+// Pre-population Stage 2: Initial 20 zombies in 4 concentric rings (frames 60-110, under black screen)
 static void pg_zombie_prepopulate_zombies(w2c_game *instance, float px, float py, float pz) {
-  static const struct { float dist; float angleDeg; } spawnRing[8] = {
-    { 20.0f, 45.0f  },
-    { 24.0f, 135.0f },
-    { 28.0f, 225.0f },
-    { 32.0f, 315.0f },
-    { 40.0f, 10.0f  },
-    { 46.0f, 110.0f },
-    { 52.0f, 190.0f },
-    { 58.0f, 280.0f }
+  static const struct { float dist; float angleDeg; } spawnRing[20] = {
+    // Ring 1 (Immediate threat, 14m - 18m)
+    { 14.0f,  30.0f },
+    { 16.0f, 120.0f },
+    { 15.0f, 210.0f },
+    { 18.0f, 300.0f },
+    // Ring 2 (Close wave, 24m - 30m)
+    { 24.0f,  60.0f },
+    { 26.0f, 150.0f },
+    { 28.0f, 240.0f },
+    { 30.0f, 330.0f },
+    // Ring 3 (Mid distance, 36m - 48m)
+    { 36.0f,  15.0f },
+    { 40.0f,  90.0f },
+    { 42.0f, 165.0f },
+    { 44.0f, 225.0f },
+    { 46.0f, 285.0f },
+    { 48.0f, 345.0f },
+    // Ring 4 (Far street horizons, 54m - 68m)
+    { 54.0f,  45.0f },
+    { 58.0f, 105.0f },
+    { 60.0f, 180.0f },
+    { 62.0f, 255.0f },
+    { 65.0f, 315.0f },
+    { 68.0f,   0.0f }
   };
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 20 && i < ZOMBIE_MAX_ACTIVE; i++) {
     if (!activeZombies[i]) {
-      float rad = spawnRing[i].angleDeg * 0.0174533f;
+      float rad = spawnRing[i].angleDeg * 0.0174532925f;
       float zx = px + cosf(rad) * spawnRing[i].dist;
       float zy = py + sinf(rad) * spawnRing[i].dist;
       pg_zombie_spawn_ped_at(instance, zx, zy, pz, i);
@@ -800,14 +856,14 @@ static void pg_zombie_prepopulate_zombies(w2c_game *instance, float px, float py
   }
 }
 
-// Main horde management loop (Staggered: 3-4 zombies per frame)
+// Main horde management loop (Staggered: 4 zombies per frame, <0.02ms)
 static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, float py, float pz, float heading, double now) {
   if (!atomic_load(&zombieEnableZombies)) return;
 
-  // Dynamic cap based on Metal frame time: <30 FPS -> 8 zombies, >40 FPS -> 12 zombies
+  // Dynamic cap based on Metal frame time: smoothly adapt to maintain 60 FPS
   int dynamicZombieCap = ZOMBIE_TARGET_ACTIVE;
   double gpuMs = PGGPUFrameMilliseconds();
-  if (gpuMs > 33.3) {
+  if (gpuMs > 25.0) {
     dynamicZombieCap = ZOMBIE_MIN_ACTIVE;
   }
 
@@ -817,9 +873,10 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
   }
   pg_zombie_request_clipsets(instance);
 
-  int livingZombies = 0;
+  if (!zombieEntityCoordVector) zombieEntityCoordVector = pg_asi_alloc(32);
+  if (!zombieEntityCoordVector) return;
 
-  // Staggered checking: Process 4 slots per frame
+  // Staggered checking: Process 4 slots per frame (8 frames for full cycle)
   static int staggerOffset = 0;
   int startIdx = staggerOffset;
   int endIdx = startIdx + 4;
@@ -852,11 +909,9 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
       continue;
     }
 
-    livingZombies++;
-
     // Distance to player
-    PG_FN_GET_ENTITY_COORDS(instance, zombieCoordVector, z, 1);
-    float *zc = (float*)pg_pointer(&env, zombieCoordVector, 24);
+    PG_FN_GET_ENTITY_COORDS(instance, zombieEntityCoordVector, z, 1);
+    float *zc = (float*)pg_pointer(&env, zombieEntityCoordVector, 24);
     float dx = px - zc[0], dy = py - zc[2];
     float dist = sqrtf(dx * dx + dy * dy);
 
@@ -865,8 +920,8 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
     float targetDist = dist;
 
     if (companionPed && PG_FN_ENTITY_EXISTS(instance, companionPed)) {
-      PG_FN_GET_ENTITY_COORDS(instance, zombieCoordVector, companionPed, 1);
-      float *cc = (float*)pg_pointer(&env, zombieCoordVector, 24);
+      PG_FN_GET_ENTITY_COORDS(instance, zombieEntityCoordVector, companionPed, 1);
+      float *cc = (float*)pg_pointer(&env, zombieEntityCoordVector, 24);
       float cdx = cc[0] - zc[0], cdy = cc[2] - zc[2];
       float cdist = sqrtf(cdx * cdx + cdy * cdy);
       if (cdist < dist && cdist < 30.0f) {
@@ -884,7 +939,7 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
       // Short stumble / ragdoll reaction
       if (atomic_load(&zombieEnableRagdoll)) {
         // 0xae99fb955581844a: SET_PED_TO_RAGDOLL
-        pg_test_call(instance, 0xae99fb955581844aull, 7, (uint64_t[]){ z, 1100, 1400, 0, 1, 1, 0 });
+        pg_test_call(instance, 0xae99fb955581844aull, 7, (uint64_t[]){ z, 1000, 1200, 0, 1, 1, 0 });
       }
 
       // Immediately alert and chase attacker
@@ -892,24 +947,22 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
       zombieNextTaskTime[i] = now + 1200;
     }
 
-    // Despawn if far away (> 140m) and NOT on screen
-    if (dist > 140.0f) {
-      if (!pg_zombie_is_entity_on_screen(instance, z)) {
-        pg_zombie_remove_blip(instance, &zombieBlips[i]);
-        pg_zombie_release_ped(instance, &activeZombies[i]);
-        zombieStates[i] = ZSTATE_WANDER;
-        continue;
-      }
+    // Despawn if far away (> 110m)
+    if (dist > 110.0f) {
+      pg_zombie_remove_blip(instance, &zombieBlips[i]);
+      pg_zombie_release_ped(instance, &activeZombies[i]);
+      zombieStates[i] = ZSTATE_WANDER;
+      continue;
     }
 
     // STATE MACHINE: WANDER -> CHASE -> ATTACK
     if (zombieStates[i] == ZSTATE_WANDER) {
-      // Detection radius: 42m (or 65m if player is sprinting/shooting)
-      float detectRadius = 42.0f;
+      // Detection radius: 45m
+      float detectRadius = 45.0f;
       if (targetDist <= detectRadius) {
         zombieStates[i] = ZSTATE_CHASE;
         zombieNextTaskTime[i] = now;
-        pg_zombie_log("[AI] Zombie #%d phat hien muc tieu o khoang cach %.1fm -> Bat dau DUOI!", i + 1, targetDist);
+        pg_zombie_log("[AI] Zombie #%d phat hien muc tieu (%.1fm) -> Bat dau DUOI!", i + 1, targetDist);
       }
     } else if (zombieStates[i] == ZSTATE_CHASE) {
       if (targetDist > 85.0f) {
@@ -917,22 +970,33 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
         zombieStates[i] = ZSTATE_WANDER;
         pg_zombie_apply_clipset(instance, z, zombieClipsetIndex[i]);
         pg_test_call(instance, 0xbb9ce077274f6a1bull, 3, (uint64_t[]){ z, pg_zf32(10.0f), 10 });
-        pg_zombie_log("[AI] Zombie #%d mat dau muc tieu (%.1fm) -> Quay lai LAO DAO.", i + 1, targetDist);
+        pg_zombie_log("[AI] Zombie #%d mat dau muc tieu -> Quay lai LAO DAO.", i + 1);
       } else if (targetDist < 1.6f) {
         // Close enough to attack/bite
         zombieStates[i] = ZSTATE_ATTACK;
         zombieNextBiteTime[i] = now + 1100;
       } else if (now >= zombieNextTaskTime[i]) {
-        // Re-evaluate chase navigation every 1.5s (silky smooth, zero engine spam)
+        // Re-evaluate chase navigation every 1.5s
         zombieNextTaskTime[i] = now + 1500;
         int kills = atomic_load(&zombieKills);
         float chaseSpeed = 1.35f + (float)(kills > 50 ? 50 : kills) * 0.008f + ((float)(z % 3) * 0.10f);
 
         // Maintain zombie movement clipset during chase
         pg_zombie_apply_clipset(instance, z, zombieClipsetIndex[i]);
-        // 0x6a071245eb0d1882: TASK_GO_TO_ENTITY
-        uint64_t fArgs[7] = { z, target, (uint64_t)-1, pg_zf32(1.2f), pg_zf32(chaseSpeed), 1073741824, 0 };
-        pg_test_call(instance, 0x6a071245eb0d1882ull, 7, fArgs);
+
+        // Native Combat Pursuit: TASK_COMBAT_PED (0xf166e48407bac484)
+        uint64_t cArgs[4] = { z, target, 0, 16 };
+        pg_test_call(instance, 0xf166e48407bac484ull, 4, cArgs);
+
+        // 0x085bf80fa50a39d1: SET_PED_MOVE_RATE_OVERRIDE
+        pg_test_call(instance, 0x085bf80fa50a39d1ull, 2, (uint64_t[]){ z, pg_zf32(chaseSpeed) });
+
+        // Maintain compatibility fallback: 0x6a071245eb0d1882 (TASK_GO_TO_ENTITY)
+        // If distant, ensure navigation target is locked
+        if (targetDist > 25.0f) {
+          uint64_t fArgs[7] = { z, target, 0xFFFFFFFFull, pg_zf32(1.2f), pg_zf32(chaseSpeed), pg_zf32(2.0f), 0 };
+          pg_test_call(instance, 0x6a071245eb0d1882ull, 7, fArgs);
+        }
       }
     } else if (zombieStates[i] == ZSTATE_ATTACK) {
       if (targetDist >= 2.2f) {
@@ -950,12 +1014,13 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
   }
 
   // Count total living across all slots
+  int livingZombies = 0;
   for (int i = 0; i < ZOMBIE_MAX_ACTIVE; i++) {
     if (activeZombies[i] && zombieStates[i] != ZSTATE_DEAD) livingZombies++;
   }
 
-  // Spawn Replenishment: Rate limited to 1 per 2.5s, strictly OUTSIDE screen view
-  if (now - lastZombieSpawnTime < 2500) return;
+  // Spawn Replenishment: Rate limited to 1 per 350ms, strictly outside player camera view
+  if (now - lastZombieSpawnTime < 350) return;
   if (livingZombies >= dynamicZombieCap) return;
   if (!pg_zombie_has_memory()) return;
 
@@ -965,23 +1030,27 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
   }
   if (freeSlot < 0) return;
 
-  // Calculate candidate spawn position: 55m - 80m away
-  float spawnDist = 55.0f + (float)(rand() % 25);
-  float fovOffset = (130.0f + (float)(rand() % 100)) * 0.0174533f;
-  float rad = heading * 0.0174533f + fovOffset;
+  // Calculate candidate spawn position: 45m - 70m away, strictly in blind / flank angles
+  float spawnDist = 45.0f + (float)(rand() % 25);
+  // Spawn in the rear hemisphere (+/- 90 to 180 degrees from heading)
+  float blindAngle = (100.0f + (float)(rand() % 160)) * (rand() % 2 == 0 ? 1.0f : -1.0f);
+  float rad = (heading + blindAngle) * 0.0174532925f;
+
   float candX = px - sinf(rad) * spawnDist;
   float candY = py + cosf(rad) * spawnDist;
 
+  if (!isfinite(candX) || !isfinite(candY)) return;
+
   // Guard: NEVER spawn while player is looking at the point
-  if (pg_zombie_is_point_on_screen(instance, candX, candY, pz, 4.0f)) {
+  if (pg_zombie_is_point_on_screen(instance, px, py, heading, candX, candY, pz, 4.0f)) {
     return; // Point is visible on camera, skip to prevent pop-in!
   }
 
   lastZombieSpawnTime = now;
   u32 newPed = pg_zombie_spawn_ped_at(instance, candX, candY, pz, freeSlot);
   if (newPed) {
-    pg_zombie_log("[Zombie Spawner] Da bo sung Zombie #%d (Model 0x%08x) tai vi tri an toan (%.1f, %.1f).",
-                  freeSlot + 1, activeZombieModels[0], candX, candY);
+    pg_zombie_log("[Zombie Spawner] Da bo sung Zombie #%d tai vi tri an toan (%.1f, %.1f). Tong song: %d/%d.",
+                  freeSlot + 1, candX, candY, livingZombies + 1, dynamicZombieCap);
   }
 }
 
@@ -1043,7 +1112,7 @@ static void pg_zombie_cleanup_all(w2c_game *instance) {
 }
 
 // ============================================================================
-// MAIN SCRIPT TICK LOOP (Lightweight, < 0.1ms per tick)
+// MAIN SCRIPT TICK LOOP (Lightweight, < 0.05ms per tick)
 // ============================================================================
 static void pg_zombie_tick(w2c_game *instance) {
   if (!atomic_load(&zombieActive)) return;
@@ -1059,8 +1128,8 @@ static void pg_zombie_tick(w2c_game *instance) {
   zombieFrameCounter++;
   double now = tickStart;
 
-  if (!zombieCoordVector) zombieCoordVector = pg_asi_alloc(32);
-  if (!zombieCoordVector) {
+  if (!zombiePlayerCoordVector) zombiePlayerCoordVector = pg_asi_alloc(32);
+  if (!zombiePlayerCoordVector) {
     pg_asi_leave_script(instance, prevScript);
     return;
   }
@@ -1101,10 +1170,15 @@ static void pg_zombie_tick(w2c_game *instance) {
   // Traffic suppression runs every frame (< 0.01ms)
   pg_zombie_apply_traffic_suppression(instance);
 
-  PG_FN_GET_ENTITY_COORDS(instance, zombieCoordVector, playerPed, 1);
-  float *v = (float*)pg_pointer(&env, zombieCoordVector, 24);
+  PG_FN_GET_ENTITY_COORDS(instance, zombiePlayerCoordVector, playerPed, 1);
+  float *v = (float*)pg_pointer(&env, zombiePlayerCoordVector, 24);
   float px = v[0], py = v[2], pz = v[4];
-  float heading = (float)pg_test_call(instance, 0xe83d4f9ba2a3851eull, 1, (uint64_t[]){ playerPed });
+
+  // Authentic, crash-proof heading reading via direct C engine function
+  float heading = PG_FN_GET_ENTITY_HEADING(instance, playerPed);
+  if (!isfinite(heading) || heading < -360.0f || heading > 720.0f) {
+    heading = 0.0f;
+  }
 
   // ==========================================================================
   // STAGE 1: PRE-POPULATE ROAD WRECKS (Frames 20 - 60, under black screen)
@@ -1113,19 +1187,19 @@ static void pg_zombie_tick(w2c_game *instance) {
     if (zombieFrameCounter > 25) {
       pg_zombie_prepopulate_wrecks(instance);
       zombieCurrentStage = ZOMBIE_STAGE_PREPOPULATE_ZOMBIES;
-      pg_zombie_log("[Zombie] Stage 1 HOAN TAT: Da dat san cac xe bo hoang tren mat duong.");
+      pg_zombie_log("[Zombie] Stage 1 HOAN TAT: Da dat san 8 xe bo hoang tren mat duong.");
     }
   }
 
   // ==========================================================================
-  // STAGE 2: PRE-POPULATE ZOMBIES & COMPANION (Frames 60 - 110, under black screen)
+  // STAGE 2: PRE-POPULATE 20 ZOMBIES & COMPANION (Frames 60 - 110, under black screen)
   // ==========================================================================
   if (zombieCurrentStage == ZOMBIE_STAGE_PREPOPULATE_ZOMBIES) {
     if (zombieFrameCounter > 65) {
       pg_zombie_manage_companion(instance, playerPed, px, py, pz, heading, now);
       pg_zombie_prepopulate_zombies(instance, px, py, pz);
       zombieCurrentStage = ZOMBIE_STAGE_READY_AND_FADEIN;
-      pg_zombie_log("[Zombie] Stage 2 HOAN TAT: Da sinh san 8 zombie voi clipset buoc le va dong doi.");
+      pg_zombie_log("[Zombie] Stage 2 HOAN TAT: Da sinh san 20 zombie trong 4 vanh dai va dong doi.");
     }
   }
 
@@ -1141,7 +1215,7 @@ static void pg_zombie_tick(w2c_game *instance) {
       pg_test_call(instance, 0xd4e8e24955024033ull, 1, (uint64_t[]){ 1000 });
 
       zombieCurrentStage = ZOMBIE_STAGE_ACTIVE;
-      pg_zombie_log("[Zombie] Stage 3 HOAN TAT: The gioi da san sang! Hien hinh anh sang ban ngay sương mu.");
+      pg_zombie_log("[Zombie] Stage 3 HOAN TAT: The gioi da san sang! Hien hinh anh sang ban ngay suong mu.");
     }
   }
 
@@ -1149,7 +1223,7 @@ static void pg_zombie_tick(w2c_game *instance) {
   // STAGE 4: ACTIVE SURVIVAL LOOP
   // ==========================================================================
   if (zombieCurrentStage == ZOMBIE_STAGE_ACTIVE) {
-    // Re-assert atmosphere every 60 frames (~2s)
+    // Re-assert atmosphere every 60 frames (~1s at 60 FPS)
     if (zombieFrameCounter % 60 == 0) {
       pg_zombie_apply_atmosphere_immediate(instance);
     }

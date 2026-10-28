@@ -34,7 +34,7 @@ static void *logContext;
 static char *manifestPath;
 static char missingImport[256];
 static _Atomic uint64_t inputBlock;
-static int configuredWidth=960,configuredHeight=540,configuredFrameLimit=2;
+static int configuredWidth=960,configuredHeight=540,configuredFrameLimit=1;
 // Start mode for the engine's loading-screen choice (WasmInputBlock.startMode):
 // 1 Story Mode, 2 Sandbox Mode on the GTA V map. Read by f569 (game_36.c).
 static int configuredStartMode=2;
