@@ -378,7 +378,9 @@ static void pg_bar_companion_tick(w2c_game *instance) {
       barLastPostureSwitch = now;
       barRomancePosture = (barRomancePosture + 1) % 3;
       pg_bar_apply_romance_posture(instance, playerPed, barCompanionPed, barRomancePosture);
-      pg_log("[Bar Companion] Nguoi choi da doi tu the 18+ sang tu the #%d.", barRomancePosture + 1);
+      char posMsg[96];
+      snprintf(posMsg, sizeof posMsg, "[Bar Companion] Nguoi choi da doi tu the 18+ sang tu the #%d.", barRomancePosture + 1);
+      pg_log(posMsg);
     }
 
     // Check exit request (F / Enter vehicle control 75 or after 25s)
