@@ -2467,6 +2467,7 @@ void pg_asi_script_tick(w2c_game *instance, u64 thread) {
   if (thread && strcmp(pg_string(&env, thread + 428), "main")) pg_debug_tick(instance, false);
 #endif
   if (!thread || strcmp(pg_string(&env, thread + 428), "main")) return;
+  if (!pg_asi_game) pg_asi_game = instance;
   pg_asi_frame(instance);
   pg_trailer_tick(instance);
   pg_submarine_depth_tick(instance);

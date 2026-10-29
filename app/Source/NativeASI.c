@@ -641,6 +641,8 @@ static void installFaultHandler(void) {
 
 // ---- Loader -----------------------------------------------------------------------------------
 bool pg_asi_init(const PGAsiHost *host) {
+  static bool asiInitialized = false;
+  if (asiInitialized) return true;
   H = *host; pg_blink_skew = (uintptr_t)H.memory; pg_blink_low = 0x10000; pg_blink_high = H.size;
   if (!pg_blink_sink) pg_blink_sink = calloc(1, 0x2000);
   static bool blinkReady; if (!blinkReady) { WriteErrorInit(); InitMap(); InitBus(); blinkReady = true; }
@@ -653,6 +655,7 @@ bool pg_asi_init(const PGAsiHost *host) {
   cmdA = galloc(16); memcpy(G(cmdA), "GTA5.exe", 9);
   cmdW = galloc(32); for (int i = 0; i < 9; i++) wr16(cmdW + 2 * (uint64_t)i, (uint8_t)"GTA5.exe"[i]);
   envW = galloc(8);
+  asiInitialized = true;
   return true;
 }
 // A mod's menu key from its settings: trainers that take keys through a Script Hook V keyboard handler

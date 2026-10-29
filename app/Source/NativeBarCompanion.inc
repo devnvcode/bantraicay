@@ -172,21 +172,32 @@ static void pg_bar_apply_romance_posture(w2c_game *instance, u32 playerPed, u32 
 
 // Tick function called every frame in Story Mode
 static void pg_bar_companion_tick(w2c_game *instance) {
+  if (!pg_asi_game) pg_asi_game = instance;
   // Only active when Zombie Mode is OFF
   if (atomic_load(&zombieActive)) {
     if (barCompanionState != BAR_COMPANION_INACTIVE) {
+      uint64_t prev = pg_asi_enter_script(instance);
       pg_bar_companion_cleanup(instance);
+      pg_asi_leave_script(instance, prev);
     }
     return;
   }
 
   if (PGPauseMenuActive() || PGLoadSceneActive() || (PGGameStatus() & 16)) return;
 
+  uint64_t prev = pg_asi_enter_script(instance);
+
   u32 playerPed = PG_FN_PLAYER_PED_ID(instance);
-  if (!playerPed || !PG_FN_ENTITY_EXISTS(instance, playerPed)) return;
+  if (!playerPed || !PG_FN_ENTITY_EXISTS(instance, playerPed)) {
+    pg_asi_leave_script(instance, prev);
+    return;
+  }
 
   if (!barCoordVector) barCoordVector = pg_asi_alloc(32);
-  if (!barCoordVector) return;
+  if (!barCoordVector) {
+    pg_asi_leave_script(instance, prev);
+    return;
+  }
 
   PG_FN_GET_ENTITY_COORDS(instance, barCoordVector, playerPed, 1);
   float *pv = (float*)pg_pointer(&env, barCoordVector, 24);
@@ -244,6 +255,7 @@ static void pg_bar_companion_tick(w2c_game *instance) {
   // Verify entity alive
   if (barCompanionPed && !PG_FN_ENTITY_EXISTS(instance, barCompanionPed)) {
     pg_bar_companion_cleanup(instance);
+    pg_asi_leave_script(instance, prev);
     return;
   }
 
@@ -410,4 +422,5 @@ static void pg_bar_companion_tick(w2c_game *instance) {
       pg_test_call(instance, 0xbb9ce077274f6a1bull, 3, (uint64_t[]){ barCompanionPed, pg_zf32(5.0f), 10 });
     }
   }
+  pg_asi_leave_script(instance, prev);
 }

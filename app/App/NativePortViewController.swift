@@ -668,10 +668,14 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
         do { try BundledVietnamese.prepare() } catch { appendLog("Built-in translation: \(error.localizedDescription)") }
         appendLog(BundledVietnamese.status)
         appendLog("Regeneration R007 (reserve/distance profiles): frame cap \(GameSettings.shared.frameRateCap), Menyoo \(BundledMenyoo.enabled ? "on":"off"), extended distance \(StreamingSettings.distanceScale ?? "automatic"), texture budget \(StreamingSettings.textureBudgetMB) MiB (0=automatic).")
-        ModVehicleSupport.prepare(manifestPath:path,log:appendLog)
-        ModVehicleSupport.prepareLargeResources(log:appendLog)
-        SoundAssignments.resolveDuplicatePacks(log:appendLog)
-        SoundAssignments.configure()
+        do {
+            ModVehicleSupport.prepare(manifestPath:path,log:appendLog)
+            ModVehicleSupport.prepareLargeResources(log:appendLog)
+            SoundAssignments.resolveDuplicatePacks(log:appendLog)
+            SoundAssignments.configure()
+        } catch {
+            appendLog("Mod setup warning: \(error.localizedDescription)")
+        }
         noticeMods()
         startAudio()
         let (root, rootNote) = EnginePaths.filesRoot()
