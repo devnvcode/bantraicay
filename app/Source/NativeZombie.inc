@@ -195,7 +195,6 @@ static double deadCorpseTime[ZOMBIE_MAX_CORPSES];
 static double lastZombieSpawnTime = 0;
 static double lastWreckSpawnTime = 0;
 static double lastCompanionCheckTime = 0;
-static double companionRespawnAtTime = 0;
 static double lastAtmosphereSyncTime = 0;
 static double evacHoldStartTime = 0;
 
@@ -1110,7 +1109,7 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
         zombieNextBiteTime[i] = now + 1100;
         
         // Turn to face target directly
-        float bHeading = atan2f(-(px - zx), py - zy) * 57.2957795f;
+        float bHeading = atan2f(-dx, dy) * 57.2957795f;
         if (bHeading < 0) bHeading += 360.0f;
         pg_test_call(instance, 0x8e2530aa8ada980eull, 2, (uint64_t[]){ z, pg_zf32(bHeading) });
 
@@ -1281,7 +1280,8 @@ static void pg_zombie_tick(w2c_game *instance) {
   }
 
   // Instant Player Respawn at Death Location (Eliminating "Game da dung" on death)
-  int pHealth = PG_FN_GET_ENTITY_HEALTH(instance, playerPed);
+  // 0xeef059fad016d209: GET_ENTITY_HEALTH
+  int pHealth = (int)pg_test_call(instance, 0xeef059fad016d209ull, 1, (uint64_t[]){ playerPed });
   bool pDead = (bool)pg_test_call(instance, 0x3317dedb88c95038ull, 1, (uint64_t[]){ playerPed });
   if (pHealth <= 102 || pDead) {
     if (!zombiePlayerCoordVector) zombiePlayerCoordVector = pg_asi_alloc(32);
