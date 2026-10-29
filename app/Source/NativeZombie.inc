@@ -83,7 +83,7 @@ static const char *const zombieWreckModels[] = {
   "rebel", "stanier", "tornado3", "voodoo2"
 };
 
-static uint32_t activeZombieModels[10] = {
+static uint32_t activeZombieModels[16] = {
   0xAC4B4506, // u_m_y_zombie_01 (Rockstar Vinewood Rotting Zombie)
   0x2D2140D9, // u_m_y_corpse_01 (Morgue Male Corpse)
   0x4A751377, // u_f_y_corpse_01 (Morgue Female Corpse)
@@ -977,6 +977,66 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
   if (!zombieEntityCoordVector) zombieEntityCoordVector = pg_asi_alloc(32);
   if (!zombieEntityCoordVector) return;
 
+  // Map-wide ambient ped eradication & infection: Convert any ambient ped into zombie!
+  static uint64_t nearbyPedsBuf = 0;
+  if (!nearbyPedsBuf) nearbyPedsBuf = pg_asi_alloc(128);
+  if (nearbyPedsBuf) {
+    int *pedList = (int*)pg_pointer(&env, nearbyPedsBuf, 128);
+    pedList[0] = 16;
+    pg_test_call(instance, 0x2b3451fa1e31497aull, 3, (uint64_t[]){ playerPed, nearbyPedsBuf, (uint64_t)-1 });
+    int count = pedList[0];
+    if (count > 0 && count <= 16) {
+      u32 barPed = PGBarCompanionGetPed();
+      for (int p = 1; p <= count; p++) {
+        u32 ped = (u32)pedList[p];
+        if (!ped || !PG_FN_ENTITY_EXISTS(instance, ped)) continue;
+        if (ped == playerPed || ped == companionPed || ped == barPed) continue;
+        if (ped == companionPeds[0] || ped == companionPeds[1]) continue;
+
+        bool isKnownZombie = false;
+        for (int z = 0; z < ZOMBIE_MAX_ACTIVE; z++) {
+          if (activeZombies[z] == ped) { isKnownZombie = true; break; }
+        }
+        if (isKnownZombie) continue;
+
+        int freeSlot = -1;
+        for (int z = 0; z < ZOMBIE_MAX_ACTIVE; z++) {
+          if (!activeZombies[z]) { freeSlot = z; break; }
+        }
+        if (freeSlot >= 0) {
+          activeZombies[freeSlot] = ped;
+          zombieStates[freeSlot] = ZSTATE_CHASE;
+          zombieNextTaskTime[freeSlot] = now;
+          zombieNextBiteTime[freeSlot] = now + 1000;
+          zombiePrevHealth[freeSlot] = 150;
+          zombieClipsetIndex[freeSlot] = freeSlot % 2;
+
+          pg_test_call(instance, 0xf25df915fa38c5f3ull, 2, (uint64_t[]){ ped, 1 }); // disarm
+          pg_zombie_apply_clipset(instance, ped, zombieClipsetIndex[freeSlot]);
+          pg_test_call(instance, 0xf29cf591c4bf6ceeull, 2, (uint64_t[]){ ped, pg_zf32(55.0f) });
+          pg_test_call(instance, 0x33a8f7f7d5f7f33cull, 2, (uint64_t[]){ ped, pg_zf32(55.0f) });
+          pg_test_call(instance, 0x70a2d1137c8ed7c9ull, 3, (uint64_t[]){ ped, 0, 0 });
+          pg_test_call(instance, 0x9f7794730795e019ull, 3, (uint64_t[]){ ped, 17, 0 });
+
+          u32 blip = (u32)pg_test_call(instance, 0x5cde92c702a8fce7ull, 1, (uint64_t[]){ ped });
+          if (blip) {
+            zombieBlips[freeSlot] = blip;
+            pg_test_call(instance, 0x03d7fb09e75d6b7eull, 2, (uint64_t[]){ blip, 1 }); // Red
+            pg_test_call(instance, 0xd38744167b2fa257ull, 2, (uint64_t[]){ blip, pg_zf32(0.7f) });
+            pg_test_call(instance, 0xbe8be4fe60e27b72ull, 2, (uint64_t[]){ blip, 0 });
+          }
+
+          uint64_t cArgs[4] = { ped, playerPed, 0, 16 };
+          pg_test_call(instance, 0xf166e48407bac484ull, 4, cArgs);
+          pg_test_call(instance, 0x085bf80fa50a39d1ull, 2, (uint64_t[]){ ped, pg_zf32(1.35f) });
+          pg_zombie_log("[Infection] Da lay nhiem bien NPC thanh zombie #%d!", freeSlot + 1);
+        } else {
+          pg_zombie_release_ped(instance, &ped);
+        }
+      }
+    }
+  }
+
   // Staggered checking: Process 4 slots per frame (8 frames for full cycle)
   static int staggerOffset = 0;
   int startIdx = staggerOffset;
@@ -1306,8 +1366,14 @@ static void pg_zombie_tick(w2c_game *instance) {
   zombieCleanedUp = false;
   if (PGPauseMenuActive() || PGLoadSceneActive() || (PGGameStatus() & 16)) return;
 
+  if (!pg_asi_game) pg_asi_game = instance;
+  uint64_t prevScript = pg_asi_enter_script(instance);
+
   u32 playerPed = PG_FN_PLAYER_PED_ID(instance);
-  if (!playerPed || !PG_FN_ENTITY_EXISTS(instance, playerPed)) return;
+  if (!playerPed || !PG_FN_ENTITY_EXISTS(instance, playerPed)) {
+    pg_asi_leave_script(instance, prevScript);
+    return;
+  }
 
   double now = timeMS(CLOCK_MONOTONIC);
 
@@ -1322,27 +1388,34 @@ static void pg_zombie_tick(w2c_game *instance) {
   // 0xeef059fad016d209: GET_ENTITY_HEALTH
   int pHealth = (int)pg_test_call(instance, 0xeef059fad016d209ull, 1, (uint64_t[]){ playerPed });
   bool pDead = (bool)pg_test_call(instance, 0x3317dedb88c95038ull, 1, (uint64_t[]){ playerPed });
-  if (pHealth <= 102 || pDead) {
+  if (pHealth <= 105 || pDead) {
     if (!zombiePlayerCoordVector) zombiePlayerCoordVector = pg_asi_alloc(32);
     PG_FN_GET_ENTITY_COORDS(instance, zombiePlayerCoordVector, playerPed, 1);
     float *pv = (float*)pg_pointer(&env, zombiePlayerCoordVector, 24);
     float dX = pv[0], dY = pv[2], dZ = pv[4];
 
+    // Disable death restart & fade out completely
+    pg_test_call(instance, 0xfa4883a339f116a4ull, 1, (uint64_t[]){ 0 }); // SET_FADE_OUT_AFTER_DEATH(false)
+    pg_test_call(instance, 0x71e687e148e1107cull, 1, (uint64_t[]){ 1 }); // PAUSE_DEATH_ARREST_RESTART(true)
+    pg_test_call(instance, 0xa2716d40842eaf79ull, 1, (uint64_t[]){ 1 }); // IGNORE_NEXT_RESTART(true)
+
     // Resurrect & revive immediately
     pg_test_call(instance, 0xd3dbce61a490be52ull, 2, (uint64_t[]){ playerPed, 16 });
-    pg_test_call(instance, 0x428ac4b0870fb282ull, 1, (uint64_t[]){ playerPed });
-    pg_test_call(instance, 0x170a539cull, 1, (uint64_t[]){ playerPed });
+    pg_test_call(instance, 0x428ac4b0870fb282ull, 1, (uint64_t[]){ playerPed }); // RESURRECT_PED
+    pg_test_call(instance, 0x170a539cull, 1, (uint64_t[]){ playerPed }); // CLEAR_PED_TASKS_IMMEDIATELY
+    pg_test_call(instance, 0xb69317bf5e782347ull, 1, (uint64_t[]){ playerPed }); // RESET_PED_VISIBLE_DAMAGE
+    pg_test_call(instance, 0x00e620dbb78e79b9ull, 1, (uint64_t[]){ playerPed }); // CLEAR_PED_BLOOD_DAMAGE
     PG_FN_SET_ENTITY_HEALTH(instance, playerPed, 200, 0);
     pg_test_call(instance, 0xcea04d83135264ccull, 2, (uint64_t[]){ playerPed, 100 });
 
-    // Knockback all zombies within 6m
+    // Knockback all zombies within 8m
     for (int k = 0; k < ZOMBIE_MAX_ACTIVE; k++) {
       u32 zk = activeZombies[k];
       if (!zk || zombieStates[k] == ZSTATE_DEAD || !PG_FN_ENTITY_EXISTS(instance, zk)) continue;
       PG_FN_GET_ENTITY_COORDS(instance, zombiePlayerCoordVector, zk, 1);
       float *zv = (float*)pg_pointer(&env, zombiePlayerCoordVector, 24);
       float kdx = dX - zv[0], kdy = dY - zv[2];
-      if (kdx * kdx + kdy * kdy < 6.0f * 6.0f) {
+      if (kdx * kdx + kdy * kdy < 8.0f * 8.0f) {
         pg_test_call(instance, 0xae99fb955581844aull, 7, (uint64_t[]){ zk, 2500, 3000, 0, 1, 1, 0 });
         zombieStates[k] = ZSTATE_WANDER;
         zombieNextTaskTime[k] = now + 2500;
@@ -1352,16 +1425,14 @@ static void pg_zombie_tick(w2c_game *instance) {
     pv[0] = dX; pv[1] = 0; pv[2] = dY; pv[3] = 0; pv[4] = dZ + 0.15f; pv[5] = 0;
     PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, playerPed, zombiePlayerCoordVector, 0, 0, 0);
 
-    // 4 seconds of invulnerability grace
+    // 5 seconds of invulnerability grace
     pg_test_call(instance, 0x3882114bde57ff48ull, 2, (uint64_t[]){ playerPed, 1 });
-    playerGraceUntil = now + 4000;
+    playerGraceUntil = now + 5000;
     pg_test_call(instance, 0xd4e8e24955024033ull, 1, (uint64_t[]){ 600 });
-    pg_zombie_log("[Respawn] Nguoi choi duoc hoi sinh ngay lap tuc tai cho! Bat tu trong 4 giay!");
+    pg_zombie_log("[Respawn] Nguoi choi duoc hoi sinh ngay lap tuc tai cho! Khong bao gio dung game hay fade!");
+    pg_asi_leave_script(instance, prevScript);
     return;
   }
-
-  if (!pg_asi_game) pg_asi_game = instance;
-  uint64_t prevScript = pg_asi_enter_script(instance);
 
   double tickStart = timeMS(CLOCK_MONOTONIC);
   zombieFrameCounter++;
@@ -1397,9 +1468,15 @@ static void pg_zombie_tick(w2c_game *instance) {
 
     // Kiem tra model zombie that u_m_y_zombie_01 trong game data (0xc0296a2edf545e92: IS_MODEL_VALID)
     uint32_t realZombie = pg_joaat("u_m_y_zombie_01");
-    if ((bool)pg_test_call(instance, 0xc0296a2edf545e92ull, 1, (uint64_t[]){ realZombie })) {
-      activeZombieModels[activeZombieModelCount++] = realZombie;
-      pg_zombie_log("[Zombie Model] Xac nhan model zombie that u_m_y_zombie_01 ton tai trong game, da them vao danh sach.");
+    bool alreadyHasReal = false;
+    for (int m = 0; m < activeZombieModelCount; m++) {
+      if (activeZombieModels[m] == realZombie) { alreadyHasReal = true; break; }
+    }
+    if (!alreadyHasReal && activeZombieModelCount < 16) {
+      if ((bool)pg_test_call(instance, 0xc0296a2edf545e92ull, 1, (uint64_t[]){ realZombie })) {
+        activeZombieModels[activeZombieModelCount++] = realZombie;
+        pg_zombie_log("[Zombie Model] Xac nhan model zombie that u_m_y_zombie_01 ton tai trong game, da them vao danh sach.");
+      }
     }
 
     // Pre-request ALL zombie models immediately at Boot so they stream into memory for Stage 2

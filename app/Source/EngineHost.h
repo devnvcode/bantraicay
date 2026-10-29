@@ -243,3 +243,14 @@ void PGCoopGetPlayerName(char *buffer, size_t maxLen);
 int  PGCoopGetPlayerCount(void);
 void PGCoopGetStatus(char *buffer, size_t maxLen);
 bool PGCoopIsConnected(void);
+
+// Native Bar & Street Romance Companion (18+)
+uint32_t PGBarCompanionGetPed(void);
+int  PGBarCompanionGetState(void);
+int  PGBarCompanionGetPosture(void);
+int  PGBarCompanionGetLocation(void);
+void PGBarCompanionNextPosture(void);
+void PGBarCompanionToggleLocation(void);
+void PGBarCompanionPayTip(void);
+void PGBarCompanionFinish(void);
+void PGBarCompanionStartRomance(void);

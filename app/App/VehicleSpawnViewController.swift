@@ -106,10 +106,14 @@ final class VehicleSpawnViewController: UITableViewController, UISearchResultsUp
         }
         timer?.invalidate(); timer = nil
         let modNames = Set(ModVehicleSupport.vehicles())
-        vehicles = (0..<count).compactMap { index in
+        let allVehicles = (0..<count).compactMap { index in
             var entry = PGVehicleEntry()
             return PGVehicleCatalogEntryAt(UInt32(index), &entry) ? SpawnVehicle(entry) : nil
-        }.filter { modNames.contains($0.name.lowercased()) }.sorted { ($0.title, $0.name) < ($1.title, $1.name) }
+        }
+        let modVehicles = allVehicles.filter { modNames.contains($0.name.lowercased()) }
+        let stdVehicles = allVehicles.filter { !modNames.contains($0.name.lowercased()) }
+        vehicles = modVehicles.sorted { ($0.title, $0.name) < ($1.title, $1.name) } +
+                   stdVehicles.sorted { ($0.title, $0.name) < ($1.title, $1.name) }
         updateSearchResults(for: search)
     }
     func updateSearchResults(for searchController: UISearchController) {
@@ -144,7 +148,8 @@ final class VehicleSpawnViewController: UITableViewController, UISearchResultsUp
             cell.selectionStyle = .none
         } else {
             let vehicle = filtered[indexPath.row]
-            content.text = vehicle.title
+            let isMod = Set(ModVehicleSupport.vehicles()).contains(vehicle.name.lowercased())
+            content.text = (isMod ? "⭐ [MOD] " : "") + vehicle.title
             content.secondaryText = "\(vehicle.name) · \(vehicle.category)"
             cell.accessoryType = .disclosureIndicator
         }

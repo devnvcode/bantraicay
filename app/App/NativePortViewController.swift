@@ -321,21 +321,35 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
         touchControls.openMods = { [weak self] in
             guard let self else { return }
             self.touchControls.reset()
-            // 1. Direct double-pulse F8 (VK_F8 = 0x77) to toggle in-game script mod menu (Menyoo / Trainer)
-            PGAsiSetKey(0x77, true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
-                PGAsiSetKey(0x77, false)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                    PGAsiSetKey(0x77, true)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
-                        PGAsiSetKey(0x77, false)
-                    }
-                }
+            let alert = UIAlertController(title: "QUẢN LÝ MOD & XE", message: "Chọn tính năng muốn sử dụng:", preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: "🚗 Gọi xe Mod (Tự động vào ghế lái)", style: .default) { [weak self] _ in
+                guard let self else { return }
+                self.pauseGame(reason: "Vehicle spawner")
+                let page = VehicleSpawnViewController()
+                let nav = UINavigationController(rootViewController: page)
+                Theme.styleNavigation(nav)
+                page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
+                self.present(nav, animated: true)
+            })
+            alert.addAction(UIAlertAction(title: "📂 Quản lý Mod (.zip / Xe / Skin)", style: .default) { [weak self] _ in
+                guard let self else { return }
+                self.pauseGame(reason: "Mod settings")
+                let page = ModsViewController()
+                let nav = UINavigationController(rootViewController: page)
+                Theme.styleNavigation(nav)
+                page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
+                self.present(nav, animated: true)
+            })
+            alert.addAction(UIAlertAction(title: "💋 Gặp bạn gái hoa 18+ (Gọi về phòng)", style: .default) { _ in
+                PGBarCompanionStartRomance()
+            })
+            alert.addAction(UIAlertAction(title: "Đóng", style: .cancel))
+            if let popover = alert.popoverPresentationController {
+                popover.sourceView = self.view
+                popover.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                popover.permittedArrowDirections = []
             }
-            // 2. Open / toggle mod navigation tray & D-pad
-            self.modKeys.toggleTray()
-            // 3. Show HUD toast guide
-            self.showModHudToast("⚡ ĐÃ BẬT SCRIPT MOD (F8)!\n▶ Dùng phím F8 / ▲ ▼ ◀ ▶ [OK] để điều khiển menu\n▶ Bấm [📂 Mods] để cài thêm mod mới (.zip/.asi/.dll)")
+            self.present(alert, animated: true)
         }
         #if targetEnvironment(simulator)
         // Test: PG_TEST_MODS_TRAY=<seconds> opens the mod tray that long after launch (screenshots).
@@ -1549,6 +1563,7 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
         }
         let elapsed = lastControllerPoll.map { now - $0 } ?? (1.0 / 60.0)
         lastControllerPoll = now
+        updateRomanceHud(now: now)
         let gameStatus = PGGameStatus()
         // A long respawn or story load looked like a freeze (GTA-50): say it's loading.
         let loading = engineStarted && PGLoadSceneSeconds() >= 3 && gameStatus & 1 != 0 && gameStatus & 16 == 0
@@ -1807,6 +1822,97 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
     /// Controller trigger diagnostics and the digital-trigger hold (GTA-58).
     private var controllerTriggersWereDown = (false, false), controllerTriggerPresses = (0, 0), controllerButtonsWithRT = PadButtons()
     private var digitalTriggerAt: (CFTimeInterval, CFTimeInterval) = (-1, -1)
+
+    // Romance 18+ HUD Overlay
+    private var romanceHudView: UIView?
+    private var romanceStateLabel: UILabel?
+    private var lastRomanceCheckTime: CFTimeInterval = 0
+
+    private func setupRomanceHud() {
+        if romanceHudView != nil { return }
+        let container = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.layer.cornerRadius = 14
+        container.layer.masksToBounds = true
+        container.layer.borderWidth = 1.0
+        container.layer.borderColor = UIColor.systemPink.withAlphaComponent(0.7).cgColor
+        container.isHidden = true
+
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.alignment = .center
+
+        let lbl = UILabel()
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        lbl.font = UIFont.systemFont(ofSize: 13, weight: .bold)
+        lbl.textColor = .white
+        lbl.text = "💋 18+:"
+        romanceStateLabel = lbl
+
+        let btnPosture = UIButton(type: .system)
+        btnPosture.setTitle("🔄 Tư thế", for: .normal)
+        btnPosture.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        btnPosture.tintColor = .systemYellow
+        btnPosture.addAction(UIAction { _ in PGBarCompanionNextPosture() }, for: .touchUpInside)
+
+        let btnLocation = UIButton(type: .system)
+        btnLocation.setTitle("🛏️/🛋️ Đổi chỗ", for: .normal)
+        btnLocation.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        btnLocation.tintColor = .systemTeal
+        btnLocation.addAction(UIAction { _ in PGBarCompanionToggleLocation() }, for: .touchUpInside)
+
+        let btnTip = UIButton(type: .system)
+        btnTip.setTitle("💵 Trả $100", for: .normal)
+        btnTip.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        btnTip.tintColor = .systemGreen
+        btnTip.addAction(UIAction { _ in PGBarCompanionPayTip() }, for: .touchUpInside)
+
+        let btnFinish = UIButton(type: .system)
+        btnFinish.setTitle("❌ Xong", for: .normal)
+        btnFinish.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        btnFinish.tintColor = .systemRed
+        btnFinish.addAction(UIAction { _ in PGBarCompanionFinish() }, for: .touchUpInside)
+
+        stack.addArrangedSubview(lbl)
+        stack.addArrangedSubview(btnPosture)
+        stack.addArrangedSubview(btnLocation)
+        stack.addArrangedSubview(btnTip)
+        stack.addArrangedSubview(btnFinish)
+
+        container.contentView.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: container.contentView.topAnchor, constant: 6),
+            stack.bottomAnchor.constraint(equalTo: container.contentView.bottomAnchor, constant: -6),
+            stack.leadingAnchor.constraint(equalTo: container.contentView.leadingAnchor, constant: 12),
+            stack.trailingAnchor.constraint(equalTo: container.contentView.trailingAnchor, constant: -12),
+        ])
+
+        view.addSubview(container)
+        NSLayoutConstraint.activate([
+            container.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            container.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10)
+        ])
+        romanceHudView = container
+    }
+
+    private func updateRomanceHud(now: CFTimeInterval) {
+        if now - lastRomanceCheckTime < 0.25 { return }
+        lastRomanceCheckTime = now
+        let state = PGBarCompanionGetState()
+        if state == 5 {
+            setupRomanceHud()
+            romanceHudView?.isHidden = false
+            let posture = PGBarCompanionGetPosture()
+            let postures = ["Thổi kèn", "Nằm ngửa", "Cưỡi ngựa", "Múa sexy"]
+            let postureName = (posture >= 0 && posture < 4) ? postures[posture] : "Tư thế \(posture + 1)"
+            let loc = PGBarCompanionGetLocation() == 0 ? "Giường" : "Ghế Sofa"
+            romanceStateLabel?.text = "💋 [\(postureName) - \(loc)]:"
+        } else {
+            romanceHudView?.isHidden = true
+        }
+    }
 
     private var modToastLabel: UILabel?
     private func showModHudToast(_ message: String) {

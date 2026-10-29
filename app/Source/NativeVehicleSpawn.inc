@@ -266,14 +266,18 @@ static void pg_vehicle_menu_step(w2c_game *instance, u64 vector) {
         if (exists && actualModel == model) {
           // Boats keep the height they were created at (on the water).
           if (category != PG_CLASS_BOAT) PG_FN_GROUND_VEHICLE(instance, vehicle, 5.0f);
-          // Always warp player into driver seat (-1) when spawning
+          // Always warp player directly into driver seat (-1) when spawning
           if (enter) {
             PG_FN_SET_PED_INTO_VEHICLE(instance, ped, vehicle, (u32)-1);
+            // Native CommandSetPedIntoVehicle: 0x9a7d0929d3522395
+            pg_test_call(instance, 0x9a7d0929d3522395ull, 2, (uint64_t[]){ ped, vehicle, (uint64_t)-1 });
+            // Turn on engine immediately
+            pg_test_call(instance, 0x1f34ec783479d5f6ull, 4, (uint64_t[]){ vehicle, 1, 1, 0 });
           }
-          // Unlock vehicle doors so player can enter/exit freely (0xb664292eaec07012: SET_VEHICLE_DOORS_LOCKED)
-          pg_test_call(instance, 0xb664292eaec07012ull, 2, (uint64_t[]){ vehicle, 1 }); // 1 = UNLOCKED
-          u32 pId = PG_FN_PLAYER_ID(instance);
-          pg_test_call(instance, 0x6e2c3d0026e6d97aull, 3, (uint64_t[]){ vehicle, pId, 0 }); // SET_VEHICLE_DOORS_LOCKED_FOR_PLAYER
+          // Set vehicle doors completely unlocked (1 = UNLOCKED, player can enter and exit freely at any time)
+          pg_test_call(instance, 0xb664292eaec07012ull, 2, (uint64_t[]){ vehicle, 1 });
+          // Ensure vehicle is drivable and engine responsive
+          pg_test_call(instance, 0x89d66009d5af382bull, 2, (uint64_t[]){ vehicle, 1 });
           // Oldest first; room was made before the model was requested.
           if (!menuVehicles[0]) menuVehicles[0] = menuVehicles[1];
           menuVehicles[1] = vehicle;

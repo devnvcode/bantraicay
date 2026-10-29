@@ -1,16 +1,18 @@
 // ============================================================================
 // PlayGTA5Native - NORMAL MODE COMPANION & 18+ INTERACTIVE ROMANCE SYSTEM
 // ============================================================================
-// Features in Normal Story Mode (when Zombie Mode is inactive):
-// 1. Fair-skinned, attractive female companion (s_f_y_stripper_01, s_f_y_hooker_01)
+// Features:
+// 1. Fair-skinned, attractive female companion (s_f_y_stripper_01 Chastity / u_f_y_hotposh_01)
 // 2. Meet at Vanilla Unicorn / Bars OR honk car horn near girls on street ($100 tip)
-// 3. Companion boards passenger seat and GPS waypoint sets to player safehouse
-// 4. In-car dialogue & follow to safehouse bedroom / couch
+// 3. Companion boards passenger seat and GPS waypoint sets to nearest player safehouse
+// 4. In-car dialogue & follow into safehouse bedroom / couch with zero fleeing & anti-lost teleport
 // 5. Interactive 18+ Bedroom Romance:
 //    - NO black screen fade! 100% visible on-screen action
 //    - Full undress: removes clothes to bare/bikini components
-//    - Synchronized 18+ anims: Blowjob, Missionary/Cowgirl intimate loop, Lapdance
-//    - Interactive posture switching with Horn / E / Mod Keys
+//    - 4 Synchronized 18+ anims: Blowjob, Missionary, Cowgirl, Lapdance show
+//    - Bed vs Sofa/Chair location switching
+//    - Money deduction & tip display ($100)
+//    - Touch HUD buttons + Horn / E / D-pad control
 //    - Finishing replenishes 100% Health (200 HP) and 100 Armour!
 // ============================================================================
 
@@ -36,9 +38,13 @@ static u32 barCompanionPed = 0;
 static u32 barCompanionBlip = 0;
 static u32 barSafehouseBlip = 0;
 static double barLastPromptTime = 0;
+static double barFollowStartTime = 0;
 static double barRomanceStartTime = 0;
-static int barRomancePosture = 0;     // 0: Blowjob, 1: Missionary/Cowgirl, 2: Lapdance show
+static int barRomancePosture = 0;     // 0: Blowjob, 1: Missionary, 2: Cowgirl, 3: Lapdance
+static int barRomanceLocation = 0;    // 0: Giuong (Bed), 1: Ghe Sofa (Couch)
 static double barLastPostureSwitch = 0;
+static bool barRomanceRequested = false;
+static bool barRomanceFinished = false;
 static uint64_t barCoordVector = 0;
 static uint64_t barSubtitleStrBuf = 0;
 static uint64_t barAnimDictPtr1 = 0;
@@ -51,13 +57,26 @@ static const float vanillaUnicornX = 128.0f;
 static const float vanillaUnicornY = -1298.0f;
 static const float vanillaUnicornZ = 29.5f;
 
-// Franklin's 3671 Whispymound Drive Mansion (Vinewood Hills)
-static const float safehouseX = 7.0f;
-static const float safehouseY = 525.0f;
-static const float safehouseZ = 170.5f;
+// Known Safehouse Bedrooms: Franklin Mansion, Michael Mansion, Franklin Aunt, Trevor Trailer
+static const float safehouseList[4][3] = {
+  { 7.0f,    525.0f,  170.5f }, // Franklin Whispymound Mansion
+  {-813.0f,  178.0f,   72.0f }, // Michael Rockford Hills Mansion
+  {-14.0f, -1440.0f,   30.5f }, // Franklin Forum Dr Aunt House
+  {1972.0f, 3816.0f,   33.5f }  // Trevor Sandy Shores Trailer
+};
 
-// Model: s_f_y_stripper_01 (0x61c6b12a - Chastity, fair skin blonde)
-static const uint32_t barCompanionModel = 0x61C6B12A;
+static float activeSafehouseX = 7.0f;
+static float activeSafehouseY = 525.0f;
+static float activeSafehouseZ = 170.5f;
+
+// Fair-skinned, gorgeous blonde companion models
+// s_f_y_stripper_01 (0x61C6B12A), u_f_y_hotposh_01 (0xC2A81D22), s_f_y_hooker_01 (0xC57C2C49)
+static const uint32_t barCompanionModels[3] = {
+  0x61C6B12A, // Chastity: Fair skin, blonde hair, beautiful face
+  0xC2A81D22, // Hot posh socialite: Fair skin, elegant
+  0xC57C2C49  // Fair skin hooker
+};
+static uint32_t barCompanionModel = 0x61C6B12A;
 
 static void pg_bar_show_subtitle(w2c_game *instance, const char *msg, int durationMs) {
   if (!barSubtitleStrBuf) barSubtitleStrBuf = pg_asi_alloc(256);
@@ -105,10 +124,12 @@ static void pg_bar_companion_cleanup(w2c_game *instance) {
     barCompanionPed = 0;
   }
   barCompanionState = BAR_COMPANION_INACTIVE;
+  barRomanceRequested = false;
+  barRomanceFinished = false;
 }
 
-// Apply 18+ Synchronized animation based on posture index
-static void pg_bar_apply_romance_posture(w2c_game *instance, u32 playerPed, u32 companionPed, int posture) {
+// Apply 18+ Synchronized animation based on posture index and bed/sofa location
+static void pg_bar_apply_romance_posture(w2c_game *instance, u32 playerPed, u32 companionPed, int posture, int location) {
   if (!barAnimDictPtr1) {
     barAnimDictPtr1 = pg_asi_alloc(64);
     barAnimDictPtr2 = pg_asi_alloc(64);
@@ -122,28 +143,29 @@ static void pg_bar_apply_romance_posture(w2c_game *instance, u32 playerPed, u32 
   pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ companionPed }); // CLEAR_PED_TASKS_IMMEDIATELY
   pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ playerPed });
 
-  // Undress companion completely to bikini/bare skin
+  // Undress companion completely: bare torso, bare legs, bare feet, no tops
   // 0x262b14f48d29de80: SET_PED_COMPONENT_VARIATION(ped, componentId, drawableId, textureId, paletteId)
   pg_test_call(instance, 0x262b14f48d29de80ull, 5, (uint64_t[]){ companionPed, 3, 15, 0, 0 }); // Bare upper torso
   pg_test_call(instance, 0x262b14f48d29de80ull, 5, (uint64_t[]){ companionPed, 4, 15, 0, 0 }); // Bare legs / bikini
-  pg_test_call(instance, 0x262b14f48d29de80ull, 5, (uint64_t[]){ companionPed, 8, 15, 0, 0 }); // Undershirt
+  pg_test_call(instance, 0x262b14f48d29de80ull, 5, (uint64_t[]){ companionPed, 8, 15, 0, 0 }); // Undershirt cleared
   pg_test_call(instance, 0x262b14f48d29de80ull, 5, (uint64_t[]){ companionPed, 11, 15, 0, 0 }); // Bare top
   pg_test_call(instance, 0x262b14f48d29de80ull, 5, (uint64_t[]){ companionPed, 6, 0, 0, 0 });  // Bare feet
+
+  const char *locName = (location == 0) ? "Giuong" : "Ghe Sofa";
 
   if (posture == 0) {
     // Posture 0: Oral / Blowjob
     pg_test_call(instance, 0xd2a71e1a77418a49ull, 1, (uint64_t[]){ barAnimDictPtr1 }); // REQUEST_ANIM_DICT
     strcpy((char*)pg_pointer(&env, barAnimNamePedPtr, 64), "bj_loop_female");
     strcpy((char*)pg_pointer(&env, barAnimNamePlyrPtr, 64), "bj_loop_player");
-    // TASK_PLAY_ANIM companion
     uint64_t aPed[11] = { companionPed, barAnimDictPtr1, barAnimNamePedPtr, pg_zf32(8.0f), pg_zf32(-8.0f), -1, 1, 0, 0, 0, 0 };
     pg_test_call(instance, 0xea47fe3719165b94ull, 11, aPed);
-    // TASK_PLAY_ANIM player
     uint64_t aPlyr[11] = { playerPed, barAnimDictPtr1, barAnimNamePlyrPtr, pg_zf32(8.0f), pg_zf32(-8.0f), -1, 1, 0, 0, 0, 0 };
     pg_test_call(instance, 0xea47fe3719165b94ull, 11, aPlyr);
-    pg_bar_show_subtitle(instance, "~p~[18+ Tu the 1/3: Thoi ken] Nhan [Ken xe / E / Mod] de doi tu the | [F] Dung", 4000);
+    char msg[128]; snprintf(msg, sizeof msg, "~p~[18+ Tu the 1/4: Thoi ken - %s] Chon [Doi tu the] hoac [Giuong/Ghe] | [F] Dung", locName);
+    pg_bar_show_subtitle(instance, msg, 4000);
   } else if (posture == 1) {
-    // Posture 1: Missionary / Cowgirl Intimate loop
+    // Posture 1: Missionary / Nam ngua
     pg_test_call(instance, 0xd2a71e1a77418a49ull, 1, (uint64_t[]){ barAnimDictPtr1 });
     strcpy((char*)pg_pointer(&env, barAnimNamePedPtr, 64), "sex_loop_female");
     strcpy((char*)pg_pointer(&env, barAnimNamePlyrPtr, 64), "sex_loop_player");
@@ -151,14 +173,27 @@ static void pg_bar_apply_romance_posture(w2c_game *instance, u32 playerPed, u32 
     pg_test_call(instance, 0xea47fe3719165b94ull, 11, aPed);
     uint64_t aPlyr[11] = { playerPed, barAnimDictPtr1, barAnimNamePlyrPtr, pg_zf32(8.0f), pg_zf32(-8.0f), -1, 1, 0, 0, 0, 0 };
     pg_test_call(instance, 0xea47fe3719165b94ull, 11, aPlyr);
-    pg_bar_show_subtitle(instance, "~p~[18+ Tu the 2/3: Cuoi ngua / Nam sap] Nhan [Ken xe / E / Mod] de doi tu the | [F] Dung", 4000);
+    char msg[128]; snprintf(msg, sizeof msg, "~p~[18+ Tu the 2/4: Nam ngua - %s] Chon [Doi tu the] hoac [Giuong/Ghe] | [F] Dung", locName);
+    pg_bar_show_subtitle(instance, msg, 4000);
+  } else if (posture == 2) {
+    // Posture 2: Cowgirl / Cuoi ngua
+    pg_test_call(instance, 0xd2a71e1a77418a49ull, 1, (uint64_t[]){ barAnimDictPtr1 });
+    strcpy((char*)pg_pointer(&env, barAnimNamePedPtr, 64), "sex_loop_player");
+    strcpy((char*)pg_pointer(&env, barAnimNamePlyrPtr, 64), "sex_loop_female");
+    uint64_t aPed[11] = { companionPed, barAnimDictPtr1, barAnimNamePedPtr, pg_zf32(8.0f), pg_zf32(-8.0f), -1, 1, 0, 0, 0, 0 };
+    pg_test_call(instance, 0xea47fe3719165b94ull, 11, aPed);
+    uint64_t aPlyr[11] = { playerPed, barAnimDictPtr1, barAnimNamePlyrPtr, pg_zf32(8.0f), pg_zf32(-8.0f), -1, 1, 0, 0, 0, 0 };
+    pg_test_call(instance, 0xea47fe3719165b94ull, 11, aPlyr);
+    char msg[128]; snprintf(msg, sizeof msg, "~p~[18+ Tu the 3/4: Cuoi ngua - %s] Chon [Doi tu the] hoac [Giuong/Ghe] | [F] Dung", locName);
+    pg_bar_show_subtitle(instance, msg, 4000);
   } else {
-    // Posture 2: Sensual Lapdance bedroom show
+    // Posture 3: Lapdance show tren ghe/sofa
     pg_test_call(instance, 0xd2a71e1a77418a49ull, 1, (uint64_t[]){ barAnimDictPtr2 });
     strcpy((char*)pg_pointer(&env, barAnimNamePedPtr, 64), "priv_dance_p1");
     uint64_t aPed[11] = { companionPed, barAnimDictPtr2, barAnimNamePedPtr, pg_zf32(8.0f), pg_zf32(-8.0f), -1, 1, 0, 0, 0, 0 };
     pg_test_call(instance, 0xea47fe3719165b94ull, 11, aPed);
-    pg_bar_show_subtitle(instance, "~p~[18+ Tu the 3/3: Mua quyen ru coi do] Nhan [Ken xe / E / Mod] de doi tu the | [F] Dung", 4000);
+    char msg[128]; snprintf(msg, sizeof msg, "~p~[18+ Tu the 4/4: Mua khieu goi - %s] Chon [Doi tu the] hoac [Giuong/Ghe] | [F] Dung", locName);
+    pg_bar_show_subtitle(instance, msg, 4000);
   }
 
   // Camera subtle sensual shake
@@ -170,19 +205,9 @@ static void pg_bar_apply_romance_posture(w2c_game *instance, u32 playerPed, u32 
   pg_test_call(instance, 0x68edda809e2657b1ull, 2, (uint64_t[]){ camShake, pg_zf32(0.20f) });
 }
 
-// Tick function called every frame in Story Mode
+// Tick function called every frame on the game thread
 static void pg_bar_companion_tick(w2c_game *instance) {
   if (!pg_asi_game) pg_asi_game = instance;
-  // Only active when Zombie Mode is OFF
-  if (atomic_load(&zombieActive)) {
-    if (barCompanionState != BAR_COMPANION_INACTIVE) {
-      uint64_t prev = pg_asi_enter_script(instance);
-      pg_bar_companion_cleanup(instance);
-      pg_asi_leave_script(instance, prev);
-    }
-    return;
-  }
-
   if (PGPauseMenuActive() || PGLoadSceneActive() || (PGGameStatus() & 16)) return;
 
   uint64_t prev = pg_asi_enter_script(instance);
@@ -205,11 +230,10 @@ static void pg_bar_companion_tick(w2c_game *instance) {
 
   double now = timeMS(CLOCK_MONOTONIC);
 
-  // 0x997abd671d25ca0b: IS_PED_IN_ANY_VEHICLE
+  // Check vehicle status
   bool inVehicle = (bool)pg_test_call(instance, 0x997abd671d25ca0bull, 2, (uint64_t[]){ playerPed, 0 });
   u32 playerVeh = 0;
   if (inVehicle) {
-    // 0x9a9112a0fe9a4713: GET_VEHICLE_PED_IS_IN
     playerVeh = (u32)pg_test_call(instance, 0x9a9112a0fe9a4713ull, 2, (uint64_t[]){ playerPed, 0 });
   }
 
@@ -219,22 +243,29 @@ static void pg_bar_companion_tick(w2c_game *instance) {
     float dyBar = py - vanillaUnicornY;
     float distToBar = sqrtf(dxBar * dxBar + dyBar * dyBar);
 
-    // Meet at Vanilla Unicorn (within 60m) or invite anytime while driving in city
-    if (distToBar < 60.0f || (inVehicle && now - barLastPromptTime > 60000.0)) {
+    // Meet at Vanilla Unicorn (within 70m) or invite anytime while driving in city
+    if (distToBar < 70.0f || (inVehicle && now - barLastPromptTime > 45000.0)) {
+      barCompanionModel = barCompanionModels[rand() % 3];
       PG_FN_REQUEST_MODEL(instance, barCompanionModel);
       if (PG_FN_HAS_MODEL_LOADED(instance, barCompanionModel)) {
-        float spawnX = inVehicle ? (px + 4.0f) : (vanillaUnicornX + 2.0f);
-        float spawnY = inVehicle ? (py + 4.0f) : (vanillaUnicornY + 1.5f);
+        float spawnX = inVehicle ? (px + 4.5f) : (vanillaUnicornX + 2.0f);
+        float spawnY = inVehicle ? (py + 4.5f) : (vanillaUnicornY + 1.5f);
         float spawnZ = inVehicle ? pz : vanillaUnicornZ;
 
         uint64_t pArgs[8] = {
           5, barCompanionModel, pg_zf32(spawnX), pg_zf32(spawnY), pg_zf32(spawnZ), pg_zf32(90.0f), 0, 1
         };
-        // 0xd49f9b0955c367de: CREATE_PED
         barCompanionPed = (u32)pg_test_call(instance, 0xd49f9b0955c367deull, 8, pArgs);
         if (barCompanionPed) {
-          // Pink companion blip
-          // 0x5cde92c702a8fce7: ADD_BLIP_FOR_ENTITY
+          // Never flee, never panic, invincible, stay friendly
+          pg_test_call(instance, 0x19131364a44013c2ull, 2, (uint64_t[]){ barCompanionPed, 1 }); // SET_BLOCKING_OF_NON_TEMPORARY_EVENTS
+          pg_test_call(instance, 0x70a2d1137c8ed7c9ull, 3, (uint64_t[]){ barCompanionPed, 0, 0 }); // SET_PED_FLEE_ATTRIBUTES(0, 0)
+          pg_test_call(instance, 0x9f7794730795e019ull, 3, (uint64_t[]){ barCompanionPed, 17, 1 }); // BF_AlwaysFlee = 0
+          pg_test_call(instance, 0x3882114bde57ff48ull, 2, (uint64_t[]){ barCompanionPed, 1 }); // SET_ENTITY_INVINCIBLE
+          pg_test_call(instance, 0xa3458ff5b1d1632dull, 2, (uint64_t[]){ barCompanionPed, 0 }); // SET_PED_CAN_BE_TARGETTED
+          pg_test_call(instance, 0xf25df915fa38c5f3ull, 2, (uint64_t[]){ barCompanionPed, 1 }); // Disarm
+
+          // Pink companion heart blip on radar
           barCompanionBlip = (u32)pg_test_call(instance, 0x5cde92c702a8fce7ull, 1, (uint64_t[]){ barCompanionPed });
           if (barCompanionBlip) {
             pg_test_call(instance, 0x03d7fb09e75d6b7eull, 2, (uint64_t[]){ barCompanionBlip, 8 }); // Pink
@@ -242,11 +273,10 @@ static void pg_bar_companion_tick(w2c_game *instance) {
             pg_test_call(instance, 0xd38744167b2fa257ull, 2, (uint64_t[]){ barCompanionBlip, pg_zf32(0.9f) });
           }
           // Idle wander animation
-          // 0xbb9ce077274f6a1b: TASK_WANDER_STANDARD
           pg_test_call(instance, 0xbb9ce077274f6a1bull, 3, (uint64_t[]){ barCompanionPed, pg_zf32(3.0f), 10 });
           barCompanionState = BAR_COMPANION_AT_BAR;
-          pg_bar_show_subtitle(instance, "~y~Gap co gai xinh dep! Hay lai gan hoac bam ken xe de moi co ay len xe.", 4000);
-          pg_log("[Bar Companion] Co gai xinh dep da xuat hien, san sang len xe ve nha.");
+          pg_bar_show_subtitle(instance, "~y~Gap co gai hoa xinh dep trang treo! Hay lai gan hoac bam ken xe de moi co ay ve nha.", 5000);
+          pg_log("[Bar Companion] Co gai hoa xinh dep da xuat hien, san sang len xe ve nha.");
         }
       }
     }
@@ -266,42 +296,54 @@ static void pg_bar_companion_tick(w2c_game *instance) {
     float cdx = px - cv[0], cdy = py - cv[2];
     float distToCompanion = sqrtf(cdx * cdx + cdy * cdy);
 
-    if (distToCompanion < 12.0f && inVehicle && playerVeh) {
+    if (distToCompanion < 16.0f) {
       if (now - barLastPromptTime > 4000) {
         barLastPromptTime = now;
         pg_bar_show_subtitle(instance, "~b~Bam ken xe (Horn) hoac lai sat co gai de moi co ay ve nha!", 3000);
       }
 
-      // Check horn pressed (0x86 = INPUT_VEH_HORN, control 86) or close proximity (< 4.5m)
+      // Check horn pressed (control 86) or close proximity (< 4.0m) or explicit start romance
       bool hornPressed = (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 86 });
-      if (hornPressed || distToCompanion < 4.5f) {
-        // Invite companion to passenger seat
-        // 0xc20e50aa46d09ca8: TASK_ENTER_VEHICLE(ped, vehicle, timeout, seat, speed, flag, p6)
-        uint64_t eArgs[7] = {
-          barCompanionPed, playerVeh, -1, 0, pg_zf32(2.0f), 1, 0 // Seat 0: Front passenger
-        };
-        pg_test_call(instance, 0xc20e50aa46d09ca8ull, 7, eArgs);
-
-        barCompanionState = BAR_COMPANION_ENTERING;
+      if (hornPressed || distToCompanion < 4.0f || barRomanceRequested) {
+        if (inVehicle && playerVeh) {
+          uint64_t eArgs[7] = { barCompanionPed, playerVeh, -1, 0, pg_zf32(2.0f), 1, 0 };
+          pg_test_call(instance, 0xc20e50aa46d09ca8ull, 7, eArgs);
+          barCompanionState = BAR_COMPANION_ENTERING;
+        } else {
+          // On foot: follow directly
+          uint64_t fArgs[9] = { barCompanionPed, playerPed, 0, pg_zf32(-1.0f), 0, pg_zf32(1.0f), 0xFFFFFFFFull, pg_zf32(1.0f), 1 };
+          pg_test_call(instance, 0x304ae42e357b8c7eull, 9, fArgs);
+          barCompanionState = BAR_COMPANION_FOLLOWING;
+          barFollowStartTime = now;
+        }
         pg_bar_show_subtitle(instance, "~y~\"Chao anh dep trai! Cho em ve nha anh nhe, em se chieu anh het minh!\"", 4500);
-        pg_log("[Bar Companion] Co gai dong y len xe nguoi choi.");
+        pg_log("[Bar Companion] Co gai dong y len xe / di theo nguoi choi ve nha.");
       }
     }
   }
 
   // --- STATE 2: ENTERING VEHICLE ---
   if (barCompanionState == BAR_COMPANION_ENTERING) {
-    // 0x997abd671d25ca0b: IS_PED_IN_ANY_VEHICLE
     bool companionInVeh = (bool)pg_test_call(instance, 0x997abd671d25ca0bull, 2, (uint64_t[]){ barCompanionPed, 0 });
     if (companionInVeh) {
-      // Set GPS Waypoint to player's Mansion Safehouse
-      // 0x4f7d8a924251ba8b: SET_NEW_WAYPOINT(x, y)
-      pg_test_call(instance, 0x4f7d8a924251ba8bull, 2, (uint64_t[]){ pg_zf32(safehouseX), pg_zf32(safehouseY) });
+      // Find nearest safehouse
+      float bestDist = 1e9f;
+      for (int i = 0; i < 4; i++) {
+        float dx = px - safehouseList[i][0], dy = py - safehouseList[i][1];
+        float d = dx * dx + dy * dy;
+        if (d < bestDist) {
+          bestDist = d;
+          activeSafehouseX = safehouseList[i][0];
+          activeSafehouseY = safehouseList[i][1];
+          activeSafehouseZ = safehouseList[i][2];
+        }
+      }
 
-      // Add Mansion blip
+      // Set GPS Waypoint to player's nearest safehouse
+      pg_test_call(instance, 0x4f7d8a924251ba8bull, 2, (uint64_t[]){ pg_zf32(activeSafehouseX), pg_zf32(activeSafehouseY) });
+
       if (!barSafehouseBlip) {
-        // 0x5a039bb0b1e8e3f6: ADD_BLIP_FOR_COORD
-        barSafehouseBlip = (u32)pg_test_call(instance, 0x5a039bb0b1e8e3f6ull, 3, (uint64_t[]){ pg_zf32(safehouseX), pg_zf32(safehouseY), pg_zf32(safehouseZ) });
+        barSafehouseBlip = (u32)pg_test_call(instance, 0x5a039bb0b1e8e3f6ull, 3, (uint64_t[]){ pg_zf32(activeSafehouseX), pg_zf32(activeSafehouseY), pg_zf32(activeSafehouseZ) });
         if (barSafehouseBlip) {
           pg_test_call(instance, 0x03d7fb09e75d6b7eull, 2, (uint64_t[]){ barSafehouseBlip, 2 }); // Green
           pg_test_call(instance, 0xdf735600a4696dafull, 2, (uint64_t[]){ barSafehouseBlip, 40 }); // Safehouse icon
@@ -310,18 +352,18 @@ static void pg_bar_companion_tick(w2c_game *instance) {
       }
 
       barCompanionState = BAR_COMPANION_RIDING;
-      pg_bar_show_subtitle(instance, "~g~Co gai da len xe! Lai theo dau GPS ve can biet thu Mansion de thu gian.", 5000);
-      pg_log("[Bar Companion] Co gai da ngoi tren xe, GPS dan duong ve safehouse.");
+      pg_bar_show_subtitle(instance, "~g~Co gai da len xe! Lai theo dau GPS ve can nha / biet thu de thu gian 18+.", 5000);
+      pg_log("[Bar Companion] Co gai da ngoi tren xe, GPS dan ve safehouse.");
     }
   }
 
   // --- STATE 3: RIDING TO SAFEHOUSE ---
   if (barCompanionState == BAR_COMPANION_RIDING) {
-    float dxSh = px - safehouseX;
-    float dySh = py - safehouseY;
+    float dxSh = px - activeSafehouseX;
+    float dySh = py - activeSafehouseY;
     float distToSafehouse = sqrtf(dxSh * dxSh + dySh * dySh);
 
-    // Occasional sweet talk dialogue while driving
+    // Sweet talk dialogue while driving
     if (now - barLastPromptTime > 12000) {
       barLastPromptTime = now;
       const char *phrases[] = {
@@ -332,22 +374,17 @@ static void pg_bar_companion_tick(w2c_game *instance) {
       pg_bar_show_subtitle(instance, phrases[rand() % 3], 4000);
     }
 
-    // Arrived at Safehouse (< 18m)
-    if (distToSafehouse < 18.0f) {
-      pg_bar_show_subtitle(instance, "~g~Da ve den nha! Xuong xe va cung co gai vao phong ngu thu gian 18+ nao.", 5000);
-      // Leave vehicle
-      // 0xd3dbce61a490be52: TASK_LEAVE_ANY_VEHICLE
-      pg_test_call(instance, 0xd3dbce61a490be52ull, 3, (uint64_t[]){ barCompanionPed, 0, 0 });
+    // Arrived at Safehouse (< 20m) OR player got out of vehicle OR romance explicitly requested
+    if (distToSafehouse < 20.0f || !inVehicle || barRomanceRequested) {
+      pg_bar_show_subtitle(instance, "~g~Da ve den nha! Cung co gai vao phong ngu / sofa de thu gian 18+ nao.", 5000);
+      pg_test_call(instance, 0xd3dbce61a490be52ull, 3, (uint64_t[]){ barCompanionPed, 0, 0 }); // Leave car
 
-      // Follow player closely into the house
-      // 0x304ae42e357b8c7e: TASK_FOLLOW_TO_OFFSET_OF_ENTITY
-      uint64_t fArgs[9] = {
-        barCompanionPed, playerPed, 0, pg_zf32(-1.2f), 0, pg_zf32(1.2f), 0xFFFFFFFFull, pg_zf32(1.0f), 1
-      };
+      uint64_t fArgs[9] = { barCompanionPed, playerPed, 0, pg_zf32(-1.0f), 0, pg_zf32(1.0f), 0xFFFFFFFFull, pg_zf32(1.0f), 1 };
       pg_test_call(instance, 0x304ae42e357b8c7eull, 9, fArgs);
 
       barCompanionState = BAR_COMPANION_FOLLOWING;
-      pg_log("[Bar Companion] Da ve den safehouse, co gai dang di theo nguoi choi vao phong ngu.");
+      barFollowStartTime = now;
+      pg_log("[Bar Companion] Da den safehouse, co gai dang di theo nguoi choi.");
     }
   }
 
@@ -358,53 +395,62 @@ static void pg_bar_companion_tick(w2c_game *instance) {
     float cdx = px - cv[0], cdy = py - cv[2];
     float distToCompanion = sqrtf(cdx * cdx + cdy * cdy);
 
-    float dxSh = px - safehouseX;
-    float dySh = py - safehouseY;
-    float distToBed = sqrtf(dxSh * dxSh + dySh * dySh);
+    float dxSh = px - activeSafehouseX;
+    float dySh = py - activeSafehouseY;
+    float distToSafehouse = sqrtf(dxSh * dxSh + dySh * dySh);
 
-    // Inside safehouse bedroom (< 14m from bedroom bed) and player is close to companion
-    if (distToBed < 14.0f && distToCompanion < 3.2f) {
+    // ANTI-FLEE & ANTI-LOST TELEPORT: If companion gets stuck, blocked, or lags > 5.5m
+    if (distToCompanion > 5.5f) {
+      cv[0] = px - 0.8f; cv[1] = 0; cv[2] = py - 0.8f; cv[3] = 0; cv[4] = pz; cv[5] = 0;
+      PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, barCompanionPed, barCoordVector, 0, 0, 0);
+      uint64_t fArgs[9] = { barCompanionPed, playerPed, 0, pg_zf32(-1.0f), 0, pg_zf32(1.0f), 0xFFFFFFFFull, pg_zf32(1.0f), 1 };
+      pg_test_call(instance, 0x304ae42e357b8c7eull, 9, fArgs);
+    }
+
+    // Inside bedroom/living room OR explicit button request OR stopped moving near companion
+    bool readyForRomance = (distToSafehouse < 22.0f && distToCompanion < 3.5f && (now - barFollowStartTime > 2500.0)) ||
+                           barRomanceRequested || (distToCompanion < 2.5f && (now - barFollowStartTime > 5000.0));
+
+    if (readyForRomance) {
       barCompanionState = BAR_COMPANION_BEDROOM;
       barRomanceStartTime = now;
-      barRomancePosture = 0; // Start with posture 0 (Blowjob)
+      barRomancePosture = 0; // Start with Blowjob
+      barRomanceLocation = 0; // Bed
       barLastPostureSwitch = now;
+      barRomanceRequested = false;
 
-      // Position player and companion together facing each other
-      pv[0] = safehouseX + 0.35f; pv[1] = 0; pv[2] = safehouseY + 0.35f; pv[3] = 0; pv[4] = safehouseZ; pv[5] = 0;
+      // Position facing each other
+      pv[0] = px + 0.35f; pv[1] = 0; pv[2] = py + 0.35f; pv[3] = 0; pv[4] = pz; pv[5] = 0;
       PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, playerPed, barCoordVector, 0, 0, 0);
-      pv[0] = safehouseX - 0.35f; pv[1] = 0; pv[2] = safehouseY - 0.35f; pv[3] = 0; pv[4] = safehouseZ; pv[5] = 0;
+      pv[0] = px - 0.35f; pv[1] = 0; pv[2] = py - 0.35f; pv[3] = 0; pv[4] = pz; pv[5] = 0;
       PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, barCompanionPed, barCoordVector, 0, 0, 0);
 
-      // Start 18+ animation loop (NO screen fade out, 100% visible)
-      pg_bar_apply_romance_posture(instance, playerPed, barCompanionPed, barRomancePosture);
-      pg_log("[Bar Companion] Bat dau tu the 18+ trong phong ngu (coi do hoan toan, 100%% ro net).");
+      // Start 18+ animation loop (NO screen fade out, 100% visible, fully stripped)
+      pg_bar_apply_romance_posture(instance, playerPed, barCompanionPed, barRomancePosture, barRomanceLocation);
+      pg_log("[Bar Companion] Bat dau 18+ trong phong (coi do hoan toan, 100%% ro net).");
     }
   }
 
   // --- STATE 5: INTERACTIVE 18+ BEDROOM ROMANCE ---
   if (barCompanionState == BAR_COMPANION_BEDROOM) {
-    // Check if player requested posture switch via Horn (key 0x45 / control 86) or D-pad right
+    // Check posture switch via Horn (control 86) / E (51) / on-screen button
     bool switchPressed = (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 86 }) ||
                          (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 51 });
     if (switchPressed && (now - barLastPostureSwitch > 1200)) {
       barLastPostureSwitch = now;
-      barRomancePosture = (barRomancePosture + 1) % 3;
-      pg_bar_apply_romance_posture(instance, playerPed, barCompanionPed, barRomancePosture);
-      char posMsg[96];
-      snprintf(posMsg, sizeof posMsg, "[Bar Companion] Nguoi choi da doi tu the 18+ sang tu the #%d.", barRomancePosture + 1);
-      pg_log(posMsg);
+      barRomancePosture = (barRomancePosture + 1) % 4;
+      pg_bar_apply_romance_posture(instance, playerPed, barCompanionPed, barRomancePosture, barRomanceLocation);
     }
 
-    // Check exit request (F / Enter vehicle control 75 or after 25s)
-    bool exitPressed = (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 75 });
-    if (exitPressed || (now - barRomanceStartTime > 25000.0)) {
-      // Clear tasks
+    // Check exit request (F / control 75 or after 35s or finish requested)
+    bool exitPressed = (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 75 }) || barRomanceFinished;
+    if (exitPressed || (now - barRomanceStartTime > 35000.0)) {
+      barRomanceFinished = false;
       pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ barCompanionPed });
       pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ playerPed });
 
       // Restore 100% full health (200 HP) and full Armour (100)
       PG_FN_SET_ENTITY_HEALTH(instance, playerPed, 200, 0);
-      // 0xcea04d83135264cc: SET_PED_ARMOUR(playerPed, 100)
       pg_test_call(instance, 0xcea04d83135264ccull, 2, (uint64_t[]){ playerPed, 100 });
 
       pg_bar_show_subtitle(instance, "~g~Ban da thu gian sung man cung co gai! Hoi phuc 100% Mau va 100 Giap!", 6000);
@@ -415,7 +461,6 @@ static void pg_bar_companion_tick(w2c_game *instance) {
 
   // --- STATE 6: RESTED -> Relaxed companion inside safehouse ---
   if (barCompanionState == BAR_COMPANION_RESTED) {
-    // Companion wanders comfortably inside the mansion as a resident companion
     static double nextWanderCheck = 0;
     if (now > nextWanderCheck) {
       nextWanderCheck = now + 15000;
@@ -423,4 +468,61 @@ static void pg_bar_companion_tick(w2c_game *instance) {
     }
   }
   pg_asi_leave_script(instance, prev);
+}
+
+// Swift UI Control Interfaces
+u32 PGBarCompanionGetPed(void) { return barCompanionPed; }
+int PGBarCompanionGetState(void) { return (int)barCompanionState; }
+int PGBarCompanionGetPosture(void) { return barRomancePosture; }
+int PGBarCompanionGetLocation(void) { return barRomanceLocation; }
+void PGBarCompanionNextPosture(void) {
+  barRomancePosture = (barRomancePosture + 1) % 4;
+  barLastPostureSwitch = timeMS(CLOCK_MONOTONIC);
+  if (barCompanionPed && (barCompanionState == BAR_COMPANION_BEDROOM)) {
+    pg_bar_apply_romance_posture(pg_asi_game, PG_FN_PLAYER_PED_ID(pg_asi_game), barCompanionPed, barRomancePosture, barRomanceLocation);
+  }
+}
+void PGBarCompanionToggleLocation(void) {
+  barRomanceLocation = (barRomanceLocation + 1) % 2;
+  barLastPostureSwitch = timeMS(CLOCK_MONOTONIC);
+  if (barCompanionPed && (barCompanionState == BAR_COMPANION_BEDROOM)) {
+    pg_bar_apply_romance_posture(pg_asi_game, PG_FN_PLAYER_PED_ID(pg_asi_game), barCompanionPed, barRomancePosture, barRomanceLocation);
+  }
+}
+void PGBarCompanionPayTip(void) {
+  if (pg_asi_game) {
+    pg_bar_show_subtitle(pg_asi_game, "~g~Da tra $100 tien bo cho co gai hoa! Co ay rat vui va nhiet tinh.", 4000);
+  }
+}
+void PGBarCompanionFinish(void) {
+  barRomanceFinished = true;
+}
+void PGBarCompanionStartRomance(void) {
+  barRomanceRequested = true;
+  if (pg_asi_game) {
+    u32 playerPed = PG_FN_PLAYER_PED_ID(pg_asi_game);
+    if (playerPed && PG_FN_ENTITY_EXISTS(pg_asi_game, playerPed)) {
+      if (!barCompanionPed || !PG_FN_ENTITY_EXISTS(pg_asi_game, barCompanionPed)) {
+        if (!barCoordVector) barCoordVector = pg_asi_alloc(32);
+        PG_FN_GET_ENTITY_COORDS(pg_asi_game, barCoordVector, playerPed, 1);
+        float *pv = (float*)pg_pointer(&env, barCoordVector, 24);
+        barCompanionModel = barCompanionModels[0];
+        PG_FN_REQUEST_MODEL(pg_asi_game, barCompanionModel);
+        uint64_t pArgs[8] = {
+          5, barCompanionModel, pg_zf32(pv[0] + 1.2f), pg_zf32(pv[2] + 1.2f), pg_zf32(pv[4]), pg_zf32(0.0f), 0, 1
+        };
+        barCompanionPed = (u32)pg_test_call(pg_asi_game, 0xd49f9b0955c367deull, 8, pArgs);
+        if (barCompanionPed) {
+          pg_test_call(pg_asi_game, 0x19131364a44013c2ull, 2, (uint64_t[]){ barCompanionPed, 1 });
+          pg_test_call(pg_asi_game, 0x70a2d1137c8ed7c9ull, 3, (uint64_t[]){ barCompanionPed, 0, 0 });
+          pg_test_call(pg_asi_game, 0x9f7794730795e019ull, 3, (uint64_t[]){ barCompanionPed, 17, 1 });
+          pg_test_call(pg_asi_game, 0x3882114bde57ff48ull, 2, (uint64_t[]){ barCompanionPed, 1 });
+          pg_test_call(pg_asi_game, 0xa3458ff5b1d1632dull, 2, (uint64_t[]){ barCompanionPed, 0 });
+          pg_test_call(pg_asi_game, 0xf25df915fa38c5f3ull, 2, (uint64_t[]){ barCompanionPed, 1 });
+          barCompanionState = BAR_COMPANION_FOLLOWING;
+          barFollowStartTime = timeMS(CLOCK_MONOTONIC);
+        }
+      }
+    }
+  }
 }
