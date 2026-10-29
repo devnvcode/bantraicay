@@ -24,8 +24,6 @@ final class ModKeysView: UIView, UIKeyInput {
     private let firstRow = UIStackView()
     private let scroll = UIScrollView()
     var openModManager: (() -> Void)?
-    var openModManager: (() -> Void)?
-    var openModManager: (() -> Void)?
     private let grid = UIStackView()
     private let dpad = UIView()
     private var trayTop: NSLayoutConstraint?, trayCenter: NSLayoutConstraint?

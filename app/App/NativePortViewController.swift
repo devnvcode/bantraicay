@@ -1837,39 +1837,6 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
         }
     }
 
-    private var modToastLabel: UILabel?
-    private func showModHudToast(_ message: String) {
-        if modToastLabel == nil {
-            let label = UILabel()
-            label.numberOfLines = 0
-            label.textAlignment = .center
-            label.font = .systemFont(ofSize: 13, weight: .bold)
-            label.textColor = .systemYellow
-            label.backgroundColor = UIColor.black.withAlphaComponent(0.85)
-            label.layer.cornerRadius = 10
-            label.layer.borderColor = UIColor.systemYellow.cgColor
-            label.layer.borderWidth = 1.2
-            label.clipsToBounds = true
-            label.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(label)
-            NSLayoutConstraint.activate([
-                label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 55),
-                label.widthAnchor.constraint(lessThanOrEqualToConstant: 440),
-                label.heightAnchor.constraint(greaterThanOrEqualToConstant: 52)
-            ])
-            modToastLabel = label
-        }
-        guard let label = modToastLabel else { return }
-        label.text = "  " + message.replacingOccurrences(of: "\n", with: "\n  ") + "  "
-        label.alpha = 0
-        label.isHidden = false
-        UIView.animate(withDuration: 0.25) { label.alpha = 1.0 }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.8) {
-            UIView.animate(withDuration: 0.35, animations: { label.alpha = 0 }) { _ in label.isHidden = true }
-        }
-    }
-
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
     func draw(in view: MTKView) {
         guard let descriptor = view.currentRenderPassDescriptor, let drawable = view.currentDrawable,
