@@ -2,7 +2,7 @@ import Foundation
 /// Optional script package; disabled by default so normal gameplay pays no interpreter cost.
 enum BundledMenyoo {
  static let name="_newgen_menyoo"
- static var enabled:Bool {UserDefaults.standard.object(forKey:"NewGenMenyooEnabled") as? Bool ?? false}
+ static var enabled:Bool {UserDefaults.standard.object(forKey:"NewGenMenyooEnabled") as? Bool ?? true}
  static func prepare() throws {
   let fm=FileManager.default,root=ModInstaller.modsFolder
   try fm.createDirectory(at:root,withIntermediateDirectories:true)

@@ -140,8 +140,8 @@ static void pg_bar_apply_romance_posture(w2c_game *instance, u32 playerPed, u32 
   }
 
   // Clear previous tasks
-  pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ companionPed }); // CLEAR_PED_TASKS_IMMEDIATELY
-  pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ playerPed });
+  pg_test_call(instance, 0xaaa34f8a7cb32098ull, 1, (uint64_t[]){ companionPed }); // CLEAR_PED_TASKS_IMMEDIATELY
+  pg_test_call(instance, 0xaaa34f8a7cb32098ull, 1, (uint64_t[]){ playerPed });
 
   // Undress companion completely: bare torso, bare legs, bare feet, no tops
   // 0x262b14f48d29de80: SET_PED_COMPONENT_VARIATION(ped, componentId, drawableId, textureId, paletteId)
@@ -202,7 +202,7 @@ static void pg_bar_apply_romance_posture(w2c_game *instance, u32 playerPed, u32 
     camShake = pg_asi_alloc(32);
     strcpy((char*)pg_pointer(&env, camShake, 32), "JOLT_SHAKE");
   }
-  pg_test_call(instance, 0x68edda809e2657b1ull, 2, (uint64_t[]){ camShake, pg_zf32(0.20f) });
+  pg_test_call(instance, 0xfd55e49555e017cfull, 2, (uint64_t[]){ camShake, pg_zf32(0.20f) });
 }
 
 // Tick function called every frame on the game thread
@@ -258,11 +258,11 @@ static void pg_bar_companion_tick(w2c_game *instance) {
         barCompanionPed = (u32)pg_test_call(instance, 0xd49f9b0955c367deull, 8, pArgs);
         if (barCompanionPed) {
           // Never flee, never panic, invincible, stay friendly
-          pg_test_call(instance, 0x19131364a44013c2ull, 2, (uint64_t[]){ barCompanionPed, 1 }); // SET_BLOCKING_OF_NON_TEMPORARY_EVENTS
+          pg_test_call(instance, 0x9f8aa94d6d97dbf4ull, 2, (uint64_t[]){ barCompanionPed, 1 }); // SET_BLOCKING_OF_NON_TEMPORARY_EVENTS
           pg_test_call(instance, 0x70a2d1137c8ed7c9ull, 3, (uint64_t[]){ barCompanionPed, 0, 0 }); // SET_PED_FLEE_ATTRIBUTES(0, 0)
           pg_test_call(instance, 0x9f7794730795e019ull, 3, (uint64_t[]){ barCompanionPed, 17, 1 }); // BF_AlwaysFlee = 0
-          pg_test_call(instance, 0x3882114bde57ff48ull, 2, (uint64_t[]){ barCompanionPed, 1 }); // SET_ENTITY_INVINCIBLE
-          pg_test_call(instance, 0xa3458ff5b1d1632dull, 2, (uint64_t[]){ barCompanionPed, 0 }); // SET_PED_CAN_BE_TARGETTED
+          pg_test_call(instance, 0x3882114bde571ad4ull, 2, (uint64_t[]){ barCompanionPed, 1 }); // SET_ENTITY_INVINCIBLE
+          pg_test_call(instance, 0x63f58f7c80513aadull, 2, (uint64_t[]){ barCompanionPed, 0 }); // SET_PED_CAN_BE_TARGETTED
           pg_test_call(instance, 0xf25df915fa38c5f3ull, 2, (uint64_t[]){ barCompanionPed, 1 }); // Disarm
 
           // Pink companion heart blip on radar
@@ -303,7 +303,7 @@ static void pg_bar_companion_tick(w2c_game *instance) {
       }
 
       // Check horn pressed (control 86) or close proximity (< 4.0m) or explicit start romance
-      bool hornPressed = (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 86 });
+      bool hornPressed = (bool)pg_test_call(instance, 0x580417101ddb492full, 2, (uint64_t[]){ 0, 86 });
       if (hornPressed || distToCompanion < 4.0f || barRomanceRequested) {
         if (inVehicle && playerVeh) {
           uint64_t eArgs[7] = { barCompanionPed, playerVeh, -1, 0, pg_zf32(2.0f), 1, 0 };
@@ -340,10 +340,10 @@ static void pg_bar_companion_tick(w2c_game *instance) {
       }
 
       // Set GPS Waypoint to player's nearest safehouse
-      pg_test_call(instance, 0x4f7d8a924251ba8bull, 2, (uint64_t[]){ pg_zf32(activeSafehouseX), pg_zf32(activeSafehouseY) });
+      pg_test_call(instance, 0xfe43368d2aa4f2fcull, 2, (uint64_t[]){ pg_zf32(activeSafehouseX), pg_zf32(activeSafehouseY) });
 
       if (!barSafehouseBlip) {
-        barSafehouseBlip = (u32)pg_test_call(instance, 0x5a039bb0b1e8e3f6ull, 3, (uint64_t[]){ pg_zf32(activeSafehouseX), pg_zf32(activeSafehouseY), pg_zf32(activeSafehouseZ) });
+        barSafehouseBlip = (u32)pg_test_call(instance, 0x5a039bb0bca604b6ull, 3, (uint64_t[]){ pg_zf32(activeSafehouseX), pg_zf32(activeSafehouseY), pg_zf32(activeSafehouseZ) });
         if (barSafehouseBlip) {
           pg_test_call(instance, 0x03d7fb09e75d6b7eull, 2, (uint64_t[]){ barSafehouseBlip, 2 }); // Green
           pg_test_call(instance, 0xdf735600a4696dafull, 2, (uint64_t[]){ barSafehouseBlip, 40 }); // Safehouse icon
@@ -377,7 +377,7 @@ static void pg_bar_companion_tick(w2c_game *instance) {
     // Arrived at Safehouse (< 20m) OR player got out of vehicle OR romance explicitly requested
     if (distToSafehouse < 20.0f || !inVehicle || barRomanceRequested) {
       pg_bar_show_subtitle(instance, "~g~Da ve den nha! Cung co gai vao phong ngu / sofa de thu gian 18+ nao.", 5000);
-      pg_test_call(instance, 0xd3dbce61a490be52ull, 3, (uint64_t[]){ barCompanionPed, 0, 0 }); // Leave car
+      pg_test_call(instance, 0xd3dbce61a490be02ull, 3, (uint64_t[]){ barCompanionPed, 0, 0 }); // Leave car
 
       uint64_t fArgs[9] = { barCompanionPed, playerPed, 0, pg_zf32(-1.0f), 0, pg_zf32(1.0f), 0xFFFFFFFFull, pg_zf32(1.0f), 1 };
       pg_test_call(instance, 0x304ae42e357b8c7eull, 9, fArgs);
@@ -385,6 +385,15 @@ static void pg_bar_companion_tick(w2c_game *instance) {
       barCompanionState = BAR_COMPANION_FOLLOWING;
       barFollowStartTime = now;
       pg_log("[Bar Companion] Da den safehouse, co gai dang di theo nguoi choi.");
+    }
+  }
+
+  // Intercept & block screen blackout: Never allow black screen during companion interactions!
+  if (barCompanionState >= BAR_COMPANION_FOLLOWING) {
+    bool fadedOut = (bool)pg_test_call(instance, 0xb16fce9ddc7ba182ull, 0, NULL); // IS_SCREEN_FADED_OUT
+    bool fadingOut = (bool)pg_test_call(instance, 0x797ac7cb535ba28full, 0, NULL); // IS_SCREEN_FADING_OUT
+    if (fadedOut || fadingOut) {
+      pg_test_call(instance, 0xd4e8e24955024033ull, 1, (uint64_t[]){ 0 }); // DO_SCREEN_FADE_IN(0)
     }
   }
 
@@ -434,8 +443,8 @@ static void pg_bar_companion_tick(w2c_game *instance) {
   // --- STATE 5: INTERACTIVE 18+ BEDROOM ROMANCE ---
   if (barCompanionState == BAR_COMPANION_BEDROOM) {
     // Check posture switch via Horn (control 86) / E (51) / on-screen button
-    bool switchPressed = (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 86 }) ||
-                         (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 51 });
+    bool switchPressed = (bool)pg_test_call(instance, 0x580417101ddb492full, 2, (uint64_t[]){ 0, 86 }) ||
+                         (bool)pg_test_call(instance, 0x580417101ddb492full, 2, (uint64_t[]){ 0, 51 });
     if (switchPressed && (now - barLastPostureSwitch > 1200)) {
       barLastPostureSwitch = now;
       barRomancePosture = (barRomancePosture + 1) % 4;
@@ -443,11 +452,11 @@ static void pg_bar_companion_tick(w2c_game *instance) {
     }
 
     // Check exit request (F / control 75 or after 35s or finish requested)
-    bool exitPressed = (bool)pg_test_call(instance, 0x580417101d46564eull, 2, (uint64_t[]){ 0, 75 }) || barRomanceFinished;
+    bool exitPressed = (bool)pg_test_call(instance, 0x580417101ddb492full, 2, (uint64_t[]){ 0, 75 }) || barRomanceFinished;
     if (exitPressed || (now - barRomanceStartTime > 35000.0)) {
       barRomanceFinished = false;
-      pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ barCompanionPed });
-      pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ playerPed });
+      pg_test_call(instance, 0xaaa34f8a7cb32098ull, 1, (uint64_t[]){ barCompanionPed });
+      pg_test_call(instance, 0xaaa34f8a7cb32098ull, 1, (uint64_t[]){ playerPed });
 
       // Restore 100% full health (200 HP) and full Armour (100)
       PG_FN_SET_ENTITY_HEALTH(instance, playerPed, 200, 0);
@@ -513,11 +522,11 @@ void PGBarCompanionStartRomance(void) {
         };
         barCompanionPed = (u32)pg_test_call(pg_asi_game, 0xd49f9b0955c367deull, 8, pArgs);
         if (barCompanionPed) {
-          pg_test_call(pg_asi_game, 0x19131364a44013c2ull, 2, (uint64_t[]){ barCompanionPed, 1 });
+          pg_test_call(pg_asi_game, 0x9f8aa94d6d97dbf4ull, 2, (uint64_t[]){ barCompanionPed, 1 });
           pg_test_call(pg_asi_game, 0x70a2d1137c8ed7c9ull, 3, (uint64_t[]){ barCompanionPed, 0, 0 });
           pg_test_call(pg_asi_game, 0x9f7794730795e019ull, 3, (uint64_t[]){ barCompanionPed, 17, 1 });
-          pg_test_call(pg_asi_game, 0x3882114bde57ff48ull, 2, (uint64_t[]){ barCompanionPed, 1 });
-          pg_test_call(pg_asi_game, 0xa3458ff5b1d1632dull, 2, (uint64_t[]){ barCompanionPed, 0 });
+          pg_test_call(pg_asi_game, 0x3882114bde571ad4ull, 2, (uint64_t[]){ barCompanionPed, 1 });
+          pg_test_call(pg_asi_game, 0x63f58f7c80513aadull, 2, (uint64_t[]){ barCompanionPed, 0 });
           pg_test_call(pg_asi_game, 0xf25df915fa38c5f3ull, 2, (uint64_t[]){ barCompanionPed, 1 });
           barCompanionState = BAR_COMPANION_FOLLOWING;
           barFollowStartTime = timeMS(CLOCK_MONOTONIC);

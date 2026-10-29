@@ -269,15 +269,24 @@ static void pg_vehicle_menu_step(w2c_game *instance, u64 vector) {
           // Always warp player directly into driver seat (-1) when spawning
           if (enter) {
             PG_FN_SET_PED_INTO_VEHICLE(instance, ped, vehicle, (u32)-1);
-            // Native CommandSetPedIntoVehicle: 0x9a7d0929d3522395
-            pg_test_call(instance, 0x9a7d0929d3522395ull, 2, (uint64_t[]){ ped, vehicle, (uint64_t)-1 });
-            // Turn on engine immediately
-            pg_test_call(instance, 0x1f34ec783479d5f6ull, 4, (uint64_t[]){ vehicle, 1, 1, 0 });
+            // Native SET_PED_INTO_VEHICLE: 0xf75b0d629e1c063d (3 arguments: ped, vehicle, seatIndex -1)
+            pg_test_call(instance, 0xf75b0d629e1c063dull, 3, (uint64_t[]){ ped, vehicle, (uint64_t)-1 });
+            // Turn on engine immediately: 0x2497c4717c8b881e (SET_VEHICLE_ENGINE_ON)
+            pg_test_call(instance, 0x2497c4717c8b881eull, 4, (uint64_t[]){ vehicle, 1, 1, 0 });
           }
-          // Set vehicle doors completely unlocked (1 = UNLOCKED, player can enter and exit freely at any time)
-          pg_test_call(instance, 0xb664292eaec07012ull, 2, (uint64_t[]){ vehicle, 1 });
-          // Ensure vehicle is drivable and engine responsive
-          pg_test_call(instance, 0x89d66009d5af382bull, 2, (uint64_t[]){ vehicle, 1 });
+          // Set vehicle doors completely unlocked: 0xb664292eaecf7fa6 (1 = UNLOCKED)
+          pg_test_call(instance, 0xb664292eaecf7fa6ull, 2, (uint64_t[]){ vehicle, 1 });
+          // Explicitly unlock for player: 0x517aaf684bb50cd1 (SET_VEHICLE_DOORS_LOCKED_FOR_PLAYER, false)
+          pg_test_call(instance, 0x517aaf684bb50cd1ull, 3, (uint64_t[]){ vehicle, ped, 0 });
+          // Shut all doors and compartments (shut boot / underseat storage so scooter seat is not sticking up):
+          // 0x781b3d62bb013ef5: SET_VEHICLE_DOORS_SHUT
+          pg_test_call(instance, 0x781b3d62bb013ef5ull, 2, (uint64_t[]){ vehicle, 0 });
+          // 0x93d9bd300d7789e5: SET_VEHICLE_DOOR_SHUT(5, 0) (boot / underseat compartment)
+          pg_test_call(instance, 0x93d9bd300d7789e5ull, 3, (uint64_t[]){ vehicle, 5, 0 });
+          // 0x93d9bd300d7789e5: SET_VEHICLE_DOOR_SHUT(4, 0) (bonnet / hood compartment)
+          pg_test_call(instance, 0x93d9bd300d7789e5ull, 3, (uint64_t[]){ vehicle, 4, 0 });
+          // Ensure vehicle is drivable: 0x8aba6af54b942b95 (SET_VEHICLE_UNDRIVEABLE, false)
+          pg_test_call(instance, 0x8aba6af54b942b95ull, 2, (uint64_t[]){ vehicle, 0 });
           // Oldest first; room was made before the model was requested.
           if (!menuVehicles[0]) menuVehicles[0] = menuVehicles[1];
           menuVehicles[1] = vehicle;

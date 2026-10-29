@@ -321,35 +321,21 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
         touchControls.openMods = { [weak self] in
             guard let self else { return }
             self.touchControls.reset()
-            let alert = UIAlertController(title: "QUẢN LÝ MOD & XE", message: "Chọn tính năng muốn sử dụng:", preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: "🚗 Gọi xe Mod (Tự động vào ghế lái)", style: .default) { [weak self] _ in
-                guard let self else { return }
-                self.pauseGame(reason: "Vehicle spawner")
-                let page = VehicleSpawnViewController()
-                let nav = UINavigationController(rootViewController: page)
-                Theme.styleNavigation(nav)
-                page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
-                self.present(nav, animated: true)
-            })
-            alert.addAction(UIAlertAction(title: "📂 Quản lý Mod (.zip / Xe / Skin)", style: .default) { [weak self] _ in
-                guard let self else { return }
-                self.pauseGame(reason: "Mod settings")
-                let page = ModsViewController()
-                let nav = UINavigationController(rootViewController: page)
-                Theme.styleNavigation(nav)
-                page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
-                self.present(nav, animated: true)
-            })
-            alert.addAction(UIAlertAction(title: "💋 Gặp bạn gái hoa 18+ (Gọi về phòng)", style: .default) { _ in
-                PGBarCompanionStartRomance()
-            })
-            alert.addAction(UIAlertAction(title: "Đóng", style: .cancel))
-            if let popover = alert.popoverPresentationController {
-                popover.sourceView = self.view
-                popover.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-                popover.permittedArrowDirections = []
+            // 1. Direct double-pulse F8 (VK_F8 = 0x77) to toggle in-game script mod menu (Menyoo / Trainer)
+            PGAsiSetKey(0x77, true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                PGAsiSetKey(0x77, false)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                    PGAsiSetKey(0x77, true)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                        PGAsiSetKey(0x77, false)
+                    }
+                }
             }
-            self.present(alert, animated: true)
+            // 2. Open / toggle mod navigation tray & D-pad
+            self.modKeys.toggleTray()
+            // 3. Show HUD toast guide
+            self.showModHudToast("⚡ ĐÃ MỞ MENU MOD MENYOO (F8)!\n▶ Dùng phím F8 / ▲ ▼ ◀ ▶ [OK] để điều khiển\n▶ Vào Vehicle Spawner để gọi mọi loại xe mod")
         }
         #if targetEnvironment(simulator)
         // Test: PG_TEST_MODS_TRAY=<seconds> opens the mod tray that long after launch (screenshots).

@@ -376,9 +376,9 @@ static void pg_zombie_apply_clipset(w2c_game *instance, u32 ped, int clipIdx) {
     uint64_t args[3] = { ped, zombieClipsetPtrs[idx], pg_zf32(0.25f) };
     pg_test_call(instance, 0xaf8a94ede7712befull, 3, args);
     // 0x406ccf555b04fcf4: SET_PED_STRAFE_CLIPSET
-    pg_test_call(instance, 0x406ccf555b04fcf4ull, 2, (uint64_t[]){ ped, zombieClipsetPtrs[idx] });
+    pg_test_call(instance, 0x29a28f3f8cf6d854ull, 2, (uint64_t[]){ ped, zombieClipsetPtrs[idx] });
     // 0x90f237894a48574a: SET_PED_WEAPON_MOVEMENT_CLIPSET
-    pg_test_call(instance, 0x90f237894a48574aull, 2, (uint64_t[]){ ped, zombieClipsetPtrs[idx] });
+    pg_test_call(instance, 0x2622e35b77d3aca2ull, 2, (uint64_t[]){ ped, zombieClipsetPtrs[idx] });
   }
 }
 
@@ -550,7 +550,7 @@ static u32 pg_zombie_spawn_wreck_at(w2c_game *instance, float x, float y, float 
 
     // Freeze in place so physics doesn't make it jump or slide
     // 0x1c99bb7b61196e45: SET_ENTITY_VELOCITY
-    pg_test_call(instance, 0x1c99bb7b61196e45ull, 4, (uint64_t[]){ veh, 0, 0, 0 });
+    pg_test_call(instance, 0x1c99bb7b6e96d16full, 4, (uint64_t[]){ veh, 0, 0, 0 });
   }
 
   PG_FN_RELEASE_MODEL(instance, model);
@@ -656,9 +656,9 @@ static u32 pg_zombie_spawn_ped_at(w2c_game *instance, float x, float y, float z,
     pg_test_call(instance, 0x83f7e01c7b769a26ull, 5, (uint64_t[]){ zPed, zombieDmgPackFallPtr, pg_zf32(100.0f), pg_zf32(100.0f), 0 });
     pg_test_call(instance, 0x83f7e01c7b769a26ull, 5, (uint64_t[]){ zPed, zombieDmgPackVehPtr, pg_zf32(100.0f), pg_zf32(100.0f), 0 });
     // 0x818f2d5743b17c16: SET_PED_SWEAT (Clammy decayed zombie look)
-    pg_test_call(instance, 0x818f2d5743b17c16ull, 2, (uint64_t[]){ zPed, pg_zf32(100.0f) });
+    pg_test_call(instance, 0x27b0405f59637d1full, 2, (uint64_t[]){ zPed, pg_zf32(100.0f) });
     // 0xa9a5355bf4e4604f: Dead hollow stare (disable facial expressiveness)
-    pg_test_call(instance, 0xa9a5355bf4e4604full, 2, (uint64_t[]){ zPed, 47 });
+    // 0xa9a5355bf4e4604f disabled
   }
 
   // Initial wander task with zombie gait
@@ -826,9 +826,9 @@ static void pg_zombie_manage_companions(w2c_game *instance, u32 playerPed, float
       // High combat accuracy (85%)
       pg_test_call(instance, 0x7aefb85c1d49deb6ull, 2, (uint64_t[]){ newPed, 85 });
       // Combat attributes
-      pg_test_call(instance, 0xc7622937fb3874f7ull, 3, (uint64_t[]){ newPed, 5, 1 }); // AlwaysFight
-      pg_test_call(instance, 0xc7622937fb3874f7ull, 3, (uint64_t[]){ newPed, 46, 1 });
-      pg_test_call(instance, 0xc7622937fb3874f7ull, 3, (uint64_t[]){ newPed, 0, 1 });
+      pg_test_call(instance, 0x9f7794730795e019ull, 3, (uint64_t[]){ newPed, 5, 1 }); // AlwaysFight
+      pg_test_call(instance, 0x9f7794730795e019ull, 3, (uint64_t[]){ newPed, 46, 1 });
+      pg_test_call(instance, 0x9f7794730795e019ull, 3, (uint64_t[]){ newPed, 0, 1 });
 
       // Join player group & friendly relationship
       if (pGroup) pg_test_call(instance, 0x9f3480fe65db31b5ull, 2, (uint64_t[]){ newPed, pGroup });
@@ -976,66 +976,6 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
 
   if (!zombieEntityCoordVector) zombieEntityCoordVector = pg_asi_alloc(32);
   if (!zombieEntityCoordVector) return;
-
-  // Map-wide ambient ped eradication & infection: Convert any ambient ped into zombie!
-  static uint64_t nearbyPedsBuf = 0;
-  if (!nearbyPedsBuf) nearbyPedsBuf = pg_asi_alloc(128);
-  if (nearbyPedsBuf) {
-    int *pedList = (int*)pg_pointer(&env, nearbyPedsBuf, 128);
-    pedList[0] = 16;
-    pg_test_call(instance, 0x2b3451fa1e31497aull, 3, (uint64_t[]){ playerPed, nearbyPedsBuf, (uint64_t)-1 });
-    int count = pedList[0];
-    if (count > 0 && count <= 16) {
-      u32 barPed = PGBarCompanionGetPed();
-      for (int p = 1; p <= count; p++) {
-        u32 ped = (u32)pedList[p];
-        if (!ped || !PG_FN_ENTITY_EXISTS(instance, ped)) continue;
-        if (ped == playerPed || ped == companionPed || ped == barPed) continue;
-        if (ped == companionPeds[0] || ped == companionPeds[1]) continue;
-
-        bool isKnownZombie = false;
-        for (int z = 0; z < ZOMBIE_MAX_ACTIVE; z++) {
-          if (activeZombies[z] == ped) { isKnownZombie = true; break; }
-        }
-        if (isKnownZombie) continue;
-
-        int freeSlot = -1;
-        for (int z = 0; z < ZOMBIE_MAX_ACTIVE; z++) {
-          if (!activeZombies[z]) { freeSlot = z; break; }
-        }
-        if (freeSlot >= 0) {
-          activeZombies[freeSlot] = ped;
-          zombieStates[freeSlot] = ZSTATE_CHASE;
-          zombieNextTaskTime[freeSlot] = now;
-          zombieNextBiteTime[freeSlot] = now + 1000;
-          zombiePrevHealth[freeSlot] = 150;
-          zombieClipsetIndex[freeSlot] = freeSlot % 2;
-
-          pg_test_call(instance, 0xf25df915fa38c5f3ull, 2, (uint64_t[]){ ped, 1 }); // disarm
-          pg_zombie_apply_clipset(instance, ped, zombieClipsetIndex[freeSlot]);
-          pg_test_call(instance, 0xf29cf591c4bf6ceeull, 2, (uint64_t[]){ ped, pg_zf32(55.0f) });
-          pg_test_call(instance, 0x33a8f7f7d5f7f33cull, 2, (uint64_t[]){ ped, pg_zf32(55.0f) });
-          pg_test_call(instance, 0x70a2d1137c8ed7c9ull, 3, (uint64_t[]){ ped, 0, 0 });
-          pg_test_call(instance, 0x9f7794730795e019ull, 3, (uint64_t[]){ ped, 17, 0 });
-
-          u32 blip = (u32)pg_test_call(instance, 0x5cde92c702a8fce7ull, 1, (uint64_t[]){ ped });
-          if (blip) {
-            zombieBlips[freeSlot] = blip;
-            pg_test_call(instance, 0x03d7fb09e75d6b7eull, 2, (uint64_t[]){ blip, 1 }); // Red
-            pg_test_call(instance, 0xd38744167b2fa257ull, 2, (uint64_t[]){ blip, pg_zf32(0.7f) });
-            pg_test_call(instance, 0xbe8be4fe60e27b72ull, 2, (uint64_t[]){ blip, 0 });
-          }
-
-          uint64_t cArgs[4] = { ped, playerPed, 0, 16 };
-          pg_test_call(instance, 0xf166e48407bac484ull, 4, cArgs);
-          pg_test_call(instance, 0x085bf80fa50a39d1ull, 2, (uint64_t[]){ ped, pg_zf32(1.35f) });
-          pg_zombie_log("[Infection] Da lay nhiem bien NPC thanh zombie #%d!", freeSlot + 1);
-        } else {
-          pg_zombie_release_ped(instance, &ped);
-        }
-      }
-    }
-  }
 
   // Staggered checking: Process 4 slots per frame (8 frames for full cycle)
   static int staggerOffset = 0;
@@ -1189,7 +1129,7 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
 
         // Clear boxing/punching melee task immediately
         // 0xe1ef3c1216ee2859: CLEAR_PED_TASKS_IMMEDIATELY
-        pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ z });
+        pg_test_call(instance, 0xaaa34f8a7cb32098ull, 1, (uint64_t[]){ z });
 
         // Play authentic lunging neck bite animation
         if (!zombieBiteDictPtr) {
@@ -1210,7 +1150,7 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
           pg_test_call(instance, 0x697157ced63f18d4ull, 3, (uint64_t[]){ target, 20, 1 });
           if (target == playerPed) {
             // Intense screen jolt camera shake on bite
-            pg_test_call(instance, 0x68edda809e2657b1ull, 2, (uint64_t[]){ zombieCamShakePtr, pg_zf32(0.55f) });
+            pg_test_call(instance, 0xfd55e49555e017cfull, 2, (uint64_t[]){ zombieCamShakePtr, pg_zf32(0.55f) });
             // Flash red pain
             pg_test_call(instance, 0xd4e8e24955024033ull, 1, (uint64_t[]){ 500 });
             // Apply bite blood splatter on player torso & neck
@@ -1381,11 +1321,10 @@ static void pg_zombie_tick(w2c_game *instance) {
   if (playerGraceUntil > 0 && now >= playerGraceUntil) {
     playerGraceUntil = 0;
     // 0x3882114bde57ff48: SET_ENTITY_INVINCIBLE(player, false)
-    pg_test_call(instance, 0x3882114bde57ff48ull, 2, (uint64_t[]){ playerPed, 0 });
+    pg_test_call(instance, 0x3882114bde571ad4ull, 2, (uint64_t[]){ playerPed, 0 });
   }
 
   // Instant Player Respawn at Death Location (Eliminating "Game da dung" on death)
-  // 0xeef059fad016d209: GET_ENTITY_HEALTH
   int pHealth = (int)pg_test_call(instance, 0xeef059fad016d209ull, 1, (uint64_t[]){ playerPed });
   bool pDead = (bool)pg_test_call(instance, 0x3317dedb88c95038ull, 1, (uint64_t[]){ playerPed });
   if (pHealth <= 105 || pDead) {
@@ -1394,17 +1333,17 @@ static void pg_zombie_tick(w2c_game *instance) {
     float *pv = (float*)pg_pointer(&env, zombiePlayerCoordVector, 24);
     float dX = pv[0], dY = pv[2], dZ = pv[4];
 
-    // Disable death restart & fade out completely
-    pg_test_call(instance, 0xfa4883a339f116a4ull, 1, (uint64_t[]){ 0 }); // SET_FADE_OUT_AFTER_DEATH(false)
-    pg_test_call(instance, 0x71e687e148e1107cull, 1, (uint64_t[]){ 1 }); // PAUSE_DEATH_ARREST_RESTART(true)
-    pg_test_call(instance, 0xa2716d40842eaf79ull, 1, (uint64_t[]){ 1 }); // IGNORE_NEXT_RESTART(true)
+    // Disable death restart & fade out completely using verified natives
+    pg_test_call(instance, 0x4a18e01df2c87b86ull, 1, (uint64_t[]){ 0 }); // SET_FADE_OUT_AFTER_DEATH(false)
+    pg_test_call(instance, 0x2c2b3493fbf51c71ull, 1, (uint64_t[]){ 1 }); // PAUSE_DEATH_ARREST_RESTART(true)
+    pg_test_call(instance, 0x21ffb63d8c615361ull, 1, (uint64_t[]){ 1 }); // IGNORE_NEXT_RESTART(true)
 
-    // Resurrect & revive immediately
-    pg_test_call(instance, 0xd3dbce61a490be52ull, 2, (uint64_t[]){ playerPed, 16 });
-    pg_test_call(instance, 0x428ac4b0870fb282ull, 1, (uint64_t[]){ playerPed }); // RESURRECT_PED
-    pg_test_call(instance, 0x170a539cull, 1, (uint64_t[]){ playerPed }); // CLEAR_PED_TASKS_IMMEDIATELY
-    pg_test_call(instance, 0xb69317bf5e782347ull, 1, (uint64_t[]){ playerPed }); // RESET_PED_VISIBLE_DAMAGE
-    pg_test_call(instance, 0x00e620dbb78e79b9ull, 1, (uint64_t[]){ playerPed }); // CLEAR_PED_BLOOD_DAMAGE
+    // Resurrect & revive immediately with verified natives
+    pg_test_call(instance, 0x71bc8e838b9c6035ull, 1, (uint64_t[]){ playerPed }); // RESURRECT_PED
+    pg_test_call(instance, 0x8d8acd8388cd99ceull, 2, (uint64_t[]){ playerPed, 16 }); // REVIVE_INJURED_PED
+    pg_test_call(instance, 0xaaa34f8a7cb32098ull, 1, (uint64_t[]){ playerPed }); // CLEAR_PED_TASKS_IMMEDIATELY
+    pg_test_call(instance, 0x3ac1f7b898f30c05ull, 1, (uint64_t[]){ playerPed }); // RESET_PED_VISIBLE_DAMAGE
+    pg_test_call(instance, 0x8fe22675a5a45817ull, 1, (uint64_t[]){ playerPed }); // CLEAR_PED_BLOOD_DAMAGE
     PG_FN_SET_ENTITY_HEALTH(instance, playerPed, 200, 0);
     pg_test_call(instance, 0xcea04d83135264ccull, 2, (uint64_t[]){ playerPed, 100 });
 
@@ -1426,9 +1365,9 @@ static void pg_zombie_tick(w2c_game *instance) {
     PG_FN_SET_ENTITY_COORDS_NO_OFFSET(instance, playerPed, zombiePlayerCoordVector, 0, 0, 0);
 
     // 5 seconds of invulnerability grace
-    pg_test_call(instance, 0x3882114bde57ff48ull, 2, (uint64_t[]){ playerPed, 1 });
+    pg_test_call(instance, 0x3882114bde571ad4ull, 2, (uint64_t[]){ playerPed, 1 }); // SET_ENTITY_INVINCIBLE
     playerGraceUntil = now + 5000;
-    pg_test_call(instance, 0xd4e8e24955024033ull, 1, (uint64_t[]){ 600 });
+    pg_test_call(instance, 0xd4e8e24955024033ull, 1, (uint64_t[]){ 0 }); // DO_SCREEN_FADE_IN(0)
     pg_zombie_log("[Respawn] Nguoi choi duoc hoi sinh ngay lap tuc tai cho! Khong bao gio dung game hay fade!");
     pg_asi_leave_script(instance, prevScript);
     return;

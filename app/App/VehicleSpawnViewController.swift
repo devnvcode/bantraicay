@@ -117,7 +117,17 @@ final class VehicleSpawnViewController: UITableViewController, UISearchResultsUp
         updateSearchResults(for: search)
     }
     func updateSearchResults(for searchController: UISearchController) {
-        filtered = vehicles.filter { $0.matches(searchController.searchBar.text ?? "") }
+        let query = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let modNames = Set(ModVehicleSupport.vehicles())
+        let modVehicles = vehicles.filter { modNames.contains($0.name.lowercased()) }
+
+        if query.isEmpty && !modVehicles.isEmpty {
+            // Prioritize installed mod vehicles (scooters, bikes, addon cars) when search is empty
+            filtered = modVehicles
+        } else {
+            filtered = vehicles.filter { $0.matches(query) }
+        }
+
         if vehicles.isEmpty || filtered.isEmpty {
             message.text = AppLanguage.choose(vehicles.isEmpty ? "No vehicles are available yet. Return to gameplay, then reopen this menu." : "No matching vehicles")
             message.isHidden = false

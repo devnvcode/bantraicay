@@ -136,6 +136,7 @@ final class ModKeysView: UIView, UIKeyInput {
         chips += (1..<256).filter { hinted[$0] != 0 && !chips.contains($0) && Self.name($0) != nil }
         chips += remembered.filter { !chips.contains($0) && (closed[$0] != 0 || info.keyboardHandler) }
         if chips.isEmpty && !info.keyboardHandler { chips = found.filter { (0x70...0x7B).contains($0) && closed[$0] != 0 } }
+        if !chips.contains(0x77) { chips.insert(0x77, at: 0) }
         menuChips = Array(chips.prefix(3))
         // A menu just came up (say after ☰ F3): the tray makes room for the D-pad. Only when it appears:
         // the tray opened again over an open menu stays open (it used to close again at once).
