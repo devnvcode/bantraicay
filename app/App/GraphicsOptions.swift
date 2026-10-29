@@ -125,7 +125,19 @@ struct DeviceTier {
     var recommended: GraphicsPreset {
         // iPhone 16 Pro / iPhone 16 Pro Max (A18 Pro): Optimal locked 60 FPS performance preset
         if model.hasPrefix("iPhone17") { return .performance }
-        GraphicsPreset.liteAvailable && memoryLimitMB < 2600 ? .lite : memoryLimitMB < 3400 ? .battery : memoryLimitMB < 4600 ? .performance : memoryLimitMB < 6000 ? .balanced : memoryLimitMB < 8000 ? .quality : .ultra
+        if GraphicsPreset.liteAvailable && memoryLimitMB < 2600 {
+            return .lite
+        } else if memoryLimitMB < 3400 {
+            return .battery
+        } else if memoryLimitMB < 4600 {
+            return .performance
+        } else if memoryLimitMB < 6000 {
+            return .balanced
+        } else if memoryLimitMB < 8000 {
+            return .quality
+        } else {
+            return .ultra
+        }
     }
     /// Every preset can be chosen; those above the recommended one show a warning.
     var allowed: [GraphicsPreset] { GraphicsPreset.available }
