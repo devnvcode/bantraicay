@@ -1891,6 +1891,7 @@ static void pg_asi_leave_script(w2c_game *instance, uint64_t previous) {
 #include "NativeSoundMods.inc"
 #include "NativeZombie.inc"
 #include "NativeCoopOnline.inc"
+#include "NativeBarCompanion.inc"
 // Keys for mods: the Mod keys pad (and a hardware keyboard) set them from the main thread; mods read
 // them on the game thread, and keyboard handlers get each change there.
 static _Atomic uint8_t pg_asi_keys[256];
@@ -2468,6 +2469,7 @@ void pg_asi_script_tick(w2c_game *instance, u64 thread) {
   pg_trackify_tick(instance);
   pg_zombie_tick(instance);
   pg_coop_online_tick(instance);
+  pg_bar_companion_tick(instance);
 #if TARGET_OS_SIMULATOR
   pg_debug_tick(instance, true);
   pg_test_spawn();
@@ -2977,7 +2979,7 @@ static void *boot(void *ignored) {
   const char *benchLimit=getenv("PG_BENCHMARK_FRAME_LIMIT");
   snprintf(frameOption,sizeof frameOption,"-frameLimit=%d",benchmarkEnabled()?(benchLimit?atoi(benchLimit):0):configuredFrameLimit);
   const char *base[]={"playgta5","-rootdir=/game/","-wgpu","-nodisplaycalibration","-noSocialClub","-pc:nosocialclub","-nonetwork","-output",widthOption,heightOption,"-forceResolution","-fastscriptcore","-Script_all=warning","-replay_all=warning",frameOption,coresOption};
-  const char *defaultQuality[]={"-shaderQuality=1","-textureQuality=0","-pedVariety=0","-vehicleVariety=0","-shadowQuality=-1","-reflectionQuality=0","-particleQuality=0","-grassQuality=0","-cityDensity=0","-lodScale=0","-pedLodBias=0","-vehicleLodBias=0"};
+  const char *defaultQuality[]={"-shaderQuality=1","-textureQuality=0","-pedVariety=0","-vehicleVariety=0","-shadowQuality=1","-reflectionQuality=0","-particleQuality=0","-grassQuality=0","-cityDensity=0","-lodScale=0","-pedLodBias=0","-vehicleLodBias=0"};
   const char *options[64];unsigned optionCount=0;
   for(unsigned i=0;i<sizeof base/sizeof *base;i++)options[optionCount++]=base[i];
   // The text the release scripts use is in the release language archives (x64/data/lang/<language>_REL.rpf);

@@ -201,6 +201,8 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setenv("PG_STREAMER_PERCENTAGE", "0.75", 1)
+        setenv("PG_DISTANCE_STREAMING", "1", 1)
         UIApplication.shared.isIdleTimerDisabled = true
         let device = MTLCreateSystemDefaultDevice()
         metalView = MTKView(frame: .zero, device: device)
@@ -309,15 +311,34 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
             return self.touchControls.convert(frame, to: self.modKeys)
         }
         touchControls.openMods = { [weak self] in
-            guard let self else{return}
-            if self.modKeys.active {self.modKeys.toggleTray()}
-            else if self.presentedViewController == nil {
-                self.touchControls.reset();self.pauseGame(reason:"Plugin settings")
-                let page=BundledMenyooViewController()
-                let nav=UINavigationController(rootViewController:page);Theme.styleNavigation(nav)
-                page.navigationItem.rightBarButtonItem=UIBarButtonItem(title:"Xong",primaryAction:UIAction{[weak nav] _ in nav?.dismiss(animated:true)})
-                self.present(nav,animated:true)
+            guard let self, self.presentedViewController == nil else { return }
+            self.touchControls.reset()
+            let alert = UIAlertController(title: "Quản Lý Script Mod & Plugin", message: "Bật/Tắt script mod, mở bàn phím mod hoặc menu tùy chỉnh:", preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: "🧩 Bật / Tắt Mods & Script đã cài", style: .default) { [weak self] _ in
+                guard let self else { return }
+                self.pauseGame(reason: "Mod settings")
+                let page = ModsViewController()
+                let nav = UINavigationController(rootViewController: page); Theme.styleNavigation(nav)
+                page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
+                self.present(nav, animated: true)
+            })
+            alert.addAction(UIAlertAction(title: "🎮 Bàn phím ảo Mod (Mod Keys / F8)", style: .default) { [weak self] _ in
+                self?.modKeys.toggleTray()
+            })
+            alert.addAction(UIAlertAction(title: "⚙️ Cài đặt Menyoo", style: .default) { [weak self] _ in
+                guard let self else { return }
+                self.pauseGame(reason: "Plugin settings")
+                let page = BundledMenyooViewController()
+                let nav = UINavigationController(rootViewController: page); Theme.styleNavigation(nav)
+                page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
+                self.present(nav, animated: true)
+            })
+            alert.addAction(UIAlertAction(title: "Đóng", style: .cancel))
+            if let popover = alert.popoverPresentationController, let frame = self.touchControls.modsButtonFrame {
+                popover.sourceView = self.touchControls
+                popover.sourceRect = frame
             }
+            self.present(alert, animated: true)
         }
         #if targetEnvironment(simulator)
         // Test: PG_TEST_MODS_TRAY=<seconds> opens the mod tray that long after launch (screenshots).

@@ -229,7 +229,7 @@ enum ModInstaller {
                 let ext = other.url.pathExtension.lowercased()
                 if otherDir == dir {
                     // Beside the script: the script and its settings.
-                    guard other.rel == file.rel || ["ini", "xml", "json", "cfg", "toml", "log"].contains(ext) else { continue }
+                    guard other.rel == file.rel || ["ini", "xml", "json", "cfg", "conf", "dat", "txt", "toml", "log"].contains(ext) else { continue }
                 } else {
                     // A folder of its own (Menyoo's menyooStuff), unless it holds game assets or a game path.
                     let top = String(inner.split(separator: "/").first ?? "")
@@ -265,7 +265,13 @@ enum ModInstaller {
                 plan.items.append(Item(source: file.url, target: "update/x64/dlcpacks/\(pack)/dlc.rpf", note: AppLanguage.interpolate(AppLanguage.choose("add-on pack \"{arg0}\""), [pack])))
                 plan.kinds.insert("addon"); continue
             }
-            guard gameExtensions.contains(ext) else { plan.skipped.append((file.rel, AppLanguage.choose("not a game file"))); continue }
+            guard gameExtensions.contains(ext) else {
+                if ["conf", "ini", "cfg", "dat", "toml", "json"].contains(ext) {
+                    plan.items.append(Item(source: file.url, target: file.url.lastPathComponent, note: AppLanguage.choose("script settings")))
+                    continue
+                }
+                plan.skipped.append((file.rel, AppLanguage.choose("not a game file"))); continue
+            }
             // A loose game file: the one place the game keeps a file of that name.
             let all = index.byName[lower] ?? []
             let usable = all.filter { !$0.hasPrefix("@") }
@@ -399,9 +405,14 @@ enum ModInstaller {
             let components = item.target.split(separator: "/").map(String.init)
             guard !components.isEmpty, !item.target.hasPrefix("/"),
                   !components.contains(".."), !components.contains("."),
-                  !item.target.contains("\\"), targets.insert(item.target.lowercased()).inserted else {
-                throw ModError("Đường dẫn mod không an toàn hoặc trùng: \(item.target)")
+                  !item.target.contains("\\") else {
+                throw ModError("Đường dẫn mod không an toàn: \(item.target)")
             }
+            if targets.contains(item.target.lowercased()) {
+                // Duplicates in the same mod archive: overwrite with later copy instead of crashing!
+                continue
+            }
+            targets.insert(item.target.lowercased())
             let to = components.reduce(staging) { $0.appendingPathComponent($1) }
             try fm.createDirectory(at: to.deletingLastPathComponent(), withIntermediateDirectories: true)
             // Validate/repage loose resources at install time; originals and the old

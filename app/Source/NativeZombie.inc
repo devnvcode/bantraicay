@@ -303,9 +303,15 @@ static void pg_zombie_remove_blip(w2c_game *instance, u32 *blipHandle) {
   }
 }
 
-// Check if a point is visible in camera view (Mathematical Vector Frustum Check + Native Guard)
+// Check if a point is visible in camera view (Mathematical Vector Frustum Check)
 static bool pg_zombie_is_point_on_screen(w2c_game *instance, float px, float py, float heading, float x, float y, float z, float radius) {
+  (void)instance; (void)z; (void)radius;
   if (!isfinite(x) || !isfinite(y) || !isfinite(z)) return true;
+
+  float dx = x - px;
+  float dy = y - py;
+  float distSq = dx * dx + dy * dy;
+  if (distSq < 225.0f) return true; // Close proximity (< 15m) considered on-screen to avoid direct pop-in
 
   // Vector dot product check:
   // Heading 0 faces North (+Y), 90 faces West (-X), 180 South (-Y), 270 East (+X)
@@ -313,20 +319,13 @@ static bool pg_zombie_is_point_on_screen(w2c_game *instance, float px, float py,
   float fx = -sinf(rad);
   float fy =  cosf(rad);
 
-  float dx = x - px;
-  float dy = y - py;
-  float distSq = dx * dx + dy * dy;
-  if (distSq < 16.0f) return true; // Close proximity is considered on-screen
-
   float invDist = 1.0f / sqrtf(distSq);
   float cosAngle = (fx * dx + fy * dy) * invDist;
 
-  // cosAngle > 0.15f is within the 160-degree front camera field of view
-  if (cosAngle > 0.15f) return true;
+  // cosAngle > 0.40f is directly in front of the camera (> ~130-degree front cone)
+  if (cosAngle > 0.40f) return true;
 
-  // Also verify with native IS_SPHERE_VISIBLE for completeness
-  uint64_t args[4] = { pg_zf32(x), pg_zf32(y), pg_zf32(z), pg_zf32(radius) };
-  return (bool)pg_test_call(instance, 0xe33d59da70b58fdfull, 4, args);
+  return false;
 }
 
 // Check if entity is currently on screen
@@ -343,13 +342,16 @@ static bool pg_zombie_get_ground_z(w2c_game *instance, float x, float y, float z
   if (!zombieGroundZBuf) zombieGroundZBuf = pg_asi_alloc(16);
   if (!zombieGroundZBuf) return false;
 
+  // 0x07503f7948f491a7: REQUEST_COLLISION_AT_COORD
+  pg_test_call(instance, 0x07503f7948f491a7ull, 3, (uint64_t[]){ pg_zf32(x), pg_zf32(y), pg_zf32(zInput) });
+
   *(float*)pg_pointer(&env, zombieGroundZBuf, 4) = zInput;
   // 0xc906a7dab05c8d2b: GET_GROUND_Z_FOR_3D_COORD(float x, float y, float z, float *groundZ, BOOL ignoreWater)
-  uint64_t args[5] = { pg_zf32(x), pg_zf32(y), pg_zf32(zInput + 2.0f), zombieGroundZBuf, 0 };
+  uint64_t args[5] = { pg_zf32(x), pg_zf32(y), pg_zf32(zInput + 25.0f), zombieGroundZBuf, 0 };
   bool ok = (bool)pg_test_call(instance, 0xc906a7dab05c8d2bull, 5, args);
   if (ok) {
     float resZ = *(float*)pg_pointer(&env, zombieGroundZBuf, 4);
-    if (isfinite(resZ) && fabsf(resZ - zInput) < 30.0f) {
+    if (isfinite(resZ) && fabsf(resZ - zInput) < 65.0f) {
       *outZ = resZ;
       return true;
     }
@@ -1050,8 +1052,12 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
       zombieNextTaskTime[i] = now + 1200;
     }
 
-    // Despawn if far away (> 110m)
-    if (dist > 110.0f) {
+    // Despawn if far away (> 110m) or if far behind player when moving
+    float radP = heading * 0.0174532925f;
+    float fxP = -sinf(radP), fyP = cosf(radP);
+    float dotBehind = (fxP * dx + fyP * dy) / (dist > 0.1f ? dist : 1.0f);
+    bool farBehind = (dotBehind < -0.30f && dist > 75.0f);
+    if (dist > 110.0f || farBehind) {
       pg_zombie_remove_blip(instance, &zombieBlips[i]);
       pg_zombie_release_ped(instance, &activeZombies[i]);
       zombieStates[i] = ZSTATE_WANDER;
@@ -1066,6 +1072,18 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
         zombieStates[i] = ZSTATE_CHASE;
         zombieNextTaskTime[i] = now;
         pg_zombie_log("[AI] Zombie #%d phat hien muc tieu (%.1fm) -> Bat dau DUOI!", i + 1, targetDist);
+        // Pack swarm alert: notify nearby zombies within 35m to swarm target together!
+        for (int k = 0; k < ZOMBIE_MAX_ACTIVE; k++) {
+          if (k != i && activeZombies[k] && zombieStates[k] == ZSTATE_WANDER) {
+            PG_FN_GET_ENTITY_COORDS(instance, zombieEntityCoordVector, activeZombies[k], 1);
+            float *kc = (float*)pg_pointer(&env, zombieEntityCoordVector, 24);
+            float kdx = zc[0] - kc[0], kdy = zc[2] - kc[2];
+            if (kdx * kdx + kdy * kdy < 35.0f * 35.0f) {
+              zombieStates[k] = ZSTATE_CHASE;
+              zombieNextTaskTime[k] = now + (rand() % 300);
+            }
+          }
+        }
       }
     } else if (zombieStates[i] == ZSTATE_CHASE) {
       if (targetDist > 85.0f) {
@@ -1159,7 +1177,7 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
     if (activeZombies[i] && zombieStates[i] != ZSTATE_DEAD) livingZombies++;
   }
 
-  // Spawn Replenishment: Rate limited to 1 per 350ms, strictly outside player camera view
+  // Spawn Replenishment: Rate limited to 1 horde pack per 350ms, anywhere across the map
   if (now - lastZombieSpawnTime < 350) return;
   if (livingZombies >= dynamicZombieCap) return;
   if (!pg_zombie_has_memory()) return;
@@ -1170,27 +1188,50 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
   }
   if (freeSlot < 0) return;
 
-  // Calculate candidate spawn position: 45m - 70m away, strictly in blind / flank angles
-  float spawnDist = 45.0f + (float)(rand() % 25);
-  // Spawn in the rear hemisphere (+/- 90 to 180 degrees from heading)
-  float blindAngle = (100.0f + (float)(rand() % 160)) * (rand() % 2 == 0 ? 1.0f : -1.0f);
-  float rad = (heading + blindAngle) * 0.0174532925f;
+  // Search candidate horde pack position: 28m - 60m away, 360-degree sweep
+  float packDist = 28.0f + (float)(rand() % 32);
+  float packAngle = (float)(rand() % 360);
+  float rad = (heading + packAngle) * 0.0174532925f;
 
-  float candX = px - sinf(rad) * spawnDist;
-  float candY = py + cosf(rad) * spawnDist;
+  float candX = px - sinf(rad) * packDist;
+  float candY = py + cosf(rad) * packDist;
 
   if (!isfinite(candX) || !isfinite(candY)) return;
 
-  // Guard: NEVER spawn while player is looking at the point
+  // Guard: Avoid spawning directly in front of the player's close line of sight (< 25m or center screen)
   if (pg_zombie_is_point_on_screen(instance, px, py, heading, candX, candY, pz, 4.0f)) {
-    return; // Point is visible on camera, skip to prevent pop-in!
+    return;
   }
 
   lastZombieSpawnTime = now;
-  u32 newPed = pg_zombie_spawn_ped_at(instance, candX, candY, pz, freeSlot);
-  if (newPed) {
-    pg_zombie_log("[Zombie Spawner] Da bo sung Zombie #%d tai vi tri an toan (%.1f, %.1f). Tong song: %d/%d.",
-                  freeSlot + 1, candX, candY, livingZombies + 1, dynamicZombieCap);
+
+  // Spawn pack of 2-3 zombies together in horde cluster
+  int packSize = 2 + (rand() % 2);
+  int spawnedCount = 0;
+  static const float packOffsets[3][2] = {
+    { 0.0f,  0.0f },
+    { 2.2f,  1.5f },
+    {-1.8f,  2.0f }
+  };
+
+  for (int p = 0; p < packSize; p++) {
+    int targetSlot = -1;
+    for (int s = 0; s < ZOMBIE_MAX_ACTIVE; s++) {
+      if (!activeZombies[s]) { targetSlot = s; break; }
+    }
+    if (targetSlot < 0 || livingZombies + spawnedCount >= dynamicZombieCap) break;
+
+    float zx = candX + packOffsets[p][0];
+    float zy = candY + packOffsets[p][1];
+    u32 zPed = pg_zombie_spawn_ped_at(instance, zx, zy, pz, targetSlot);
+    if (zPed) {
+      spawnedCount++;
+    }
+  }
+
+  if (spawnedCount > 0) {
+    pg_zombie_log("[Zombie Horde Spawner] Da sinh bay zombie (%d con) tai (%.1f, %.1f). Tong song: %d/%d.",
+                  spawnedCount, candX, candY, livingZombies + spawnedCount, dynamicZombieCap);
   }
 }
 
@@ -1257,14 +1298,15 @@ static void pg_zombie_cleanup_all(w2c_game *instance) {
 // MAIN SCRIPT TICK LOOP (Lightweight, < 0.05ms per tick)
 // ============================================================================
 static void pg_zombie_tick(w2c_game *instance) {
+  static bool zombieCleanedUp = false;
   if (!atomic_load(&zombieActive)) {
-    static bool cleanedUp = false;
-    if (!cleanedUp) {
-      cleanedUp = true;
+    if (!zombieCleanedUp) {
+      zombieCleanedUp = true;
       pg_zombie_cleanup_all(instance);
     }
     return;
   }
+  zombieCleanedUp = false;
   if (PGPauseMenuActive() || PGLoadSceneActive() || (PGGameStatus() & 16)) return;
 
   u32 playerPed = PG_FN_PLAYER_PED_ID(instance);
@@ -1363,6 +1405,18 @@ static void pg_zombie_tick(w2c_game *instance) {
       pg_zombie_log("[Zombie Model] Xac nhan model zombie that u_m_y_zombie_01 ton tai trong game, da them vao danh sach.");
     }
 
+    // Pre-request ALL zombie models immediately at Boot so they stream into memory for Stage 2
+    for (int m = 0; m < activeZombieModelCount; m++) {
+      PG_FN_REQUEST_MODEL(instance, activeZombieModels[m]);
+    }
+    for (int c = 0; c < ZOMBIE_MAX_COMPANIONS; c++) {
+      PG_FN_REQUEST_MODEL(instance, companionModels[c]);
+    }
+    PG_FN_REQUEST_MODEL(instance, companionModel);
+    for (int w = 0; w < 4; w++) {
+      PG_FN_REQUEST_MODEL(instance, pg_joaat(zombieWreckModels[w]));
+    }
+
     zombieCurrentStage = ZOMBIE_STAGE_PREPOPULATE_WRECKS;
     pg_zombie_log("[Zombie] Stage 0 KHOI TAO: Da khoa gio 12h, OVERCAST va dua ra ngoai duong Portola Drive.");
   }
@@ -1395,7 +1449,17 @@ static void pg_zombie_tick(w2c_game *instance) {
   // STAGE 2: PRE-POPULATE 20 ZOMBIES & COMPANION (Frames 60 - 110, under black screen)
   // ==========================================================================
   if (zombieCurrentStage == ZOMBIE_STAGE_PREPOPULATE_ZOMBIES) {
-    if (zombieFrameCounter > 65) {
+    for (int m = 0; m < activeZombieModelCount; m++) {
+      PG_FN_REQUEST_MODEL(instance, activeZombieModels[m]);
+    }
+    bool modelLoaded = false;
+    for (int m = 0; m < activeZombieModelCount; m++) {
+      if (PG_FN_HAS_MODEL_LOADED(instance, activeZombieModels[m])) {
+        modelLoaded = true;
+        break;
+      }
+    }
+    if (zombieFrameCounter > 65 && (modelLoaded || zombieFrameCounter > 120)) {
       pg_zombie_manage_companions(instance, playerPed, px, py, pz, heading, now);
       pg_zombie_prepopulate_zombies(instance, px, py, pz);
       zombieCurrentStage = ZOMBIE_STAGE_READY_AND_FADEIN;

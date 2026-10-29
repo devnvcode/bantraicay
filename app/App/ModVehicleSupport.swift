@@ -35,6 +35,7 @@ enum ModVehicleSupport {
   }
   let parentRE=try! NSRegularExpression(pattern:"<parent>\\s*([^<]+)\\s*</parent>")
   let modelRE=try! NSRegularExpression(pattern:"<modelName>\\s*([^<]+)\\s*</modelName>")
+  let layoutRE=try! NSRegularExpression(pattern:"<layout>\\s*([^<]+)\\s*</layout>")
   for (url,r,root) in archives {
    do {
     var out=r.bytes,changed=false
@@ -56,6 +57,17 @@ enum ModVehicleSupport {
       if !known.contains(parent) {
        text=(text as NSString).replacingCharacters(in:m.range,with:"<parent>vehshare</parent>")
        log("Vehicle compatibility: missing texture parent \(parent) -> vehshare in \(url.lastPathComponent)/\(e.path).")
+      }
+     }
+     // Normalize mod vehicle seating layouts so rider/driver skeleton aligns properly on top of seat
+     for m in layoutRE.matches(in:text,range:NSRange(location:0,length:ns.length)).reversed() {
+      let layout=ns.substring(with:m.range(at:1)).trimmingCharacters(in:.whitespacesAndNewlines).uppercased()
+      let stdLayouts: Set<String> = ["LAYOUT_STANDARD", "LAYOUT_STD_MOTORBIKE", "LAYOUT_BICYCLE", "LAYOUT_STD_BOAT", "LAYOUT_STD_HELI", "LAYOUT_STD_PLANE", "LAYOUT_STD_SUB", "LAYOUT_STD_TRAIN"]
+      if !stdLayouts.contains(layout) {
+       let isBike = layout.contains("BIKE") || layout.contains("MOTO") || layout.contains("SCOOTER") || layout.contains("CHOPPER") || layout.contains("CYCLE")
+       let targetLayout = isBike ? "LAYOUT_STD_MOTORBIKE" : "LAYOUT_STANDARD"
+       text=(text as NSString).replacingCharacters(in:m.range,with:"<layout>\(targetLayout)</layout>")
+       log("Vehicle compatibility: custom layout \(layout) -> \(targetLayout) in \(url.lastPathComponent)/\(e.path). Fix seat clipping.")
       }
      }
      if text != String(data:data,encoding:.utf8) {
