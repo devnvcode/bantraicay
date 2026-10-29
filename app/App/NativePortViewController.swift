@@ -1904,9 +1904,9 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
         if state == 5 {
             setupRomanceHud()
             romanceHudView?.isHidden = false
-            let posture = PGBarCompanionGetPosture()
+            let posture = Int(PGBarCompanionGetPosture())
             let postures = ["Thổi kèn", "Nằm ngửa", "Cưỡi ngựa", "Múa sexy"]
-            let postureName = (posture >= 0 && posture < 4) ? postures[posture] : "Tư thế \(posture + 1)"
+            let postureName = (posture >= 0 && posture < postures.count) ? postures[posture] : "Tư thế \(posture + 1)"
             let loc = PGBarCompanionGetLocation() == 0 ? "Giường" : "Ghế Sofa"
             romanceStateLabel?.text = "💋 [\(postureName) - \(loc)]:"
         } else {
