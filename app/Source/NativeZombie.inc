@@ -573,12 +573,23 @@ static u32 pg_zombie_spawn_ped_at(w2c_game *instance, float x, float y, float z,
   // 0x07503f7948f491a7: REQUEST_COLLISION_AT_COORD
   pg_test_call(instance, 0x07503f7948f491a7ull, 3, (uint64_t[]){ pg_zf32(x), pg_zf32(y), pg_zf32(groundZ) });
 
-  // Choose loaded model
+  // Choose loaded model (strict 50/50 balance between Female & Male zombies)
   uint32_t chosen = 0;
-  for (int m = 0; m < activeZombieModelCount; m++) {
-    if (PG_FN_HAS_MODEL_LOADED(instance, activeZombieModels[m])) {
-      chosen = activeZombieModels[m];
+  int preferredGender = slot % 2; // 0 = Female (corpses/infected), 1 = Male
+  for (int offset = 0; offset < activeZombieModelCount; offset++) {
+    int idx = (preferredGender == 0) ? (1 + (offset * 2) % 10) : ((offset * 2) % 10);
+    if (idx < activeZombieModelCount && PG_FN_HAS_MODEL_LOADED(instance, activeZombieModels[idx])) {
+      chosen = activeZombieModels[idx];
       break;
+    }
+  }
+  // Fallback to any loaded zombie model
+  if (!chosen) {
+    for (int m = 0; m < activeZombieModelCount; m++) {
+      if (PG_FN_HAS_MODEL_LOADED(instance, activeZombieModels[m])) {
+        chosen = activeZombieModels[m];
+        break;
+      }
     }
   }
   if (!chosen) return 0;
@@ -627,19 +638,30 @@ static u32 pg_zombie_spawn_ped_at(w2c_game *instance, float x, float y, float z,
   PG_FN_SET_ENTITY_HEALTH(instance, zPed, zHp, 0);
   zombiePrevHealth[slot] = zHp;
 
-  // Horrific zombie damage decals, wounds & clammy skin
+  // Horrific zombie damage decals, rotting face wounds & clammy decaying skin
   if (atomic_load(&zombieEnableBlood)) {
+    static uint64_t zDmgHeadshot = 0;
+    static uint64_t zDmgBurntHead = 0;
     if (!zombieDmgPackFallPtr) {
       zombieDmgPackFallPtr = pg_asi_alloc(32);
       zombieDmgPackVehPtr = pg_asi_alloc(32);
+      zDmgHeadshot = pg_asi_alloc(32);
+      zDmgBurntHead = pg_asi_alloc(32);
       strcpy((char*)pg_pointer(&env, zombieDmgPackFallPtr, 32), "Fall");
       strcpy((char*)pg_pointer(&env, zombieDmgPackVehPtr, 32), "BigHitByVehicle");
+      strcpy((char*)pg_pointer(&env, zDmgHeadshot, 32), "Dir_Head_Shot");
+      strcpy((char*)pg_pointer(&env, zDmgBurntHead, 32), "Burnt_Ped_Head_Blood");
     }
-    // 0x83f7e01c7b769a26: APPLY_PED_DAMAGE_PACK
+    // Terrifying rotting face & gory head gunshot decals
+    pg_test_call(instance, 0x83f7e01c7b769a26ull, 5, (uint64_t[]){ zPed, zDmgHeadshot, pg_zf32(100.0f), pg_zf32(100.0f), 0 });
+    pg_test_call(instance, 0x83f7e01c7b769a26ull, 5, (uint64_t[]){ zPed, zDmgBurntHead, pg_zf32(100.0f), pg_zf32(100.0f), 0 });
+    // 0x83f7e01c7b769a26: APPLY_PED_DAMAGE_PACK (body tears & crushing injuries)
     pg_test_call(instance, 0x83f7e01c7b769a26ull, 5, (uint64_t[]){ zPed, zombieDmgPackFallPtr, pg_zf32(100.0f), pg_zf32(100.0f), 0 });
     pg_test_call(instance, 0x83f7e01c7b769a26ull, 5, (uint64_t[]){ zPed, zombieDmgPackVehPtr, pg_zf32(100.0f), pg_zf32(100.0f), 0 });
     // 0x818f2d5743b17c16: SET_PED_SWEAT (Clammy decayed zombie look)
     pg_test_call(instance, 0x818f2d5743b17c16ull, 2, (uint64_t[]){ zPed, pg_zf32(100.0f) });
+    // 0xa9a5355bf4e4604f: Dead hollow stare (disable facial expressiveness)
+    pg_test_call(instance, 0xa9a5355bf4e4604full, 2, (uint64_t[]){ zPed, 47 });
   }
 
   // Initial wander task with zombie gait
@@ -767,7 +789,14 @@ static void pg_zombie_manage_companions(w2c_game *instance, u32 playerPed, float
           uint64_t cArgs[4] = { ped, targetZombie, 0, 16 };
           pg_test_call(instance, 0xf166e48407bac484ull, 4, cArgs);
           // 0x085bf80fa50a39d1: SET_PED_MOVE_RATE_OVERRIDE
-          pg_test_call(instance, 0x085bf80fa50a39d1ull, 2, (uint64_t[]){ ped, pg_zf32(1.25f) });
+          pg_test_call(instance, 0x085bf80fa50a39d1ull, 2, (uint64_t[]){ ped, pg_zf32(1.30f) });
+        } else {
+          // No nearby zombie: companion actively follows player closely
+          if (distSq > 3.0f * 3.0f) {
+            // 0x6a071245eb0d1882: TASK_GO_TO_ENTITY
+            uint64_t fArgs[7] = { ped, playerPed, 0xFFFFFFFFull, pg_zf32(2.2f), pg_zf32(1.8f), pg_zf32(2.0f), 0 };
+            pg_test_call(instance, 0x6a071245eb0d1882ull, 7, fArgs);
+          }
         }
       }
       continue;
@@ -779,7 +808,9 @@ static void pg_zombie_manage_companions(w2c_game *instance, u32 playerPed, float
 
     uint32_t model = companionModels[c];
     PG_FN_REQUEST_MODEL(instance, model);
-    if (!PG_FN_HAS_MODEL_LOADED(instance, model) || !PG_FN_HAS_MODEL_LOADED(instance, companionModel)) continue;
+    PG_FN_REQUEST_MODEL(instance, companionModel);
+    if (!PG_FN_HAS_MODEL_LOADED(instance, model)) continue;
+    if (c == 0 && !PG_FN_HAS_MODEL_LOADED(instance, companionModel)) continue;
 
     float spawnX = px + (c == 0 ? -2.2f : 2.2f);
     float spawnY = py + (c == 0 ? -2.2f : 2.2f);
@@ -940,6 +971,10 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
   for (int m = 0; m < activeZombieModelCount; m++) {
     PG_FN_REQUEST_MODEL(instance, activeZombieModels[m]);
   }
+  for (int c = 0; c < ZOMBIE_MAX_COMPANIONS; c++) {
+    PG_FN_REQUEST_MODEL(instance, companionModels[c]);
+  }
+  PG_FN_REQUEST_MODEL(instance, companionModel);
   pg_zombie_request_clipsets(instance);
 
   if (!zombieEntityCoordVector) zombieEntityCoordVector = pg_asi_alloc(32);
@@ -1079,7 +1114,11 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
         if (bHeading < 0) bHeading += 360.0f;
         pg_test_call(instance, 0x8e2530aa8ada980eull, 2, (uint64_t[]){ z, pg_zf32(bHeading) });
 
-        // Play lunging bite animation (melee attack fwd)
+        // Clear boxing/punching melee task immediately
+        // 0xe1ef3c1216ee2859: CLEAR_PED_TASKS_IMMEDIATELY
+        pg_test_call(instance, 0xe1ef3c1216ee2859ull, 1, (uint64_t[]){ z });
+
+        // Play authentic lunging neck bite animation
         if (!zombieBiteDictPtr) {
           zombieBiteDictPtr = pg_asi_alloc(64);
           zombieBiteAnimPtr = pg_asi_alloc(64);
@@ -1089,20 +1128,27 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
           strcpy((char*)pg_pointer(&env, zombieCamShakePtr, 64), "SMALL_EXPLOSION_SHAKE");
         }
         pg_test_call(instance, 0xd2a71e1a77418a49ull, 1, (uint64_t[]){ zombieBiteDictPtr });
-        uint64_t aArgs[11] = { z, zombieBiteDictPtr, zombieBiteAnimPtr, pg_zf32(8.0f), pg_zf32(-8.0f), 900, 1, 0, 0, 0, 0 };
+        uint64_t aArgs[11] = { z, zombieBiteDictPtr, zombieBiteAnimPtr, pg_zf32(8.0f), pg_zf32(-8.0f), 1000, 1, 0, 0, 0, 0 };
         // 0xea47fe3719165b94: TASK_PLAY_ANIM
         pg_test_call(instance, 0xea47fe3719165b94ull, 11, aArgs);
 
         if (atomic_load(&zombieEnableBiteDamage)) {
           // 0x697157ced63f18d4: APPLY_DAMAGE_TO_PED
-          pg_test_call(instance, 0x697157ced63f18d4ull, 3, (uint64_t[]){ target, 15, 1 });
+          pg_test_call(instance, 0x697157ced63f18d4ull, 3, (uint64_t[]){ target, 20, 1 });
           if (target == playerPed) {
-            // Screen jolt camera shake on bite
-            pg_test_call(instance, 0x68edda809e2657b1ull, 2, (uint64_t[]){ zombieCamShakePtr, pg_zf32(0.40f) });
+            // Intense screen jolt camera shake on bite
+            pg_test_call(instance, 0x68edda809e2657b1ull, 2, (uint64_t[]){ zombieCamShakePtr, pg_zf32(0.55f) });
             // Flash red pain
-            pg_test_call(instance, 0xd4e8e24955024033ull, 1, (uint64_t[]){ 450 });
+            pg_test_call(instance, 0xd4e8e24955024033ull, 1, (uint64_t[]){ 500 });
+            // Apply bite blood splatter on player torso & neck
+            static uint64_t pBiteDmg = 0;
+            if (!pBiteDmg) {
+              pBiteDmg = pg_asi_alloc(32);
+              strcpy((char*)pg_pointer(&env, pBiteDmg, 32), "Fall");
+            }
+            pg_test_call(instance, 0x83f7e01c7b769a26ull, 5, (uint64_t[]){ playerPed, pBiteDmg, pg_zf32(100.0f), pg_zf32(100.0f), 0 });
           }
-          pg_zombie_log("[Combat] Zombie #%d can ngap rang vao muc tieu! Gay 15 sat thuong.", i + 1);
+          pg_zombie_log("[Combat] Zombie #%d lao vao can ngap rang vao muc tieu! Gay 20 sat thuong.", i + 1);
         }
       }
     }
@@ -1280,7 +1326,7 @@ static void pg_zombie_tick(w2c_game *instance) {
 
   double tickStart = timeMS(CLOCK_MONOTONIC);
   zombieFrameCounter++;
-  double now = tickStart;
+  now = tickStart;
 
   if (!zombiePlayerCoordVector) zombiePlayerCoordVector = pg_asi_alloc(32);
   if (!zombiePlayerCoordVector) {
