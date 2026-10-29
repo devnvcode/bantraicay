@@ -23,6 +23,9 @@ final class ModKeysView: UIView, UIKeyInput {
     private let tray = UIView()
     private let firstRow = UIStackView()
     private let scroll = UIScrollView()
+    var openModManager: (() -> Void)?
+    var openModManager: (() -> Void)?
+    var openModManager: (() -> Void)?
     private let grid = UIStackView()
     private let dpad = UIView()
     private var trayTop: NSLayoutConstraint?, trayCenter: NSLayoutConstraint?
@@ -144,10 +147,10 @@ final class ModKeysView: UIView, UIKeyInput {
         // mods never say: the number pad, which Script Hook V trainers (Simple Trainer, Menyoo) use.
         let handlerOnly = info.keyboardHandler && ![0x68, 0x26, 0x62, 0x28].contains(where: { open[$0] != 0 })
         let usable = { (key: Int) in open[key] != 0 || (handlerOnly && [0x68, 0x62, 0x64, 0x66, 0x65, 0x60].contains(key)) }
-        let pick = { (choices: [Int]) in choices.first(where: usable) ?? 0 }
-        let nav = [pick([0x68, 0x26]), pick([0x62, 0x28]), pick([0x64, 0x25]), pick([0x66, 0x27]), pick([0x65, 0x0D]), pick([0x60, 0x08, 0x1B])]
+        let pick = { (choices: [Int], fallback: Int) in choices.first(where: usable) ?? fallback }
+        let nav = [pick([0x68, 0x26], 0x26), pick([0x62, 0x28], 0x28), pick([0x64, 0x25], 0x25), pick([0x66, 0x27], 0x27), pick([0x65, 0x0D], 0x0D), pick([0x60, 0x08, 0x1B], 0x08)]
         if nav != navKeys { navKeys = nav; buildDpad() }
-        dpad.isHidden = !(info.menuVisible && nav.filter { $0 != 0 }.count >= 2 && tray.isHidden && !typing)
+        dpad.isHidden = !(info.menuVisible && tray.isHidden && !typing)
         // The tray's keys are laid out again only while it's closed, so nothing moves under a finger.
         let sorted = found.sorted { Self.rank($0) == Self.rank($1) ? $0 < $1 : Self.rank($0) < Self.rank($1) }
         if sorted != keys && tray.isHidden { keys = sorted }
@@ -157,7 +160,13 @@ final class ModKeysView: UIView, UIKeyInput {
 
     private func rebuild() {
         firstRow.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        if !menuChips.contains(0x77) {
+            firstRow.addArrangedSubview(makeKey(0x77, compact: true, title: "☰ F8"))
+        }
         for key in menuChips { firstRow.addArrangedSubview(makeKey(key, compact: true, title: "☰ " + (Self.name(key) ?? ""))) }
+        let modManagerBtn = ModKeyButton(key: 0, title: "📂 " + AppLanguage.choose("Mods"), pinned: false, compact: true)
+        modManagerBtn.pressed = { [weak self] down in if !down { self?.openModManager?() } }
+        firstRow.addArrangedSubview(modManagerBtn)
         let type = ModKeyButton(key: 0, title: "⌨ " + AppLanguage.choose("Type"), pinned: false, compact: true)
         type.pressed = { [weak self] down in if !down { self?.startTyping() } }
         firstRow.addArrangedSubview(type)

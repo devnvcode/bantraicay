@@ -42,8 +42,8 @@
 #include <pthread.h>
 
 // --- Cấu hình giới hạn quần thể Zombie V6 (Đông đúc như NPC thường, khóa 60 FPS) ---
-#define ZOMBIE_MAX_ACTIVE       36
-#define ZOMBIE_TARGET_ACTIVE    28
+#define ZOMBIE_MAX_ACTIVE       40
+#define ZOMBIE_TARGET_ACTIVE    32
 #define ZOMBIE_MIN_ACTIVE       20
 #define ZOMBIE_MAX_WRECKS       8
 #define ZOMBIE_MAX_CORPSES      16
@@ -311,20 +311,16 @@ static bool pg_zombie_is_point_on_screen(w2c_game *instance, float px, float py,
   float dx = x - px;
   float dy = y - py;
   float distSq = dx * dx + dy * dy;
-  if (distSq < 225.0f) return true; // Close proximity (< 15m) considered on-screen to avoid direct pop-in
+  // Only avoid spawning right in front of the player's close face (< 18m)
+  if (distSq < 324.0f) {
+    float rad = heading * 0.0174532925f;
+    float fx = -sinf(rad), fy = cosf(rad);
+    float invDist = 1.0f / (sqrtf(distSq) + 0.001f);
+    float cosAngle = (fx * dx + fy * dy) * invDist;
+    if (cosAngle > 0.40f) return true; // Inside close front cone
+  }
 
-  // Vector dot product check:
-  // Heading 0 faces North (+Y), 90 faces West (-X), 180 South (-Y), 270 East (+X)
-  float rad = heading * 0.0174532925f;
-  float fx = -sinf(rad);
-  float fy =  cosf(rad);
-
-  float invDist = 1.0f / sqrtf(distSq);
-  float cosAngle = (fx * dx + fy * dy) * invDist;
-
-  // cosAngle > 0.40f is directly in front of the camera (> ~130-degree front cone)
-  if (cosAngle > 0.40f) return true;
-
+  // Beyond 18m: ALLOW spawning ahead on streets & sidewalks so hordes appear ahead while driving/walking!
   return false;
 }
 
@@ -1056,7 +1052,7 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
     float radP = heading * 0.0174532925f;
     float fxP = -sinf(radP), fyP = cosf(radP);
     float dotBehind = (fxP * dx + fyP * dy) / (dist > 0.1f ? dist : 1.0f);
-    bool farBehind = (dotBehind < -0.30f && dist > 75.0f);
+    bool farBehind = (dotBehind < -0.30f && dist > 140.0f);
     if (dist > 110.0f || farBehind) {
       pg_zombie_remove_blip(instance, &zombieBlips[i]);
       pg_zombie_release_ped(instance, &activeZombies[i]);
@@ -1198,9 +1194,10 @@ static void pg_zombie_manage_horde(w2c_game *instance, u32 playerPed, float px, 
 
   if (!isfinite(candX) || !isfinite(candY)) return;
 
-  // Guard: Avoid spawning directly in front of the player's close line of sight (< 25m or center screen)
+  // Guard: If point is right under player nose (< 18m), flip angle to opposite hemisphere
   if (pg_zombie_is_point_on_screen(instance, px, py, heading, candX, candY, pz, 4.0f)) {
-    return;
+    candX = px + sinf(rad) * packDist;
+    candY = py - cosf(rad) * packDist;
   }
 
   lastZombieSpawnTime = now;

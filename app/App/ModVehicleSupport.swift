@@ -36,6 +36,8 @@ enum ModVehicleSupport {
   let parentRE=try! NSRegularExpression(pattern:"<parent>\\s*([^<]+)\\s*</parent>")
   let modelRE=try! NSRegularExpression(pattern:"<modelName>\\s*([^<]+)\\s*</modelName>")
   let layoutRE=try! NSRegularExpression(pattern:"<layout>\\s*([^<]+)\\s*</layout>")
+  let audioRE=try! NSRegularExpression(pattern:"<audioNameHash>\\s*([^<]*)\\s*</audioNameHash>")
+  let sitRE=try! NSRegularExpression(pattern:"<sitInBike\\s+value=[\"\']([^\"\']*) [\"\']\\s*/>")
   for (url,r,root) in archives {
    do {
     var out=r.bytes,changed=false
@@ -69,6 +71,24 @@ enum ModVehicleSupport {
        text=(text as NSString).replacingCharacters(in:m.range,with:"<layout>\(targetLayout)</layout>")
        log("Vehicle compatibility: custom layout \(layout) -> \(targetLayout) in \(url.lastPathComponent)/\(e.path). Fix seat clipping.")
       }
+     // Normalize audioNameHash so vehicle horn and engine audio work 100% on mod vehicles
+     for m in audioRE.matches(in:text,range:NSRange(location:0,length:ns.length)).reversed() {
+      let audio=ns.substring(with:m.range(at:1)).trimmingCharacters(in:.whitespacesAndNewlines).uppercased()
+      let stdAudios: Set<String> = ["ADDER", "ZENTORNO", "BATI", "SANCHEZ", "FAGGIO", "TAILGATER", "BALLER", "COMET2", "BUFFALO", "SULTAN", "ELEGY2", "FELON", "F620", "ORACLE", "AKUMA", "CARBONRS", "DAEMON", "DOUBLE"]
+      if audio.isEmpty || !stdAudios.contains(audio) {
+       let isBike = text.contains("LAYOUT_STD_MOTORBIKE") || text.contains("BIKE") || text.contains("MOTO")
+       let targetAudio = isBike ? "BATI" : "ADDER"
+       text=(text as NSString).replacingCharacters(in:m.range,with:"<audioNameHash>\(targetAudio)</audioNameHash>")
+       log("Vehicle audio compatibility: custom audio \(audio) -> \(targetAudio) in \(url.lastPathComponent)/\(e.path). Fix horn & engine audio.")
+      }
+     }
+     // Normalize sitInBike to true for motorbikes so the rider sits firmly on the saddle
+     for m in sitRE.matches(in:text,range:NSRange(location:0,length:ns.length)).reversed() {
+      let isBike = text.contains("LAYOUT_STD_MOTORBIKE") || text.contains("BIKE") || text.contains("MOTO")
+      if isBike {
+       text=(text as NSString).replacingCharacters(in:m.range,with:"<sitInBike value=\"true\" />")
+      }
+     }
      }
      if text != String(data:data,encoding:.utf8) {
       // Append an uncompressed binary entry; all geometry, nested RPFs and flags stay byte-identical.

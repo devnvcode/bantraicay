@@ -2,7 +2,7 @@ import Foundation
 /// Optional script package; disabled by default so normal gameplay pays no interpreter cost.
 enum BundledMenyoo {
  static let name="_newgen_menyoo"
- static var enabled:Bool {UserDefaults.standard.bool(forKey:"NewGenMenyooEnabled")}
+ static var enabled:Bool {UserDefaults.standard.object(forKey:"NewGenMenyooEnabled") as? Bool ?? true}
  static func prepare() throws {
   let fm=FileManager.default,root=ModInstaller.modsFolder
   try fm.createDirectory(at:root,withIntermediateDirectories:true)
@@ -12,7 +12,8 @@ enum BundledMenyoo {
    guard let zip=Bundle.main.url(forResource:"BundledMenyoo",withExtension:"zip") else{throw ModError("Thiếu gói Menyoo tích hợp.")}
    let stage=try ModInstaller.unpack(zip);defer{try? fm.removeItem(at:stage)}
    try "2".write(to:stage.appendingPathComponent(".newgen-menyoo"),atomically:true,encoding:.utf8)
-   try fm.moveItem(at:stage,to:off);target=off
+   let initTarget = enabled ? on : off
+   try fm.moveItem(at:stage,to:initTarget);target=initTarget
   }
   guard fm.fileExists(atPath:target.appendingPathComponent(".newgen-menyoo").path) else{throw ModError("Thư mục Menyoo không thuộc gói tích hợp; giữ nguyên.")}
   let marker=target.appendingPathComponent(".newgen-menyoo")

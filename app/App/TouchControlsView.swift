@@ -452,7 +452,7 @@ final class TouchControlsView: UIView {
     private let pause = ControlButton("pause", icon: "pause", label: AppLanguage.choose("Pause menu"))
     private let settings = ControlButton("settings", icon: "settings", label: AppLanguage.choose("Settings"))
     /// Script mods (GTA-69): shown while one runs; opens the mod tray (ModKeysView).
-    private let mods = ControlButton("mods", icon: "mods", label: "Plugin")
+    private let mods = ControlButton("mods", icon: "mods", label: "Script Mod (F8)")
     var modsActive = false { didSet { if modsActive != oldValue { updateVisibility(); setNeedsLayout() } } }
     var openMods: (() -> Void)?
     /// Where the Mods control is, for the tray that opens from it.
@@ -595,7 +595,7 @@ final class TouchControlsView: UIView {
             "phone": AppLanguage.choose("Phone"),
             "pause": AppLanguage.choose("Pause menu"),
             "settings": AppLanguage.choose("Settings"),
-            "mods": "Plugin",
+            "mods": "Script Mod (F8)",
             "lights": AppLanguage.choose("Headlights"),
             "radio": AppLanguage.choose("Radio"),
             "up": AppLanguage.choose("Up"),

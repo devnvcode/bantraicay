@@ -310,35 +310,32 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
             guard let self, let frame = self.touchControls.modsButtonFrame else { return nil }
             return self.touchControls.convert(frame, to: self.modKeys)
         }
+        modKeys.openModManager = { [weak self] in
+            guard let self else { return }
+            self.pauseGame(reason: "Mod settings")
+            let page = ModsViewController()
+            let nav = UINavigationController(rootViewController: page); Theme.styleNavigation(nav)
+            page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
+            self.present(nav, animated: true)
+        }
         touchControls.openMods = { [weak self] in
-            guard let self, self.presentedViewController == nil else { return }
+            guard let self else { return }
             self.touchControls.reset()
-            let alert = UIAlertController(title: "Quản Lý Script Mod & Plugin", message: "Bật/Tắt script mod, mở bàn phím mod hoặc menu tùy chỉnh:", preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: "🧩 Bật / Tắt Mods & Script đã cài", style: .default) { [weak self] _ in
-                guard let self else { return }
-                self.pauseGame(reason: "Mod settings")
-                let page = ModsViewController()
-                let nav = UINavigationController(rootViewController: page); Theme.styleNavigation(nav)
-                page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
-                self.present(nav, animated: true)
-            })
-            alert.addAction(UIAlertAction(title: "🎮 Bàn phím ảo Mod (Mod Keys / F8)", style: .default) { [weak self] _ in
-                self?.modKeys.toggleTray()
-            })
-            alert.addAction(UIAlertAction(title: "⚙️ Cài đặt Menyoo", style: .default) { [weak self] _ in
-                guard let self else { return }
-                self.pauseGame(reason: "Plugin settings")
-                let page = BundledMenyooViewController()
-                let nav = UINavigationController(rootViewController: page); Theme.styleNavigation(nav)
-                page.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Xong", primaryAction: UIAction { [weak nav] _ in nav?.dismiss(animated: true) })
-                self.present(nav, animated: true)
-            })
-            alert.addAction(UIAlertAction(title: "Đóng", style: .cancel))
-            if let popover = alert.popoverPresentationController, let frame = self.touchControls.modsButtonFrame {
-                popover.sourceView = self.touchControls
-                popover.sourceRect = frame
+            // 1. Direct double-pulse F8 (VK_F8 = 0x77) to toggle in-game script mod menu (Menyoo / Trainer)
+            PGAsiSetKey(0x77, true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                PGAsiSetKey(0x77, false)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                    PGAsiSetKey(0x77, true)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                        PGAsiSetKey(0x77, false)
+                    }
+                }
             }
-            self.present(alert, animated: true)
+            // 2. Open / toggle mod navigation tray & D-pad
+            self.modKeys.toggleTray()
+            // 3. Show HUD toast guide
+            self.showModHudToast("⚡ ĐÃ BẬT SCRIPT MOD (F8)!\n▶ Dùng phím F8 / ▲ ▼ ◀ ▶ [OK] để điều khiển menu\n▶ Bấm [📂 Mods] để cài thêm mod mới (.zip/.asi/.dll)")
         }
         #if targetEnvironment(simulator)
         // Test: PG_TEST_MODS_TRAY=<seconds> opens the mod tray that long after launch (screenshots).
@@ -1806,6 +1803,72 @@ final class NativePortViewController: UIViewController, MTKViewDelegate {
     /// Controller trigger diagnostics and the digital-trigger hold (GTA-58).
     private var controllerTriggersWereDown = (false, false), controllerTriggerPresses = (0, 0), controllerButtonsWithRT = PadButtons()
     private var digitalTriggerAt: (CFTimeInterval, CFTimeInterval) = (-1, -1)
+
+    private var modToastLabel: UILabel?
+    private func showModHudToast(_ message: String) {
+        if modToastLabel == nil {
+            let label = UILabel()
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            label.font = .systemFont(ofSize: 13, weight: .bold)
+            label.textColor = .systemYellow
+            label.backgroundColor = UIColor.black.withAlphaComponent(0.85)
+            label.layer.cornerRadius = 10
+            label.layer.borderColor = UIColor.systemYellow.cgColor
+            label.layer.borderWidth = 1.2
+            label.clipsToBounds = true
+            label.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(label)
+            NSLayoutConstraint.activate([
+                label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 55),
+                label.widthAnchor.constraint(lessThanOrEqualToConstant: 440),
+                label.heightAnchor.constraint(greaterThanOrEqualToConstant: 52)
+            ])
+            modToastLabel = label
+        }
+        guard let label = modToastLabel else { return }
+        label.text = "  " + message.replacingOccurrences(of: "\n", with: "\n  ") + "  "
+        label.alpha = 0
+        label.isHidden = false
+        UIView.animate(withDuration: 0.25) { label.alpha = 1.0 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.8) {
+            UIView.animate(withDuration: 0.35, animations: { label.alpha = 0 }) { _ in label.isHidden = true }
+        }
+    }
+
+    private var modToastLabel: UILabel?
+    private func showModHudToast(_ message: String) {
+        if modToastLabel == nil {
+            let label = UILabel()
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            label.font = .systemFont(ofSize: 13, weight: .bold)
+            label.textColor = .systemYellow
+            label.backgroundColor = UIColor.black.withAlphaComponent(0.85)
+            label.layer.cornerRadius = 10
+            label.layer.borderColor = UIColor.systemYellow.cgColor
+            label.layer.borderWidth = 1.2
+            label.clipsToBounds = true
+            label.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(label)
+            NSLayoutConstraint.activate([
+                label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 55),
+                label.widthAnchor.constraint(lessThanOrEqualToConstant: 440),
+                label.heightAnchor.constraint(greaterThanOrEqualToConstant: 52)
+            ])
+            modToastLabel = label
+        }
+        guard let label = modToastLabel else { return }
+        label.text = "  " + message.replacingOccurrences(of: "\n", with: "\n  ") + "  "
+        label.alpha = 0
+        label.isHidden = false
+        UIView.animate(withDuration: 0.25) { label.alpha = 1.0 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.8) {
+            UIView.animate(withDuration: 0.35, animations: { label.alpha = 0 }) { _ in label.isHidden = true }
+        }
+    }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
     func draw(in view: MTKView) {
